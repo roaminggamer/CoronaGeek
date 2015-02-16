@@ -7,4 +7,4 @@ This code wask discussed in episodes 124 .. 128, the sub folders contain:
 * 5_frame - Basic app framework using Composer.
 * 6_memory - Shows memory usage examples.
 * 7_custom_transitions - Shows custom transitions and how to make them.
- * 8_objectsInModules - Shows how to manage sprites and other modules in coordination w/ Composer.
+* 8_objectsInModules - Shows how to manage sprites and other modules in coordination w/ Composer.

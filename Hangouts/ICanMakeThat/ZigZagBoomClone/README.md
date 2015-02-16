@@ -15,10 +15,10 @@ Watch Videos here:
 
 
 Folder Structure:
-     app/ - The game itself.  This will evolve as we write it.
-  assets/ - Incoming sound and art assets for the game.
-    docs/ - Any documentation mentioned or used on the hangout.
-versions/ - Checkpointed versions of the game as we progress.
+ *  app/ - The game itself.  This will evolve as we write it.
+ * assets/ - Incoming sound and art assets for the game.
+ * docs/ - Any documentation mentioned or used on the hangout.
+ * versions/ - Checkpointed versions of the game as we progress.
 
 
 
