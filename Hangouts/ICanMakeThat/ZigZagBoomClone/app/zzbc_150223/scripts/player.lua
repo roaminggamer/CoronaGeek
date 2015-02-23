@@ -38,14 +38,6 @@ end
 function public.cleanup( path )	
 	print("Cleaning up player module.")
 	layers = nil
-
-	-- If path is supplied, completely unload the module
-	if( path ) then
-		print("Unloading player module.")
-		package.loaded[path] = nil
-    	_G[path] = nil	
-    end
 end
-
 
 return public

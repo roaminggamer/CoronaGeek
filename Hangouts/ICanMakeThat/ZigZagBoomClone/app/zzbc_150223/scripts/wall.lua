@@ -37,13 +37,6 @@ end
 function public.cleanup( path )	
 	print("Cleaning up wall module.")
 	layers = nil
-	
-	-- If path is supplied, completely unload the module
-	if( path ) then
-		print("Unloading wall module.")
-		package.loaded[path] = nil
-    	_G[path] = nil	
-    end
 end
 
 -- Create a new wall segment

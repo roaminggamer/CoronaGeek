@@ -91,15 +91,13 @@ end
 -- Clean up the game
 function public.cleanup( path )	
 	print("Cleaning up game module.")
-	layers = nil
-	physics.stop()
 
-	-- If path is supplied, completely unload the module
-	if( path ) then
-		print("Unloading game module.")
-		package.loaded[path] = nil
-    	_G[path] = nil	
-    end
+	-- Initialize the key game modules
+	oneTouch.cleanup( layers )
+	playerM.cleanup( layers )	
+	wallM.cleanup( layers )
+
+	layers = nil	
 end
 
 return public
