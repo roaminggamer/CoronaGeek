@@ -1,12 +1,5 @@
-This folder contains all builds of this game.  Builds will be incremently more complete.
+This folder contains the most recent build of the game.
 
-The folders containing these builds are named thus:
+To find old versions, go to this folder:
 
-zzbc_YYMMDD
-
-* zzbc - Zig Zag Boom Clone
-* YY = Year
-* MM = Month
-* DD = Day
-
-I could rely on the gitHub history for old versions, but I think folks will find having them all available at a glance nicer.
+\CoronaGeek\Hangouts\ICanMakeThat\ZigZagBoomClone\app_old_versions

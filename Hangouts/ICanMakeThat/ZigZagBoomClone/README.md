@@ -15,7 +15,8 @@ Watch Videos here:
 
 
 Folder Structure:
- *  app/ - The game itself.  Contains sub-folders, each containing different versions of game.  
+ * app/ - The latest code for the game.
+ * app_old_versions/ - Old working versions of the code.
  * assets/ - Incoming sound and art assets for the game.
  * docs/ - Any documentation mentioned or used on the hangout.
  * versions/ - Checkpointed versions of the game as we progress.
