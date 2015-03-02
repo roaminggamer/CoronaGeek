@@ -329,7 +329,7 @@ function displayExtended.sprite( group, x, y, imgSrc, sequenceData, visualParams
 		sheetData.infoFile = strGSub(sheetData.infoFile,"%.png","")
 		sheetData.info = require(sheetData.infoFile)
 		sheetData.sheet = graphics.newImageSheet( sheetData.imgFile, sheetData.info:getSheet() )
-		table.dump(sheetData)
+		--table.dump(sheetData)
 	end	
 
 	local dObj = display_newSprite( group, sheetData.sheet, sequenceData )

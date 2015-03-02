@@ -40,6 +40,19 @@ function string:split(tok)
 	return t
 end
 
+
+-- ==
+--    string:merge( t ) - Merge all entries in an indexed table into a string.
+-- ==
+function string.merge(t)
+	local tmp = ""
+	for i = 1, #t do
+		tmp = tmp .. tostring( t[i] )
+	end
+	return tmp
+end
+
+
 -- ==
 --    string:getWord( index ) - Gets indexed word from string, where words are separated by a single space (' ').
 -- ==
@@ -253,16 +266,6 @@ function string.endswith(s, send)
     return #s >= #send and s:find(send, #s-#send+1, true) and true or false
 end
 
-
-string.url_encode = function(str)
-  if (str) then
-    str = string.gsub (str, "\n", "\r\n")
-    str = string.gsub (str, "([^%w ])",
-  function (c) return string.format ("%%%02X", string.byte(c)) end)
-    str = string.gsub (str, " ", "+")
-  end
-  return str    
-end
 
 string.url_encode = function(str)
   if (str) then

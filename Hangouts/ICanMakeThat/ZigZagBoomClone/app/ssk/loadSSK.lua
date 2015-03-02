@@ -78,7 +78,7 @@ ssk.object = local_require "ssk.external.object"
 
 ssk.randomlua = local_require "ssk.external.randomlua"
 
-ssk.getVersion = function() return "22 MAR 2015" end
+ssk.getVersion = function() return "01 MAR 2015" end
 
 if( measureSSK ) then
 	collectgarbage("collect")

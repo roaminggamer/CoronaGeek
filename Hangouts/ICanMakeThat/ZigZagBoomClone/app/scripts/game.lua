@@ -11,7 +11,7 @@ local public = {}
 local physics 	= require "physics"
 
 local layersM 	= require "scripts.layers"
-local oneTouch 	= require "scripts.oneTouch"
+local oneTouchM 	= require "scripts.oneTouch"
 local playerM 	= require "scripts.player"
 local soundM 	= require "scripts.sound"
 local wallM 	= require "scripts.wall"
@@ -38,20 +38,45 @@ function public.init( parent, params )
 	params = params or {}
 	print("Initializing game module.")
 
-	physics.start()
-	physics.setGravity( 0, 10 )
-	physics.setDrawMode( "hybrid" )
-
 	-- Create rendering layers for our game
 	layers = layersM.create( parent )
 
 	-- Initialize the key game modules
-	oneTouch.init( layers )
-	playerM.init( layers )	
-	wallM.init( layers )
-	
-	soundM.init()
+	--oneTouchM.init( layers )
+	--playerM.init( layers )	
+	wallM.init( layers )	
+	--soundM.init()
 
+	--[[
+	-- Draw blue background
+	local back = display.newRect( layers.underlay, centerX, centerY, fullw, fullh )
+	back:setFillColor( 0x01/255, 0x0f/255, 0x2a/255)
+
+	-- Draw lines as reference for discussion
+	--local vLine = display.newLine( layers.content2, centerX, bottom, centerX, top )
+	--local hLine = display.newLine( layers.content2, left, centerY, right, centerY )
+
+	-- Create first segment, centered on screen
+	--
+	local firstLength = 200
+	local pathWidth = 100
+	local sqrt2 = math.sqrt(2)
+	local x = centerX + (firstLength/2) / sqrt2
+	local y = centerY + (firstLength/2) / sqrt2
+	x, y = wallM.newSegment( x, y, -45, firstLength, pathWidth )
+
+	-- Create more segments
+	--x, y = wallM.newSegment( x, y, 45, 120, pathWidth )
+	--x, y = wallM.newSegment( x, y, -45, 140, pathWidth )
+	--x, y = wallM.newSegment( x, y, 45, 100, pathWidth )
+
+	--local circ = display.newCircle( centerX, centerY - 200, 10)
+	--physics.addBody( circ, { radius = 10, bounce = 0.6 } )	
+	--]]
+
+
+	-- Start Soundtrack
+	--soundM.playSoundTrack( "sounds/music/UniqueTracks.com_Loop_10.mp3" )
 end
 
 -- Start Game
@@ -59,39 +84,30 @@ function public.start( params )
 	params = params or {}
 	print("Starting game module.")
 
-	-- Start Soundtrack
-	--soundM.playSoundTrack( "sounds/music/UniqueTracks.com_Loop_10.mp3" )
-
-	----[[
-	-- Test sound effects
-	for i = 1, 5 do
-		timer.performWithDelay( 1000 + i * 100,
-			function() 
-				post( "onSFX", { sfx = "click" } )
-			end )
-	end
-	timer.performWithDelay( 2000,
-		function() 
-			post( "onSFX", { sfx = "explosion" } )
-		end )
-	--]]
-
+	-- Start Player Module
+	playerM.start()
 end
 
 -- Stop Game
 function public.stop( params )	
 	params = params or {}
 	print("Stopping game module.")
+
+	-- Stop Player Module
+	playerM.stop()
+
 end
 
 -- Clean up the game
 function public.cleanup( path )	
 	print("Cleaning up game module.")
 
-	-- Initialize the key game modules
-	oneTouch.cleanup( layers )
+	-- Cleanup the key game modules
+	oneTouchM.cleanup( layers )
 	playerM.cleanup( layers )	
 	wallM.cleanup( layers )
+
+	layersM.cleanup()
 
 	layers = nil	
 end

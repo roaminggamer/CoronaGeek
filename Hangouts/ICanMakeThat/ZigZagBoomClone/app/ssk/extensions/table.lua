@@ -59,15 +59,12 @@ end
 -- ==
 function table.combineUnique_i( ... )
 	local newTable = {}
-	local tmpTable = table.combineUnique( unpack(arg) )
-	
+	local tmpTable = table.combineUnique( unpack(arg) )	
 	local i = 1
-
 	for k,v in pairs( tmpTable ) do
 		newTable[i] = tmpTable[k]
-		i = i+1
+		i = i + 1
 	end
-
 	return newTable
 end
 
@@ -369,11 +366,11 @@ end
 function table.repairIndicies( theTable )
 	for k,v in pairs( theTable ) do
 		if(tonumber(k) and type(k) == "string") then
-			timer.performWithDelay( 100, function() theTable[tostring(k)] = nil end )
+			timer.performWithDelay( 1, function() theTable[tostring(k)] = nil end )
 			theTable[tonumber(k)] = v 
 		end
 		if( type(v) == "table" ) then
-			repairIndicies(v)
+			table.repairIndicies(v)
 		end
 	end
 end

@@ -29,6 +29,12 @@ display.setStatusBar(display.HiddenStatusBar)  -- Hide that pesky bar
 --system.activate("multitouch")
 io.output():setvbuf("no") -- Don't use buffer for console messages
 
+-- Physics
+--
+physics.start()
+physics.setGravity( 0, 0 )
+--physics.setDrawMode( "hybrid" )
+
 -- Android Settings
 --
 if ( system.getInfo("platformName") == "Android" ) then
@@ -65,7 +71,7 @@ end
 -- Execution
 ----------------------------------------------------------------------
 game.init()
-game.start()
-
-
-
+--game.start()
+--timer.performWithDelay( 1000, game.stop )
+--timer.performWithDelay( 2000, game.cleanup )
+	

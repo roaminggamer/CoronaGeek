@@ -427,6 +427,48 @@ misc.blockTouchesForDuration = function( duration, subtle )
 	timer.performWithDelay( duration, blocker )
 end
 
+-- temporarily block touches
+--
+misc.easyRemoteImage = function( curImg, fileName, imageURL, baseDirectory ) 
+	--print(curImg, fileName, imageURL )
+	--table.dump(curOrder)
+
+	baseDirectory = baseDirectory or system.TemporaryDirectory
+
+	if( string.match( imageURL, "http" ) == nil ) then
+		imageURL =  "http:" .. imageURL
+	end
+
+	if( io.exists( fileName, baseDirectory ) ) then
+		curImg.fill = { type = "image", baseDir = baseDirectory, filename = fileName }
+		return
+	end
+
+	local function networkListener( event )
+	    if ( event.isError ) then
+	        --print( "Network error - download failed" )
+	    elseif ( event.phase == "began" ) then
+	        --print( "Progress Phase: began" )
+	    elseif ( event.phase == "ended" ) then
+	        --print( "Displaying response image file" )
+	        curImg.fill = { type = "image", baseDir = event.response.baseDirectory, filename = event.response.filename }
+	    end
+	end
+
+	local params = {}
+	params.progress = false
+
+	network.download(
+	    imageURL,
+	    "GET",
+	    networkListener,
+	    params,
+	    fileName,
+	    baseDirectory
+	)
+end
+
+
 
 
 

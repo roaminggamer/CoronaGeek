@@ -31,14 +31,22 @@ function public.init( parent, params )
 	layers = parent
 	params = params or {}
 	print("Initializing one-touch module.")
-end
 
--- Start
-function public.start( params )	
-	params = params or {}
-	print("Starting one-touch module.")
-end
+	-- Create a touchable object
+	--
+	local touchPad = display.newRect( layers.underlay, centerX, centerY, fullw, fullh )
 
+	-- Add a simple 'touch' listener that in turn generates a 'onOneTouch' event
+	--
+	touchPad.touch = function( self, event )
+		if(event.phase == "began") then
+			print("Posting onOneTouchEvent!")
+			post( "onOneTouch", {} )
+		end
+		return true
+	end
+	touchPad:addEventListener( "touch" )
+end
 
 -- Clean up the module (and optionally unload it from memory)
 function public.cleanup( path )	

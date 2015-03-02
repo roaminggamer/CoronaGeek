@@ -15,7 +15,7 @@
 -- Docs: https://github.com/roaminggamer/SSKCorona/wiki
 -- =============================================================
 
-local debugLevel = 2 or debugLevel
+local debugLevel = 0 or debugLevel
 local function _dprint( lvl, ... )
 	if( debugLevel >= lvl ) then
 		print( unpack(arg) )
