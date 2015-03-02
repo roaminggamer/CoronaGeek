@@ -53,10 +53,10 @@ function public.newSegment( x, y, angle, length, width )
 	local vx,vy = angle2VectorFast( angle )
 	vx,vy = scaleVectorFast( vx, vy, length )
 	vx,vy = addVectorFast( vx, vy, x, y )
-	local line = display.newLine( layers.content2, x, y, vx, vy ) 
-	line.strokeWidth = 1	
+	--local line = display.newLine( layers.content2, x, y, vx, vy ) 
+	--line.strokeWidth = 1	
 
-	--[[
+	----[[
 	-- 2 - Place a rectangle over the line
 	local mx,my = vx - x, vy - y
 	mx = mx/2 + x
@@ -66,8 +66,8 @@ function public.newSegment( x, y, angle, length, width )
 	--]]
 
 	-- 3 - Replace the rectangle with two lines 'centered' on line
-	--[[
-	local leftWall = display.newRect( layers.content2, mx - width/2, my, 4, length + 4 )
+	----[[
+	local leftWall = display.newRect( layers.content2, mx - width/2, my, 4, length + 4)
 	local rightWall = display.newRect( layers.content2, mx + width/2, my, 4, length + 4 )
 	leftWall.rotation = angle	
 	rightWall.rotation = angle
@@ -75,14 +75,14 @@ function public.newSegment( x, y, angle, length, width )
 
 	-- 4 - Beautify (a little)
 	-- Colorize the walls
-	--[[
+	----[[
 	local fillColor1 = { 0xa8/255, 0xcb/255, 0xde/255 }
 	leftWall:setFillColor( unpack( fillColor1 ) )
 	rightWall:setFillColor( unpack( fillColor1 ) )
 	--]]
 
 	-- Add path background	
-	--[[
+	----[[
 	local sqrt2 = math.sqrt(2)
 	local fillColor2 = { 0x09/255, 0x2f/255, 0x5c/255 }
 	local pathBack = display.newRect( layers.content1, mx, my, width/sqrt2, length )
@@ -95,7 +95,7 @@ function public.newSegment( x, y, angle, length, width )
 	--]]
 
 	-- Add a simple 'glow'
-	--[[
+	----[[
 	local leftGlow = display.newRoundedRect( layers.content3, mx - width/2 + 2, my, 9, length + 6, 3)
 	local rightGlow = display.newRoundedRect( layers.content3, mx + width/2 - 2, my, 9, length + 6, 3 )
 	leftGlow.rotation = angle	
@@ -107,7 +107,7 @@ function public.newSegment( x, y, angle, length, width )
 	--]]
 
 	-- 5 - Add bodies to rectangles
-	--[[
+	----[[
 	physics.addBody( leftWall, "static" )
 	physics.addBody( rightWall, "static" )
 	--]]

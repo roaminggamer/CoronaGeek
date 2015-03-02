@@ -47,7 +47,7 @@ function public.init( parent, params )
 	wallM.init( layers )	
 	--soundM.init()
 
-	--[[
+	----[[
 	-- Draw blue background
 	local back = display.newRect( layers.underlay, centerX, centerY, fullw, fullh )
 	back:setFillColor( 0x01/255, 0x0f/255, 0x2a/255)
@@ -58,16 +58,16 @@ function public.init( parent, params )
 
 	-- Create first segment, centered on screen
 	--
-	local firstLength = 200
-	local pathWidth = 100
+	local firstLength = 1000
+	local pathWidth = 200
 	local sqrt2 = math.sqrt(2)
 	local x = centerX + (firstLength/2) / sqrt2
 	local y = centerY + (firstLength/2) / sqrt2
 	x, y = wallM.newSegment( x, y, -45, firstLength, pathWidth )
 
 	-- Create more segments
-	--x, y = wallM.newSegment( x, y, 45, 120, pathWidth )
-	--x, y = wallM.newSegment( x, y, -45, 140, pathWidth )
+	x, y = wallM.newSegment( x, y, 45, 120, pathWidth )
+	x, y = wallM.newSegment( x, y, -45, 140, pathWidth )
 	--x, y = wallM.newSegment( x, y, 45, 100, pathWidth )
 
 	--local circ = display.newCircle( centerX, centerY - 200, 10)

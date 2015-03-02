@@ -40,6 +40,7 @@ function public.create( parent, params )
 	layers.content3 	= display.newGroup()
 	layers.overlay 		= display.newGroup()
 
+
 	layers:insert( layers.underlay )
 	layers:insert( layers.world )
 	layers:insert( layers.overlay )
