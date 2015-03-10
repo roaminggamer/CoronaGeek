@@ -117,7 +117,7 @@ end
 -- Scene Dispatch Events, Etc. - Generally Do Not Touch Below This Line
 ---------------------------------------------------------------------------------
 function scene:show( event )
-	sceneGroup 	= self.view
+	local sceneGroup 	= self.view
 	local willDid 	= event.phase
 	if( willDid == "will" ) then
 		self:willEnter( event )
@@ -126,7 +126,7 @@ function scene:show( event )
 	end
 end
 function scene:hide( event )
-	sceneGroup 	= self.view
+	local sceneGroup 	= self.view
 	local willDid 	= event.phase
 	if( willDid == "will" ) then
 		self:willExit( event )
