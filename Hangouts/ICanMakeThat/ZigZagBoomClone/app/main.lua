@@ -73,6 +73,10 @@ end
 game.init()
 
 timer.performWithDelay( 1000, game.start )
+
 --timer.performWithDelay( 2000, game.stop )
---timer.performWithDelay( 32000, game.cleanup )
+--timer.performWithDelay( 3000, game.cleanup )
+--timer.performWithDelay( 1500, function() game.restart(1500) end )
+--timer.performWithDelay( 1500, function() post("onRestart", { delay = 1000 } ) end )
+
 	

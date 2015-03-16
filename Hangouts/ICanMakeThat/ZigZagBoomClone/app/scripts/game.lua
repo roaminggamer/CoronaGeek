@@ -21,6 +21,7 @@ local wallM 		= require "scripts.wall"
 ----------------------------------------------------------------------
 -- Variables
 local layers
+local firstSegmentLength  = 1000
 
 -- Forward Declarations
 local enterFrame
@@ -46,12 +47,7 @@ function public.init( parent, params )
 	oneTouchM.init( layers )
 	playerM.init( layers )	
 	wallM.init( layers )	
-	--soundM.init()
-
-	-- (FOR DEBUG ONLY) Draw lines as reference for discussion
-	--
-	--local vLine = display.newLine( layers.content2, centerX, bottom, centerX, top )
-	--local hLine = display.newLine( layers.content2, left, centerY, right, centerY )
+	soundM.init()
 
 	-- Draw blue background
 	--
@@ -60,15 +56,13 @@ function public.init( parent, params )
 
 	-- Draw first track segments
 	--
-	wallM.newSegment( 100 ) -- Passing length tells module this is first segment 
-	wallM.newSegment() 
-	wallM.newSegment() 
+	wallM.newSegment( firstSegmentLength ) -- Passing length tells module this is first segment 
 	wallM.newSegment() 
 	wallM.newSegment() 
 
 	-- Start listening for 'enterFrame'
 	--
-	--listen( "enterFrame", enterFrame )
+	listen( "enterFrame", enterFrame )
 
 	-- Start Soundtrack
 	--soundM.playSoundTrack( "sounds/music/UniqueTracks.com_Loop_10.mp3" )
@@ -90,7 +84,7 @@ function public.stop( params )
 
 	-- Stop listening for 'enterFrame'
 	--
-	--ignore( "enterFrame", enterFrame )
+	ignore( "enterFrame", enterFrame )
 
 	-- Stop Player Module
 	playerM.stop()
@@ -109,12 +103,30 @@ function public.cleanup( path )
 	layers = nil	
 end
 
+-- Restart game
+function public.restart( delay )
+	delay = delay or 1000
+	timer.performWithDelay( 1, public.stop )
+	timer.performWithDelay( 2, public.cleanup )
+	timer.performWithDelay( 3, public.init )
+	timer.performWithDelay( delay, public.start )
+end
+
+-- 'onRestart' listener
+--
+local function onRestart( event )
+	public.restart( event.delay )	
+end
+listen( "onRestart", onRestart )
+
+
 -- 'enterFrame' listener
 --
 enterFrame = function()
 	wallM.removeSegmentsIfNeeded()
 	wallM.drawSegmentIfNeeded()
 end
+
 
 
 return public

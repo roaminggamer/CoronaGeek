@@ -19,7 +19,7 @@ local particleM = require "scripts.particles"
 local layers
 local player
 local isRunning 	= false
-local spd 			= 75--200
+local spd 			= 200
 local playerRadius 	= 15
 local playerFill 	= { 0xa8/255, 0xcb/255, 0xde/255, 1 }
 
@@ -66,21 +66,19 @@ function public.init( parent, params )
 	-- Add a simple collision listener that stops the player on collision
 	-- We'll add more logic later
 	--
-	----[[
 	player.collision = function( self, event )
-		if( event.phase == "began") then
-			public.stop()			
+		if( event.phase == "began") then			
 			self:removeEventListener( "collision" )
-			print( "I Died!")
+			public.stop()
+			print( "I hit a wall!")
+			-- NOTE: Moved restart code to stop() function below
 		end
 		return true
 	end
 	player:addEventListener( "collision" )
-	--]]
 
 	-- Add a 'one-touch' listener to change player movement direction
 	--
-	----[[
 	player.onOneTouch = function( self, event )
 		print("Received onOneTouchEvent!")
 		if( not isRunning ) then return end -- Don't do anything till running
@@ -95,17 +93,14 @@ function public.init( parent, params )
 		end
 	end
 	listen( "onOneTouch", player )
-	--]]
 
 	-- Add simple 'enterFrame' listener to player
 	--
-	----[[
 	player.enterFrame = function( self )
-		--particleM.draw( layers.content3, self, playerRadius - 4 )
+		particleM.draw( layers.content3, self, playerRadius - 4 )
 		cameraM.update( self, layers.world )
 	end
 	listen( "enterFrame", player )
-	--]]
 
 	return player
 end
@@ -129,6 +124,8 @@ end
 function public.stop()	
 	print("Starting player module.")
 
+	if( not isRunning ) then return end
+
 	-- Toggle the 'isRunning' Flag
 	--
 	isRunning = false
@@ -144,6 +141,10 @@ function public.stop()
 	-- Stop listening for 'enterFrame'
 	--
 	--ignore( "enterFrame", player )
+
+	-- Restart the game in one second, then wait one second to move
+	--
+	timer.performWithDelay( 3000, function() post("onRestart", { delay = 1000 } ) end )
 
 end
 

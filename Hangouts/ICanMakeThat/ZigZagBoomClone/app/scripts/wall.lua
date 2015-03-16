@@ -25,7 +25,7 @@ local wallSegments 		= {}
 
 local sqrt2 			= math.sqrt(2)
 local trackLengths 		= { 100, 140, 180, 320, 360  }
-local minOffset 		= 50 -- fullh * 2 -- Reasonable offset distance for 'adding' and 'removing' segments.
+local minOffset 		= fullh * 2 -- Reasonable offset distance for 'adding' and 'removing' segments.
 
 
 -- Forward Declarations
@@ -152,7 +152,6 @@ function public.newSegment( length )
 		wallSegments[pathBack2] = pathBack2
 		wallSegments[leftGlow] = leftGlow
 		wallSegments[rightGlow] = rightGlow
-		wallSegments[leftWall] = leftWall
 		print( "Created new segment at ", x, y, table.count(wallSegments), getTimer() )
 	end
 
@@ -192,6 +191,7 @@ public.removeSegmentsIfNeeded = function()
 	-- Abort if missing segments list or player reference
 	--
 	if( not wallSegments or not player ) then return end
+
 
 	-- Remove all segments that are far enough off screen to no longer be visible
 	--
