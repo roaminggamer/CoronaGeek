@@ -8,22 +8,24 @@ local public = {}
 ----------------------------------------------------------------------
 --								REQUIRES							--
 ----------------------------------------------------------------------
-local physics 	= require "physics"
+local physics 		= require "physics"
 
-local layersM 	= require "scripts.layers"
+local layersM 		= require "scripts.layers"
 local oneTouchM 	= require "scripts.oneTouch"
-local playerM 	= require "scripts.player"
-local soundM 	= require "scripts.sound"
-local wallM 	= require "scripts.wall"
+local playerM 		= require "scripts.player"
+local soundM 		= require "scripts.sound"
+local wallM 		= require "scripts.wall"
+local hudsM 		= require "scripts.huds"
 
 ----------------------------------------------------------------------
 --								DECLARATIONS						--
 ----------------------------------------------------------------------
 -- Variables
 local layers
+local firstSegmentLength  = 1000
 
 -- Forward Declarations
-local drawFirstTrackSegment
+local enterFrame
 
 -- Localizations
 local mRand             = math.random
@@ -43,19 +45,26 @@ function public.init( parent, params )
 	layers = layersM.create( parent )
 
 	-- Initialize the key game modules
-	--oneTouchM.init( layers )
-	--playerM.init( layers )	
+	oneTouchM.init( layers )
+	hudsM.init( layers )
+	playerM.init( layers )	
 	wallM.init( layers )	
-	--soundM.init()
+	soundM.init()
 
-	-- (FOR DEBUG ONLY) Draw lines as reference for discussion
+	-- Draw blue background
 	--
-	--local vLine = display.newLine( layers.content2, centerX, bottom, centerX, top )
-	--local hLine = display.newLine( layers.content2, left, centerY, right, centerY )
+	local back = display.newRect( layers.underlay, centerX, centerY, fullw, fullh )
+	back:setFillColor( 0x01/255, 0x0f/255, 0x2a/255)
 
-	-- Draw first track segment
+	-- Draw first track segments
 	--
-	drawFirstTrackSegment( )
+	wallM.newSegment( firstSegmentLength ) -- Passing length tells module this is first segment 
+	wallM.newSegment() 
+	wallM.newSegment() 
+
+	-- Start listening for 'enterFrame'
+	--
+	listen( "enterFrame", enterFrame )
 
 	-- Start Soundtrack
 	--soundM.playSoundTrack( "sounds/music/UniqueTracks.com_Loop_10.mp3" )
@@ -75,9 +84,12 @@ function public.stop( params )
 	params = params or {}
 	print("Stopping game module.")
 
+	-- Stop listening for 'enterFrame'
+	--
+	ignore( "enterFrame", enterFrame )
+
 	-- Stop Player Module
 	playerM.stop()
-
 end
 
 -- Clean up the game
@@ -85,34 +97,43 @@ function public.cleanup( path )
 	print("Cleaning up game module.")
 
 	-- Cleanup the key game modules
-	oneTouchM.cleanup( layers )
-	playerM.cleanup( layers )	
-	wallM.cleanup( layers )
+	--
+	oneTouchM.cleanup( )
+	hudsM.cleanup( )
+	playerM.cleanup( )	
+	wallM.cleanup( )
 
 	layersM.cleanup()
 
+	-- Clear local references to objects
+	--
 	layers = nil	
 end
 
-
-drawFirstTrackSegment = function()
-	-- Draw blue background
-	local back = display.newRect( layers.underlay, centerX, centerY, fullw, fullh )
-	back:setFillColor( 0x01/255, 0x0f/255, 0x2a/255)
-
-	-- Create first segment, centered on screen
-	--
-	local firstLength = 200 -- 1000
-	local pathWidth = 150 --200
-	local sqrt2 = math.sqrt(2)
-	local x = centerX + (firstLength/2) / sqrt2
-	local y = centerY + (firstLength/2) / sqrt2
-	x, y = wallM.newSegment( x, y, -45, firstLength, pathWidth )
-
-	-- Create more segments
-	x, y = wallM.newSegment( x, y, 45, 120, pathWidth )
-	x, y = wallM.newSegment( x, y, -45, 140, pathWidth )
-	x, y = wallM.newSegment( x, y, -45, 120, pathWidth )
+-- Restart game
+function public.restart( delay )
+	delay = delay or 1000
+	timer.performWithDelay( 1, public.stop )
+	timer.performWithDelay( 2, public.cleanup )
+	timer.performWithDelay( 3, public.init )
+	timer.performWithDelay( delay, public.start )
 end
+
+-- 'onRestart' listener
+--
+local function onRestart( event )
+	public.restart( event.delay )	
+end
+listen( "onRestart", onRestart )
+
+
+-- 'enterFrame' listener
+--
+enterFrame = function()
+	wallM.removeSegmentsIfNeeded()
+	wallM.drawSegmentIfNeeded()
+end
+
+
 
 return public

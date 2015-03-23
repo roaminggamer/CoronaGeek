@@ -15,6 +15,7 @@ local oneTouchM 	= require "scripts.oneTouch"
 local playerM 		= require "scripts.player"
 local soundM 		= require "scripts.sound"
 local wallM 		= require "scripts.wall"
+local hudsM 		= require "scripts.huds"
 
 ----------------------------------------------------------------------
 --								DECLARATIONS						--
@@ -45,6 +46,7 @@ function public.init( parent, params )
 
 	-- Initialize the key game modules
 	oneTouchM.init( layers )
+	hudsM.init( layers )
 	playerM.init( layers )	
 	wallM.init( layers )	
 	soundM.init()
@@ -95,11 +97,16 @@ function public.cleanup( path )
 	print("Cleaning up game module.")
 
 	-- Cleanup the key game modules
-	oneTouchM.cleanup( layers )
-	playerM.cleanup( layers )	
-	wallM.cleanup( layers )
+	--
+	oneTouchM.cleanup( )
+	hudsM.cleanup( )
+	playerM.cleanup( )	
+	wallM.cleanup( )
 
 	layersM.cleanup()
+
+	-- Clear local references to objects
+	--
 	layers = nil	
 end
 
