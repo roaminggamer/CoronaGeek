@@ -1,5 +1,5 @@
-local ced = require "scripts.caseErrorDetect"
-ced.promoteToError()
+--local ced = require "scripts.caseErrorDetect"
+--ced.promoteToError()
 
 -- =============================================================
 -- Copyright Roaming Gamer, LLC. 2009-2015
