@@ -1,0 +1,9 @@
+Tools used to make this game.
+=============================
+
+ * Corona SDK (http://coronalabs.com/) - SDK used to write the game.
+ * bfxr (http://www.bfxr.net/) - Used to generate basic sounds.
+ * Audacity (http://audacity.sourceforge.net/) - Sound editor used to modify sound files for our game.
+ * Sublime (http://www.sublimetext.com/) - Code editor.
+
+More to be listed later...
