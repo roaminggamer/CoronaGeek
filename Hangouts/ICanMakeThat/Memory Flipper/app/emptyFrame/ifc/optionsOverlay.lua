@@ -19,7 +19,7 @@ local back
 
 -- Forward Declarations
 local onBack
-local onMusc
+local onMusic
 local onSFX
 
 -- Useful Localizations

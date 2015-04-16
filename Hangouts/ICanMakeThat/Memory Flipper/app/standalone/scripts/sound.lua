@@ -1,5 +1,5 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2014 
+-- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
 -- 
 -- =============================================================
@@ -13,7 +13,6 @@ local effects = {}
 -- Sound Effect EVENT listener
 --
 sound.onSFX = function( self, event )
-	if(true) then return end
 	local sfx = effects[event.sfx]
 	if( not sfx ) then return end
 	local channel = audio.findFreeChannel( 2 )
@@ -23,6 +22,7 @@ sound.onSFX = function( self, event )
 end; listen( "onSFX", sound )
 
 function sound.init()
+	effects["match"] 		= audio.loadSound("sounds/sfx/match.wav")
 	effects["win"] 		= audio.loadSound("sounds/sfx/win.wav")
 	effects["lose"] 		= audio.loadSound("sounds/sfx/lose.wav")
 	effects["click"] 		= audio.loadSound("sounds/sfx/click.mp3")

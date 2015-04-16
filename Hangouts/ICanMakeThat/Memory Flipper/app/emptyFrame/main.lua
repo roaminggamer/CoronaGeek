@@ -76,4 +76,5 @@ end
 ----------------------------------------------------------------------
 composer.gotoScene( "ifc.splash" )
 --composer.gotoScene( "ifc.mainMenu" )
+--composer.gotoScene( "ifc.lost" )
 

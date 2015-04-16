@@ -53,27 +53,47 @@ local pairs             = pairs
 function scene:create( event )
 	sceneGroup = self.view
 
+	-- Create a simple background
+	local back = display.newRect( sceneGroup, centerX, centerY, 380, 570 )
+	back:setFillColor( 0x01/255, 0x0f/255, 0x2a/255)
+
 	menuGroup = display.newGroup()
 	sceneGroup:insert(menuGroup)
 
-
 	-- Create some buttons for navigation
-	local playButton = PushButton( menuGroup, centerX, centerY+150, "Play", onPlay, 
-	                          { labelColor = {0xff/255, 0x59/255, 0x1c/255}, 
-								selFill 	= { 0xfd/255, 0xe5/255, 0, 1 }, 
-								unselFill 	= { 0xfd/255, 0xe5/255, 0, 0.8 }, 
-								selStroke 	= {0xff/255, 0x59/255, 0x1c/255},
-								unselStroke = {0xff/255, 0x59/255, 0x1c/255},
-	                            labelSize = 18 } )
+	local boards = {}
+	boards[#boards+1] = { images = "coronaCrush", rows = 4, cols = 3, duration = 30 }
+	boards[#boards+1] = { images = "nicuFruit", rows = 4, cols = 3, duration = 30 }
+	boards[#boards+1] = { images = "nicuFruit", rows = 4, cols = 4, duration = 45 }
+	boards[#boards+1] = { images = "nicuFlowers", rows = 4, cols = 3, duration = 30 }
+	boards[#boards+1] = { images = "nicuFlowers", rows = 4, cols = 4, duration = 45 }
+	boards[#boards+1] = { images = "lostGarden", rows = 4, cols = 3, duration = 30 }
+	boards[#boards+1] = { images = "lostGarden", rows = 4, cols = 4, duration = 45 }
+	boards[#boards+1] = { images = "lostGarden", rows = 4, cols = 4, duration = 45 }
+	boards[#boards+1] = { images = "lostGarden", rows = 6, cols = 5, duration = 60 }
+
+	local startY = centerY - (#boards * 40)/2
+
+	for i = 1, #boards do
+		print(i)
+		local labelText = boards[i].images .. " - <" .. boards[i].rows .. "," .. boards[i].cols .. ">"
+		local tmp = PushButton( menuGroup, centerX, startY + (i-1) * 40, labelText, onPlay, 
+								{ labelSize = 14, width = 180, height = 32,
+								  labelColor = {0x01/255, 0x0f/255, 0x2a/255}, 
+								  selFill 	= { 0xfd/255, 0xe5/255, 0}, 
+								  unselFill 	= { 0xfd/255, 0xe5/255, 0}, 
+								  selStroke 	= {1,1,1},
+								  unselStroke = {0,0,0}  } )
+		tmp.board = boards[i]
+	end
 
 	local optionsButton = PushButton( menuGroup, centerX, centerY + 200, "Options", onOptions, 
-	                          { labelColor = {0xff/255, 0x59/255, 0x1c/255}, 
-								selFill 	= { 0xfd/255, 0xe5/255, 0, 1 }, 
-								unselFill 	= { 0xfd/255, 0xe5/255, 0, 0.8 }, 
-								selStroke 	= {0xff/255, 0x59/255, 0x1c/255},
-								unselStroke = {0xff/255, 0x59/255, 0x1c/255},
-	                            labelSize = 18 } )
-
+	                          { labelSize = 14, width = 180, height = 32,
+	                            labelColor = {0x01/255, 0x0f/255, 0x2a/255}, 
+								unselFill 	= { 0.4,0.4,0.4}, 
+								unselFill 	= { 0.3,0.3,0.3}, 
+								selStroke 	= {1,1,1},
+							    unselStroke = {0.2,0.2,0.2}  } )
 
 end
 
@@ -105,21 +125,14 @@ end
 --				FUNCTION/CALLBACK DEFINITIONS						--
 ----------------------------------------------------------------------
 onPlay = function ( self, event ) 
+	print("Play ", self.board[1], self.board[2], self.board[3] )
+	local options = { effect = "slideLeft",  time = 500, params = { board = self.board } }
+	composer.gotoScene( "ifc.playGUI", options  )
 	return true
 end
 
 onOptions = function ( self, event ) 
-	local options =
-	{
-		isModal = true, -- Don't let touches leak through
-		effect = "fromTop", -- See list here: http://docs.coronalabs.com/daily/api/library/composer/gotoScene.html
-		time = 500,
-		params =
-		{
-			arg1 = "value", 
-			arg2 = 0
-		}
-	}
+	local options = { isModal = true, effect = "fromTop", time = 500 }
 	composer.showOverlay( "ifc.optionsOverlay", options  )	
 	return true
 end

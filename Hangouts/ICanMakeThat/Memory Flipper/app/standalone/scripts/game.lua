@@ -1,5 +1,5 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2014 
+-- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
 -- 
 -- =============================================================
@@ -20,11 +20,11 @@ local cards = {}
 
 local duration = 60
 
-local rows = 4 --8
-local cols = 3 -- 5	
+local rows = 4 
+local cols = 3 
 
-local cardWidth = w/cols -- 52
-local cardHeight = cardWidth
+local cardWidth 	= w/cols
+local cardHeight 	= cardWidth
 
 local flipCount = 0
 local currentCards = {}
@@ -146,6 +146,7 @@ onFlippedCard = function(event)
 			if( table.count(cards) == 0 ) then
 				post("onGameOver")
 			end
+			post( "onSFX", { sfx = "match" } )
 		else
 			-- Nope.
 			--
