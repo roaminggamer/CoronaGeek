@@ -38,8 +38,6 @@ local images = "nicuFruit" -- 8 images (up to 16 tiles)
 
 
 -- Forward Declarations
-local drawBoard
-local onFlippedCard
 
 -- Localizations
 local mRand             = math.random
@@ -65,7 +63,7 @@ function public.create( parent )
 
 	-- Create the rest of our game parts.
 	--
-	drawBoard()	
+	public.drawBoard()	
 	hudsM.create( layers, duration )	
 end
 
@@ -80,11 +78,12 @@ end
 
 -- Draw Board
 --
-drawBoard = function()
+function public.drawBoard()
 	-- Calculate the position of the first card (upper-left)
 	--
+
 	local startX = centerX - (cols * cardWidth)/2 + cardWidth/2
-	local startY = centerY - (rows * cardHeight)/2 + cardHeight/2 + 20 
+	local startY = centerY - (rows * cardHeight)/2 + cardHeight/2  + 20
 
 	-- Generate a list of card numbers then 'shuffle' it
 	local count = 1
@@ -121,7 +120,7 @@ end
 
 -- Listen For Card Flips - onFlippedCard()
 --
-onFlippedCard = function(event)	
+function public.onFlippedCard(event)	
 	flipCount = flipCount + 1
 	currentCards[flipCount] = event.card
 
@@ -172,7 +171,7 @@ onFlippedCard = function(event)
 		flipCount = 0
 	end	
 end
-listen( "onFlippedCard", onFlippedCard )
+listen( "onFlippedCard", public.onFlippedCard )
 
 -- Handle Game Over Event
 --

@@ -66,11 +66,10 @@ function scene:create( event )
 	boards[#boards+1] = { images = "nicuFruit", rows = 4, cols = 3, duration = 60 }
 	boards[#boards+1] = { images = "nicuFruit", rows = 4, cols = 4, duration = 90 }
 	boards[#boards+1] = { images = "nicuFlowers", rows = 4, cols = 3, duration = 60 }
-	boards[#boards+1] = { images = "nicuFlowers", rows = 4, cols = 4, duration = 90 }
 	boards[#boards+1] = { images = "lostGarden", rows = 4, cols = 3, duration = 60 }
 	boards[#boards+1] = { images = "lostGarden", rows = 4, cols = 4, duration = 90 }
 	boards[#boards+1] = { images = "lostGarden", rows = 4, cols = 4, duration = 90 }
-	boards[#boards+1] = { images = "lostGarden", rows = 6, cols = 5, duration = 360 }
+	boards[#boards+1] = { images = "lostGarden", rows = 6, cols = 5, duration = 180 }
 
 	local startY = centerY - (#boards * 40)/2
 

@@ -12,18 +12,18 @@ local effects = {}
 
 -- Sound Effect EVENT listener
 --
-sound.onSFX = function( self, event )
+local function onSFX( event )
 	local sfx = effects[event.sfx]
 	if( not sfx ) then return end
 	local channel = audio.findFreeChannel( 2 )
 	if( channel ) then
 		audio.play( sfx,  { channel = channel } )
 	end
-end; listen( "onSFX", sound )
+end; listen( "onSFX", onSFX )
 
 function sound.init()
 	effects["match"] 		= audio.loadSound("sounds/sfx/match.wav")
-	effects["win"] 		= audio.loadSound("sounds/sfx/win.wav")
+	effects["win"] 			= audio.loadSound("sounds/sfx/win.wav")
 	effects["lose"] 		= audio.loadSound("sounds/sfx/lose.wav")
 	effects["click"] 		= audio.loadSound("sounds/sfx/click.mp3")
 	effects["explosion"] 	= audio.loadSound("sounds/sfx/explosion.wav")

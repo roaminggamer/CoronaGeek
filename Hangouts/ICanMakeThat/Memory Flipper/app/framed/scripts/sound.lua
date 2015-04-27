@@ -19,7 +19,7 @@ end
 
 -- Sound Effect EVENT listener
 --
-sound.onSFX = function( self, event )
+local function onSFX( event )
 	local sfx = effects[event.sfx]
 	if( not sfx ) then return end
 	if( not sfxEn ) then return end
@@ -27,7 +27,7 @@ sound.onSFX = function( self, event )
 	if( channel ) then
 		audio.play( sfx,  { channel = channel } )
 	end
-end; listen( "onSFX", sound )
+end; listen( "onSFX", onSFX )
 
 function sound.init()
 	effects["match"] 		= audio.loadSound("sounds/sfx/match.wav")
