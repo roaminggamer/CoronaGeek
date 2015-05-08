@@ -21,11 +21,11 @@ local cards = {}
 
 local duration = 60
 
-local rows = 4 --8
-local cols = 3 -- 5	
+local rows = 4 
+local cols = 3 
 
-local cardWidth = w/cols -- 52
-local cardHeight = cardWidth
+local cardWidth 	= w/cols
+local cardHeight 	= cardWidth
 
 local flipCount = 0
 local currentCards = {}
@@ -95,8 +95,9 @@ end
 function public.drawBoard()
 	-- Calculate the position of the first card (upper-left)
 	--
+
 	local startX = centerX - (cols * cardWidth)/2 + cardWidth/2
-	local startY = centerY - (rows * cardHeight)/2 + cardHeight/2 + 20 
+	local startY = centerY - (rows * cardHeight)/2 + cardHeight/2  + 20
 
 	-- Generate a list of card numbers then 'shuffle' it
 	local count = 1
@@ -158,7 +159,6 @@ function public.onFlippedCard(event)
 			if( table.count(cards) == 0 ) then
 				post("onGameOver")
 			end
-
 			post( "onSFX", { sfx = "match" } )
 		else
 			-- Nope.
