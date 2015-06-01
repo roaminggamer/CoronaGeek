@@ -18,10 +18,10 @@ display.setStatusBar(display.HiddenStatusBar)  -- Hide that pesky bar
 
 require "ssk.loadSSK"
 
-----[[
-local sample = require "sample1" -- Wrong
+--[[
+--local sample = require "sample1" -- Wrong
 --local sample = require "sample2" -- Right
---local sample = require "sample3" -- Combined
+local sample = require "sample3" -- Combined
 sample.run()
 --]]
 
@@ -36,11 +36,11 @@ local talk = require "talk" -- Bumper Details
 -- 6 Even better
 -- 7 Ichi
 
-talk.run( 1, false ) -- arg1: 1..6, arg2: hybrid render
+talk.run( 7, false ) -- arg1: 1..6, arg2: hybrid render
 --]]
 
 
---[[
+----[[
 local editor = require "editor" -- Rudimentary level editor
 editor.run()
 --]]
