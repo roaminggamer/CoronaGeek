@@ -14,9 +14,11 @@ local scene    		= composer.newScene()
 -- Forward Declarations
 local onPress
 local onSimple
+local onSampler
 local onDoll
 local onPosable
 local onCar
+local onCar2
 
 
 -- Useful Localizations
@@ -80,10 +82,14 @@ function scene:create( event )
 
 
 	-- Create a basic push button
-	easyIFC:presetPush( layers.overlay, "default", centerX, top + 60, 220, 30, "Simple Joint (15 JUN 2015)", onSimple, { labelSize = 14 } )
-	easyIFC:presetPush( layers.overlay, "default", centerX, top + 100, 220, 30, "Dragabble Doll (15 JUN 2015)", onDoll, { labelSize = 14 } )
-	easyIFC:presetPush( layers.overlay, "default", centerX, top + 140, 220, 30, "Posable Doll (15 JUN 2015)", onPosable, { labelSize = 14 } )
-		easyIFC:presetPush( layers.overlay, "default", centerX, top + 180, 220, 30, "Simple Car (15 JUN 2015)", onCar, { labelSize = 14 } )
+	local startY = top + 60
+	local dy = 40
+	easyIFC:presetPush( layers.overlay, "default", left + 115, startY + 0 * dy, 220, 30, "Simple (Pivot) Joint (15 JUN 2015)", onSimple, { labelSize = 12 } )
+	easyIFC:presetPush( layers.overlay, "default", left + 115, startY + 1 * dy, 220, 30, "Joints Sampler (multiple) (22 JUN 2015)", onSampler, { labelSize = 12 } )
+	easyIFC:presetPush( layers.overlay, "default", left + 115, startY + 2 * dy, 220, 30, "Dragabble Doll (Pivot) (15 JUN 2015)", onDoll, { labelSize = 12 } )
+	easyIFC:presetPush( layers.overlay, "default", left + 115, startY + 3 * dy, 220, 30, "Posable Doll (Pivot) (15 JUN 2015)", onPosable, { labelSize = 12 } )
+	easyIFC:presetPush( layers.overlay, "default", left + 115, startY + 4 * dy, 220, 30, "Simple Car (Pivot) (15 JUN 2015)", onCar, { labelSize = 12 } )
+	easyIFC:presetPush( layers.overlay, "default", left + 115, startY + 5 * dy, 220, 30, "Simple Car 2 (Wheel) (22 JUN 2015)", onCar2, { labelSize = 12 } )
 end
 
 ----------------------------------------------------------------------
@@ -143,6 +149,16 @@ onSimple = function( event )
 	composer.gotoScene( "ifc.simple", options  )	
 end
 
+onSampler = function( event )
+	local options =
+	{
+		effect = "fromRight", -- See list here: http://docs.coronalabs.com/daily/api/library/composer/gotoScene.html
+		time = 500,
+	}
+	composer.gotoScene( "ifc.jointSampler", options  )	
+end
+
+
 onDoll = function( event )
 	local options =
 	{
@@ -169,6 +185,16 @@ onCar = function( event )
 		time = 500,
 	}
 	composer.gotoScene( "ifc.car", options  )	
+end
+
+
+onCar2 = function( event )
+	local options =
+	{
+		effect = "fromRight", -- See list here: http://docs.coronalabs.com/daily/api/library/composer/gotoScene.html
+		time = 500,
+	}
+	composer.gotoScene( "ifc.car2", options  )	
 end
 
 

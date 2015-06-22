@@ -29,7 +29,11 @@ physics.start()
 --composer.gotoScene( "ifc.template" )
 --composer.gotoScene( "ifc.splash" )
 composer.gotoScene( "ifc.mainMenu" )
---composer.gotoScene( "ifc.doll" )
+
 --composer.gotoScene( "ifc.simple" )
---composer.gotoScene( "ifc.car" )
+--composer.gotoScene( "ifc.jointSampler" )
+--composer.gotoScene( "ifc.doll" )
 --composer.gotoScene( "ifc.posable" )
+--composer.gotoScene( "ifc.car" )
+--composer.gotoScene( "ifc.car2" ) -- not working yet
+

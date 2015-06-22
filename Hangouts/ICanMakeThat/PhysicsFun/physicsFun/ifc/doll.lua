@@ -1,7 +1,7 @@
 -- =============================================================
 -- Your Copyright Statement Here, YYYY-YYYY
 -- =============================================================
--- Splash Screen
+-- Doll Example
 -- =============================================================
 local composer 		= require( "composer" )
 local scene    		= composer.newScene()

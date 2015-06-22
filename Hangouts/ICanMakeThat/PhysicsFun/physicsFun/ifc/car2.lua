@@ -89,7 +89,7 @@ function scene:create( event )
 
 
 	-- Create a basic label
-	local tmp = easyIFC:quickLabel( layers.overlay, "Simple Car", centerX, top + 20, gameFont2, 22, hexcolor("#2B547E")  )
+	local tmp = easyIFC:quickLabel( layers.overlay, "Wheel Car (not working yet)", centerX, top + 20, gameFont2, 22, hexcolor("#2B547E")  )
 
 
 	-- Create a basic push button
@@ -113,7 +113,7 @@ function scene:willEnter( event )
 
 	-- Body Size and PositioningVariables
 	local jointsRadius = 12
-	local neckLength = 6
+	--local pistonLength = 20
 
 	local segmentLen  = 100
 	local segmentThickness = jointsRadius * 2 - 2
@@ -122,7 +122,7 @@ function scene:willEnter( event )
 	--   body
 	-- ==	
 	local body = display.newRect( layers.content, 0, 0, 80, 30 )
-	body.x = left + 50
+	body.x = left + 100
 	body.y = top + 50
 	body:setFillColor( 1, 1, 0 )
 	physics.addBody( body, { density = 0.2, filter = filter } )
@@ -138,7 +138,7 @@ function scene:willEnter( event )
 	leftWheel.fill = { type="image", filename="images/coronaLogo.png" }
 	leftWheel.linearDamping = 0
 	leftWheel.angularDamping = 1
-	leftAxle  = physics.newJoint( "pivot", leftWheel, body, leftWheel.x, leftWheel.y )	
+	leftAxle  = physics.newJoint( "wheel", body, leftWheel, leftWheel.x, leftWheel.y, 0, 0 )	
 
 	-- ==
 	--   right wheel
@@ -148,14 +148,13 @@ function scene:willEnter( event )
 	physics.addBody( rightWheel, { density = 0.05, filter = filter, friction = 100, radius = 12 } )
 	rightWheel.linearDamping = 0
 	rightWheel.angularDamping = 1
-	rightAxle  = physics.newJoint( "pivot", rightWheel, body, rightWheel.x, rightWheel.y )
-
+	rightAxle  = physics.newJoint( "wheel", body, rightWheel, rightWheel.x, rightWheel.y, 0, 0 )
 
 	-- ==
 	--   Ground
 	-- ==	
 	local groundA = display.newRect( layers.content, 0, 0, 60, 20 )
-	groundA.x = body.x - 20
+	groundA.x = body.x - 70
 	groundA.y = body.y + 50
 	groundA:setFillColor( 0.2, 0.2, 0.2 )
 	physics.addBody( groundA, "static", { friction = 1 } )
@@ -178,8 +177,6 @@ function scene:willEnter( event )
 	groundD.y = groundC.y - 10
 	groundD:setFillColor( 0.2, 0.2, 0.2 )
 	physics.addBody( groundD, "static", { friction = 1 } )
-
-	body.x = body.x + 50
 
 
 	-- Add dragger to parts
