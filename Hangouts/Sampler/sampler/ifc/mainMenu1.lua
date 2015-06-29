@@ -80,11 +80,11 @@ function scene:create( event )
 
 	local examples = 
 	{
-		{ "Simple Car", 		"simple_car", 		148, 	false, "TBD" },
-		{ "Pivot Joint", 		"pivot_joint", 		148, 	false, "TBD" },
-		{ "Rope Joint", 		"rope_joint", 		148, 	false, "TBD" },
-		{ "Pulley Joint", 		"pulley_joint", 	148, 	false, "TBD" },
-		{ "Distance Joint", 	"distance_joint",	148, 	false, "TBD" },
+		{ "Simple Car", 		"simple_car", 		148, 	false, "http://github.com/roaminggamer/CoronaGeek/raw/master/Hangouts/Sampler/downloads/simple_car.zip" },
+		{ "Pivot Joint", 		"pivot_joint", 		148, 	false, "http://github.com/roaminggamer/CoronaGeek/raw/master/Hangouts/Sampler/downloads/pivot_joint.zip" },
+		{ "Rope Joint", 		"rope_joint", 		148, 	false, "http://github.com/roaminggamer/CoronaGeek/raw/master/Hangouts/Sampler/downloads/rope_joint.zip" },
+		{ "Pulley Joint", 		"pulley_joint", 	148, 	false, "http://github.com/roaminggamer/CoronaGeek/raw/master/Hangouts/Sampler/downloads/pulley_joint.zip" },
+		{ "Distance Joint", 	"distance_joint",	148, 	false, "http://github.com/roaminggamer/CoronaGeek/raw/master/Hangouts/Sampler/downloads/distance_joint.zip" },
 		--{ "Fake Sample Using SSK", 	"TBD", 		148, 	true, "TBD" },
 		{ "Future Topic", 		"TBD", 		999, 	false, "TBD" },
 		{ "Future Topic", 		"TBD", 		999, 	false, "TBD" },
