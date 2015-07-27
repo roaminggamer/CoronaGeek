@@ -1,0 +1,39 @@
+settings = {
+   plugins = 
+   { 
+     ["facebook"] = { publisherId = "com.coronalabs" },
+   },
+
+   orientation = 
+   {
+      default = "portrait",
+      supported = { "portrait", "portraitUpsideDown" },
+   },
+
+   android = 
+   {
+      largeHeap = true, 
+      usesPermissions = 
+      {
+         "android.permission.INTERNET",
+         --"android.permission.ACCESS_WIFI_STATE",
+         --"android.permission.READ_PHONE_STATE",
+         --"android.permission.ACCESS_NETWORK_STATE",       
+         --"android.permission.ACCESS_FINE_LOCATION",
+         --"android.permission.ACCESS_COURSE_LOCATION",
+         -- Find more permissions here: http://developer.android.com/reference/android/Manifest.permission.html
+      },
+   },
+
+
+   iphone = 
+   {
+      plist = 
+      {
+         FacebookAppID = "YOUR_ID_HERE", 
+         CFBundleURLTypes = { { CFBundleURLSchemes = { "fbYOUR_ID_HERE", }  } },         
+         ["URL types"] = { item = { ["URL Schemes"] = { ["Item 0"] = "fbYOUR_ID_HERE" }, }, },
+      }, 
+
+   },
+}

@@ -1,0 +1,20 @@
+settings =
+{
+	plugins =
+	{
+		["CoronaProvider.native.popup.activity"] = 
+		{ publisherId = "com.coronalabs", supportedPlatforms = { iphone=true, ["iphone-sim"]=true }, },
+        
+        ["CoronaProvider.native.popup.social"] = { publisherId = "com.coronalabs" },
+    },	
+
+	android = 
+	{
+		usesPermissions = 
+		{
+		"android.permission.INTERNET",
+		"android.permission.ACCESS_NETWORK_STATE",
+		},
+	},
+
+}

@@ -1,0 +1,28 @@
+settings = {
+    orientation = 
+    {
+    	----[[
+		default = "portrait",
+		supported = { "portrait", "portraitUpsideDown" },
+		--]]
+
+		--[[
+		default = "landscapeLeft",
+		supported = { "landscapeRight", "landscapeLeft" },
+		--]]
+	},
+ 	
+ 	plugins =
+    {
+        ["CoronaProvider.native.popup.social"] = { publisherId = "com.coronalabs", },
+    },	
+    android = 
+    {
+        usesPermissions = 
+        {
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        },
+    },
+
+}
