@@ -1,28 +1,27 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2015
+-- Activity (Utility) Popup for iOS Example
 -- =============================================================
--- Facebook Graph Library Examples
+--
+-- Code extracted from Corona Blog Post and (slightly modified):
+--
+-- http://coronalabs.com/blog/2015/03/17/tutorial-utilizing-the-activity-popup-plugin-ios/
+--
 -- =============================================================
--- 								License
--- =============================================================
--- You may use the contents of this file however you wish.
--- =============================================================
---[[
-		Useful Links:
-		+ Activity Popup (on iOS) - http://coronalabs.com/blog/2015/03/17/tutorial-utilizing-the-activity-popup-plugin-ios/
-]]
 display.setStatusBar(display.HiddenStatusBar)  
 io.output():setvbuf("no") -- Don't use buffer for console messages
--- =============================================================
--- IGNORE CODE ABOVE THIS LINE
--- =============================================================
 
 local shareButton -- will define later
 
+--
+-- See this page for more details on following table:
+-- http://docs.coronalabs.com/daily/plugin/CoronaProvider_native_popup_activity/showPopup.html
+--
 local items =
 {
-	{ type = "image", value = { filename = "Icon.png", baseDir = system.ResourceDirectory, } },
-	{ type = "string", value = "Hello, World" },
+	{ type = "image", value = { filename = "smiley.png", baseDir = system.ResourceDirectory, } },
+	{ type = "string", value = "Sharing on iOS via Activity Popup." },
+	{ type = "string", value = "Some targets support text (Twitter)." },
+	{ type = "string", value = "Some do not (Facebook)." },
 	{ type = "url", value = "http://www.coronalabs.com" },
 }
 
@@ -57,22 +56,13 @@ local function showShare()
 	end
 end
 
--- Not Using this snippet (getting error)
---[[ 
-widget = require( "widget" )
+--
+-- Show a 'Share' button in middle of screen.
+--
+local widget = require( "widget" )
 shareButton = widget.newButton({
 	label = "Share",
 	onRelease = showShare,
 })
 shareButton.x = display.contentCenterX
 shareButton.y = display.contentCenterY
---]]
-
--- Replaces above snippet w/ single button
-require "scripts.pushButtonClass"
-require "scripts.toggleButtonClass"
-local w = display.contentWidth
-local h = display.contentHeight
-local centerX = display.contentCenterX
-local centerY = display.contentCenterY
-shareButton = PushButton( sceneGroup, centerX, centerY, "Share", showShare,  { labelColor = {0,1,0}, labelSize = 18, width = 250 } )

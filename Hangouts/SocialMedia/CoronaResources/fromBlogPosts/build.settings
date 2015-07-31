@@ -5,13 +5,22 @@ settings =
 		default = "portrait",
 		supported = { "portrait", "portraitUpsideDown" },
 
-		--default = "landscapeLeft",
-		--supported = { "landscapeLeft", "landscapeLeft" }
+		default = "landscapeLeft",
+		supported = { "landscapeLeft", "landscapeLeft" }
 	},
 
 	plugins =
 	{
 		["CoronaProvider.native.popup.activity"] = { publisherId = "com.coronalabs" },
+	},
+
+	android = 
+	{
+		usesPermissions = 
+		{
+			"android.permission.INTERNET",
+			"android.permission.ACCESS_NETWORK_STATE",
+		},
 	},
 
 	iphone =

@@ -1,6 +1,14 @@
+-- =============================================================
+-- Sharing Panel for iOS Example
+-- =============================================================
+--
+-- Code extracted from Corona Blog Post and (slightly modified):
+--
+-- http://coronalabs.com/blog/2014/04/15/tutorial-creating-a-sharing-panel/
+--
+-- =============================================================
 
 local widget = require( "widget" )
-
 
 function widget.newPanel( options )
 
@@ -143,6 +151,8 @@ function widget.newSharingPanel()
         elseif popupName == "social" then
             local isAvailable = native.canShowPopup( popupName, event.row.params.service )
             if isAvailable then
+                -- See this page for more details: 
+                -- http://docs.coronalabs.com/daily/plugin/CoronaProvider_native_popup_social/showPopup.html
                 native.showPopup( popupName, 
                 {
                     service = event.row.params.service,
@@ -195,43 +205,65 @@ function widget.newSharingPanel()
         rowHeight = 40,
         isCategory = false,
         rowColor = { 1, 1, 1 },
+        -- See this page for more details on legal facebook params: 
+        -- http://docs.coronalabs.com/daily/plugin/CoronaProvider_native_popup_social/showPopup.html
         params = {
             popupName = "social",
             service = "facebook",
             label = "Facebook",
             message = "Some text to post to facebook",
-            image = nil,  -- See the native.showPopup("social") plugin for image parameters.
-            url = nil,    -- See the native.showPopup("social") plugin for url parameters.
+            image = 
+                {                    
+                    { filename="geek.png", baseDir=system.ResourceDirectory },
+                    { filename="rg.png", baseDir=system.ResourceDirectory }                     
+                },  
+            url = "http://roaminggamer.com", 
         }
     }
     tableView:insertRow{
         rowHeight = 40,
         isCategory = false,
         rowColor = { 1, 1, 1 },
+        -- See this page for more details on legal twitter params: 
+        -- http://docs.coronalabs.com/daily/plugin/CoronaProvider_native_popup_social/showPopup.html
         params = {
             popupName = "social",
             service = "twitter",
             label = "Twitter",
             message = "Some text to post to twitter",
-            image = nil,  -- See the native.showPopup("social") plugin for image parameters.
-            url = nil,    -- See the native.showPopup("social") plugin for url parameters.
+            image = 
+                {
+                    { filename="geek.png", baseDir=system.ResourceDirectory },
+                    { filename="rg.png", baseDir=system.ResourceDirectory } 
+                    -- ONLY first image listed will be inserted into post
+                },  
+            url = "http://roaminggamer.com", -- NOTE: Will not be inserted into tweet.
         }
     }
     tableView:insertRow{
         rowHeight = 40,
         isCategory = false,
         rowColor = { 1, 1, 1 },
+        -- See this page for more details on legal email params: 
+        -- http://docs.coronalabs.com/daily/plugin/CoronaProvider_native_popup_social/showPopup.html
         params = {
             popupName = "mail",
             label = "Email",
             body = "Some text to email",
-            attachment = nil, -- See the native.showPopup("mail") API for attachment parameters.
+            attachment = 
+                {
+                    { filename="rg.png", baseDir=system.ResourceDirectory },
+                    { filename="geek.png", baseDir=system.ResourceDirectory }            
+                },  
+            url = "http://roaminggamer.com", 
         }
     }
     tableView:insertRow{
         rowHeight = 40,
         isCategory = false,
         rowColor = { 1, 1, 1 },
+        -- See this page for more details on legal sms params: 
+        -- http://docs.coronalabs.com/daily/plugin/CoronaProvider_native_popup_social/showPopup.html
         params = {
             popupName = "sms",
             label = "Message",

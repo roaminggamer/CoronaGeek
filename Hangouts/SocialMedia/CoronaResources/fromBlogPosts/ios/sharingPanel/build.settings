@@ -2,13 +2,15 @@ settings =
 {
 	orientation =
 	{
-		default = "landscapeRight",
-		supported = { "landscapeRight", "landscapeLeft" }
+		default = "portrait",
+		supported = { "portrait", "portraitUpsideDown" },
+
+		--default = "landscapeRight",
+		--supported = { "landscapeRight", "landscapeLeft" }
 	},
 
 	plugins =
 	{
-		["CoronaProvider.native.popup.activity"] = { publisherId = "com.coronalabs",  supportedPlatforms = { iphone=true, ["iphone-sim"]=true }, },
 		["CoronaProvider.native.popup.social"] = { publisherId = "com.coronalabs", },
 	},
 
@@ -26,9 +28,6 @@ settings =
 		plist =
 		{
 			UIApplicationExitsOnSuspend = true,
-			UIAppFonts = { "berylium.otf" , "berylium bd.otf" },
-			CFBundleIconFile = "Icon.png",
-			CFBundleIconFiles = { "Icon.png" , "Icon@2x.png" , "Icon-72.png" }
 		}
 	}
 }

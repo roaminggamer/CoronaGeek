@@ -1,10 +1,17 @@
 settings =
 {
+
+	orientation =
+	{
+		default = "portrait",
+		supported = { "portrait", "portraitUpsideDown" },
+
+		--default = "landscapeRight",
+		--supported = { "landscapeRight", "landscapeLeft" }
+	},
+
 	plugins =
 	{
-		["CoronaProvider.native.popup.activity"] = 
-		{ publisherId = "com.coronalabs", supportedPlatforms = { iphone=true, ["iphone-sim"]=true }, },
-        
         ["CoronaProvider.native.popup.social"] = { publisherId = "com.coronalabs" },
     },	
 

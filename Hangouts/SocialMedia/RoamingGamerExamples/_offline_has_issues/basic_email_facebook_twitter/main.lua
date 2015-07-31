@@ -16,6 +16,10 @@ local h = display.contentHeight
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
 
+
+-- =============================================================
+-- EFM
+-- =============================================================
 local function sendEmail()
 
 	native_popup.email( "Test Message", -- Title
@@ -30,6 +34,9 @@ local function sendEmail()
 		              )
 end
 
+-- =============================================================
+-- EFM
+-- =============================================================
 local function tweet()
 	native_popup.twitter( "Hello this is a test tweet.", -- Message
 		                  "http://www.roaminggamer.com/",  -- URL
@@ -40,6 +47,9 @@ local function tweet()
 		                )
 end
 
+-- =============================================================
+-- EFM
+-- =============================================================
 local function postFB()
 	native_popup.facebook( "Hello this is a test tweet.", -- Message
 		                   "http://www.roaminggamer.com/",  -- URL
@@ -51,6 +61,9 @@ local function postFB()
 
 end
 
+-- =============================================================
+-- EFM
+-- =============================================================
 local function share()
 	native_popup.facebook( "Hello this is a test share.", -- Message
 		                   "http://www.roaminggamer.com/",  -- URL
@@ -63,13 +76,13 @@ local function share()
 end
 
 
+-- =============================================================
+-- EFM
+-- =============================================================
 -- Create some buttons to run specific functions
 PushButton( sceneGroup, centerX, centerY - 75, "e-mail", sendEmail, { labelColor = {0,1,0}, labelSize = 18 } )
 PushButton( sceneGroup, centerX, centerY - 25, "Share", share, { labelColor = {0,1,0}, labelSize = 18 } )
 PushButton( sceneGroup, centerX, centerY + 25, "Facebook", postFB, { labelColor = {0,1,0}, labelSize = 18 } )
 PushButton( sceneGroup, centerX, centerY + 75, "Twitter", tweet, { labelColor = {0,1,0}, labelSize = 18 } )
 
--- sendEmail()
---tweet()
---postFB()
 
