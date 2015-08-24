@@ -11,10 +11,21 @@ local builder = {}
 -- The Builder (Create) Function
 -- =============================================
 function builder.create( layers, data, pieces )
-	local aPiece = display.newRect( layers.content, data.x, data.y, common.blockSize, common.blockSize  )
-	aPiece.rotation = data.rotation
-	aPiece.strokeWidth = 4
-	aPiece:setStrokeColor(0,0,0)
+	local aPiece
+
+	if( common.niceGraphics ) then
+		aPiece = display.newImageRect( layers.content, "images/kenney/elementMetal018.png", common.blockSize, common.blockSize )
+		aPiece.x = data.x
+		aPiece.y = data.y
+		aPiece.rotation = data.rotation
+	else
+		aPiece = display.newRect( layers.content, data.x, data.y, common.blockSize, common.blockSize  )
+		aPiece.rotation = data.rotation
+		aPiece.strokeWidth = 4
+		aPiece:setStrokeColor(0,0,0)
+	end
+
+
 
 	if( common.debugEn ) then	
 		-- debug label to show distance to player
@@ -23,7 +34,9 @@ function builder.create( layers, data, pieces )
 	end
 
 	local physics = require "physics"
-	physics.addBody( aPiece, "static", { density = 1, bounce = 0, friction = 1 } )
+	physics.addBody( aPiece, "static", 
+		             { density = 1, bounce = 0, friction = 1,
+		               filter = common.myCC:getCollisionFilter( "platform" ) } )
 
 	pieces[#pieces+1] = aPiece
 
