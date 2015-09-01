@@ -10,6 +10,8 @@ local public = {}
 ----------------------------------------------------------------------
 local physics 		= require "physics"
 
+local sound 		= require "scripts.sound"
+
 local common 		= require "scripts.common"
 
 local inputs 		= require "scripts.inputs"
@@ -19,6 +21,10 @@ local builders = {}
 builders.player 	= require "scripts.builders.player"
 builders.round 		= require "scripts.builders.round"
 builders.square 	= require "scripts.builders.square"
+builders.timedround = require "scripts.builders.timedround"
+builders.hpath 		= require "scripts.builders.hpath"
+builders.vpath 		= require "scripts.builders.vpath"
+
 builders.coins 		= require "scripts.builders.coins"
 builders.monster 	= require "scripts.builders.monster"
 builders.spikes 	= require "scripts.builders.spikes"
@@ -29,11 +35,13 @@ builders.spikes 	= require "scripts.builders.spikes"
 -- Variables
 local layers
 local pieces
-local currentLevel = 1
+local currentLevel 		= 1
+local coinsCollected 	= 0
 
 -- Forward Declarations
 local onReloadLevel 
 local onNextLevel
+local onSound
 
 -- Localizations
 local mRand             = math.random
@@ -46,7 +54,8 @@ local pairs             = pairs
 -- 
 -- create() - Creates a new level.
 --
-function public.create( levelNum )	
+function public.create( levelNum, group )	
+	group = group or display.currentStage
 	--
 	-- 1. Destroy old level if it exists
 	--
@@ -74,12 +83,14 @@ function public.create( levelNum )
 	layers:insert( layers.content )
 	layers:insert( layers.overlay )
 
+	group:insert( layers )
+
 
 	--
 	-- 3. Draw blue background
 	--
 	local back = display.newRect( layers.underlay, centerX, centerY, fullw, fullh )
-	back:setFillColor( 0.2, 0.6, 1)
+	back:setFillColor( 0.2, 0.6, 1 )
 
 	-- 
 	-- 4. Build the level
@@ -89,9 +100,9 @@ function public.create( levelNum )
 	pieces = {}
 	for i = 1, #levelData do		
 		table.dump(levelData[i])
-		local data = levelData[i]
-		local builder = builders[data.type]
-		local tmp = builder.create( layers, data, pieces )
+		local data 		= levelData[i]
+		local builder 	= builders[data.type]
+		local tmp 		= builder.create( layers, data, pieces )
 	end
 
 	-- 
@@ -102,19 +113,41 @@ function public.create( levelNum )
 	--
 	-- 6. Add a 'coin' counter with some event listeners to count picked up coins and count clearing.	
 	--
-	local curCount = 0
-	local coinCounter = display.newText( layers.overlay, "Coins: 0", left + 10, top + 30, "HarrowPrint", 40 )
-	coinCounter.anchorX = 0
-	-- This listener handles 'incrementing' the counter on 'coin pickups'
-	coinCounter.onPickup = function( self )
-		if( self.removeSelf == nil ) then
-			Runtime:removeEventListener( "onPickup", self )
-			return
+	coinsCollected 			= 0
+	local maxCoins 			= levels.countCoins( levelNum ) or 3
+	local onCoins 			= {}
+	local offCoins 			= {}
+
+	if( maxCoins > 0 ) then
+		local function updateHUD()
+			for i = 1, maxCoins do
+				onCoins[i].isVisible  = (coinsCollected >= i)
+				offCoins[i].isVisible = (i > coinsCollected)
+			end
 		end
-		curCount = curCount + 1
-		coinCounter.text = "Coins: " .. curCount
+
+		local lastImage
+		for i = 1, maxCoins do
+			onCoins[i] = display.newImageRect( layers.overlay, "images/kenney/coin1.png", 50, 50 )
+			onCoins[i].x = left + 40 + 60 * (i - 1)
+			onCoins[i].y = top + 40
+
+			offCoins[i] = display.newImageRect(  layers.overlay, "images/kenney/coin2.png", 50, 50 )
+			offCoins[i].x = left + 40 + 60 * (i - 1)
+			offCoins[i].y = top + 40
+
+			lastImage = offCoins[i]
+		end
+
+		updateHUD()
+		
+		lastImage.onPickup = function( self )
+			if( autoIgnore( "onPickup", self ) ) then return end
+			coinsCollected = coinsCollected + 1
+			updateHUD()
+		end
+		listen( "onPickup", lastImage )
 	end
-	Runtime:addEventListener( "onPickup", coinCounter )
 
 	--
 	-- 7. Add a 'level' indicator
@@ -122,11 +155,11 @@ function public.create( levelNum )
 	local levelIndicator = display.newText( layers.overlay, "Level: " .. levelNum, right - 10, top + 30, "HarrowPrint", 40 )
 	levelIndicator.anchorX = 1
 
-
 	--
 	-- 8. Track 'current' level for reloads and advancing to next level
 	--
 	currentLevel =  levelNum
+
 end
 
 -- 
@@ -160,9 +193,10 @@ onNextLevel = function()
 	public.create( currentLevel )
 	return true
 end
-Runtime:addEventListener( "onReloadLevel", onReloadLevel )
-Runtime:addEventListener( "onNextLevel", onNextLevel )
-
+--Runtime:addEventListener( "onReloadLevel", onReloadLevel )
+--Runtime:addEventListener( "onNextLevel", onNextLevel )
+listen( "onReloadLevel", onReloadLevel )
+listen( "onNextLevel", onNextLevel )
 
 
 return public

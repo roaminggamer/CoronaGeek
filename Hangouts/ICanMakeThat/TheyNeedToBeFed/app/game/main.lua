@@ -10,7 +10,7 @@
 ----------------------------------------------------------------------
 display.setStatusBar(display.HiddenStatusBar)  
 system.activate("multitouch")
-io.output():setvbuf("no") 
+--io.output():setvbuf("no") 
 math.randomseed(os.time());
 
 ----------------------------------------------------------------------
@@ -35,7 +35,15 @@ physics.setGravity( 0, 0 )
 ----------------------------------------------------------------------
 -- Start Game
 ----------------------------------------------------------------------
-local game 		= require "scripts.game"
+local sound = require "scripts.sound"
+local game 	= require "scripts.game"
+
+
+sound.init()
+--sound.enableSFX( true )
+-- Play a sound track
+--sound.playSoundTrack( "sounds/music/Call to Adventure.mp3" )
+
 
 -- Start the game and the numbered level.
 game.create( 1 )
