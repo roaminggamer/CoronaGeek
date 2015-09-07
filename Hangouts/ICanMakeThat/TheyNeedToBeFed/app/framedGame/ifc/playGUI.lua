@@ -55,8 +55,19 @@ function scene:create( event )
 	game.create( level, sceneGroup )
 
 		-- Create a button
-	local push1 = PushButton( sceneGroup, right - 60, top + 25, "Back", onBack, 
+	local group = display.newGroup()
+	sceneGroup:insert( group )
+	local push1 = PushButton( group, right - 60, top + 25, "Back", onBack, 
 	                          { labelColor = {0.8,0.2,0.2}, labelSize = 18 } )
+
+	group.enterFrame = function( self )
+		if( self.removeSelf == nil ) then
+			ignore( "enterFrame", self )
+			return
+		end
+		self:toFront()
+	end
+	listen( "enterFrame", group )
 
 end
 

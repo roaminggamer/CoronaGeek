@@ -1,5 +1,5 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2014 
+-- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
 -- 
 -- =============================================================
@@ -21,6 +21,7 @@ builderFiles.B = "start"
 
 -- Level Blocks
 builderFiles.R = "round"
+builderFiles.I = "charles"
 builderFiles.S = "square"
 builderFiles.T = "timedround"
 builderFiles.H = "hpath"

@@ -16,5 +16,5 @@ physics.setGravity( 0, 10 )
 
 
 -- Load one or the other, not both
-require "forces"
---require "impulses"
+--require "forces"
+require "impulses"

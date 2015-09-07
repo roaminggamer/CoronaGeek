@@ -1,5 +1,5 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2014 
+-- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
 -- 
 -- =============================================================
@@ -52,6 +52,7 @@ function builder.create( layers, data, pieces )
 	player.animState = "idle" -- Starting animation state (used for animation changing logic below)
 	player.isJumping = false -- Assume we are not 'jumping' to start
 
+
 	-- Initialize player's movement++ values (used later to move player)
 	--
 	player.myAngularVelocity 	= 0
@@ -64,8 +65,10 @@ function builder.create( layers, data, pieces )
 	--
 	local physics = require "physics"
 	physics.addBody( player, "dynamic", 
-		             { density = 1, bounce = 0, friction = 100, radius = common.playerSize/2,
+		             { density = 1, bounce = 0, friction = 1, radius = common.playerSize/2,
 		               filter = common.myCC:getCollisionFilter( "player" ) } )
+	--player.isFixedRotation = true
+
 
 
 	-- Attach various listeners and start listening for these events

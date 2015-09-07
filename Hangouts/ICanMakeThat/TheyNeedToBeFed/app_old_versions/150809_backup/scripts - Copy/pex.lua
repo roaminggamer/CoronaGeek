@@ -1,5 +1,5 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2014 
+-- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
 local json 		= require "json"
 local function round(val, n) if (n) then  return math.floor( (val * 10^n) + 0.5) / (10^n); else return math.floor(val+0.5); end end

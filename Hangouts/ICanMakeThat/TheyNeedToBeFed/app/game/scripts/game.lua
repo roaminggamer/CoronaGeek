@@ -1,5 +1,5 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2014 
+-- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
 -- 
 -- =============================================================
@@ -20,6 +20,8 @@ local inputs 		= require "scripts.inputs"
 local builders = {}
 builders.player 	= require "scripts.builders.player"
 builders.round 		= require "scripts.builders.round"
+builders.charles 	= require "scripts.builders.charles"
+
 builders.square 	= require "scripts.builders.square"
 builders.timedround = require "scripts.builders.timedround"
 builders.hpath 		= require "scripts.builders.hpath"
@@ -54,8 +56,10 @@ local pairs             = pairs
 -- 
 -- create() - Creates a new level.
 --
+local lastGroup
 function public.create( levelNum, group )	
-	group = group or display.currentStage
+	group = group or lastGroup or display.currentStage
+	lastGroup = group
 	--
 	-- 1. Destroy old level if it exists
 	--
@@ -152,7 +156,7 @@ function public.create( levelNum, group )
 	--
 	-- 7. Add a 'level' indicator
 	--
-	local levelIndicator = display.newText( layers.overlay, "Level: " .. levelNum, right - 10, top + 30, "HarrowPrint", 40 )
+	local levelIndicator = display.newText( layers.overlay, "Level: " .. levelNum, right - 140, top + 30, "HarrowPrint", 40 )
 	levelIndicator.anchorX = 1
 
 	--

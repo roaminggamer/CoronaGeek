@@ -77,9 +77,9 @@ local common 	= require "scripts.common"
 local sound = require "scripts.sound"
 
 sound.init()
-sound.enableSFX( true )
+--sound.enableSFX( true )
 -- Play a sound track
-sound.playSoundTrack( "sounds/music/Call to Adventure.mp3" )
+--sound.playSoundTrack( "sounds/music/Call to Adventure.mp3" )
 
 
 
