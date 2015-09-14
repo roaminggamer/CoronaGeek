@@ -52,6 +52,7 @@ function builder.create( layers, data, pieces )
 	player.animState = "idle" -- Starting animation state (used for animation changing logic below)
 	player.isJumping = false -- Assume we are not 'jumping' to start
 
+
 	-- Initialize player's movement++ values (used later to move player)
 	--
 	player.myAngularVelocity 	= 0
@@ -187,6 +188,11 @@ function builder.create( layers, data, pieces )
 		Runtime:addEventListener( "enterFrame", player.myArrow )
 	end
 
+	-- Add a flag marking this as the player
+	player.isPlayer = true
+
+	-- Put reference to current player in common so other objects can see it
+	common.currentPlayer = player
 
 	return player
 end

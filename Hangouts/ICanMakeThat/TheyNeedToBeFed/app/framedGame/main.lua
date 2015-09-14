@@ -86,6 +86,6 @@ sound.init()
 ----------------------------------------------------------------------
 -- 3. Execution
 ----------------------------------------------------------------------
-composer.gotoScene( "ifc.splash" )
---composer.gotoScene( "ifc.mainMenu" )
+--composer.gotoScene( "ifc.splash" )
+composer.gotoScene( "ifc.mainMenu" )
 

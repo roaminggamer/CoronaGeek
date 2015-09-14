@@ -54,14 +54,14 @@ function scene:create( event )
 	sceneGroup:insert(menuGroup)
 
 	-- Create a label showing which scene this is
-	local label = display.newText( menuGroup, "Monsters Need Coins", centerX, centerY - 260, "Harrowprint", 50 )
+	local label = display.newText( menuGroup, "Monsters Need Coins !!!", centerX, centerY - 260, "Harrowprint", 50 )
 	label.x = label.x-1
 	label.y = label.y-1
-	local label = display.newText( menuGroup, "Monsters Need Coins", centerX, centerY - 260, "Harrowprint", 50 )
+	local label = display.newText( menuGroup, "Monsters Need Coins !!!", centerX, centerY - 260, "Harrowprint", 50 )
 	label:setFillColor( 0xff/255, 0x59/255, 0x1c/255 )
 	label.x = label.x+1
 	label.y = label.y+1
-	local label = display.newText( menuGroup, "Monsters Need Coins", centerX, centerY - 260, "Harrowprint", 50 )
+	local label = display.newText( menuGroup, "Monsters Need Coins !!!", centerX, centerY - 260, "Harrowprint", 50 )
 	label:setFillColor( 0xfd/255, 0xe5/255, 0 )
 
 

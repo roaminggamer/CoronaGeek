@@ -9,7 +9,7 @@ local common = {}
 --
 -- Game Variables
 --
-common.maxLevels 	= 4
+common.maxLevels 	= 6
 
 common.debugEn		= false
 common.niceGraphics = true
@@ -27,13 +27,24 @@ common.startOffsetY = 5
 
 common.levelGrid	= 8 -- Grid is 8 x 8 for demo
 common.buttonSize 	= 120
-common.blockSize 	= 100 --100 --350 --100 --* 0.25
+common.blockSize 	= 100 -- 100 --100 --350 --100 --* 0.25
 common.playerSize 	= common.blockSize / 2
 common.pickupSize 	= common.blockSize / 3
 common.monsterSize 	= common.blockSize / 2
 common.dangersSize 	= common.blockSize / 2 - 5
 common.footSize 	= common.playerSize + 20
 common.gapSize  	= 2.5 * common.blockSize --* 0.25
+
+common.turretSize 				= common.blockSize * 0.8
+common.laserSpeed				= 250
+common.laserWidth 				= common.blockSize/8
+common.turretFireTime 			= 2000
+common.turretRotateTime 		= 2000
+
+common.rocketLifetime			= 5000
+common.rocketFireTime 			= 2000
+common.rocketSpeed				= 150
+common.rocketMinFireDistance 	= 1.2 * common.gapSize
 
 --
 -- Helper Variables
@@ -75,8 +86,9 @@ common.top 				= (common.top>=0) and math.abs(common.top) or common.top
 -- Collision Calculator For Easy Collision Calculations
 --
 common.myCC = ssk.ccmgr:newCalculator()
-common.myCC:addNames( "player", "foot", "platform", "pickup", "monster", "dangers" )
+common.myCC:addNames( "player", "foot", "platform", "pickup", "monster", "dangers", "bullet" )
 common.myCC:collidesWith( "player", "platform", "pickup", "monster", "dangers" )
 common.myCC:collidesWith( "foot", "platform" )
+common.myCC:collidesWith( "bullet", "platform", "player" )
 
 return common

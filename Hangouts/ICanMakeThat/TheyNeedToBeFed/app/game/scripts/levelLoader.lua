@@ -27,6 +27,11 @@ builderFiles.T = "timedround"
 builderFiles.H = "hpath"
 builderFiles.V = "vpath"
 
+builderFiles.J = "laserturret"
+builderFiles.K = "rotatinglaserturret"
+builderFiles.L = "rocketturret"
+
+
 -- Dangers
 builderFiles.X = "spikes"
 

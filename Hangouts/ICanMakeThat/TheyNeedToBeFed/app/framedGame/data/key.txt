@@ -1,0 +1,14 @@
+-- B - Start/Begin
+-- S - Square Platform
+-- R - Round Platform
+-- I - Charles Invisible Platform
+-- T - Timed Round Platform (disappears after 3 seconds)
+
+-- H - Laser Turret (Basic)
+-- I - Laser Turret (Rotating)
+-- J - Rocket Turret 
+
+-- X - Spikes
+
+-- C - Coin
+-- M - Monster

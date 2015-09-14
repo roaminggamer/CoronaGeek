@@ -38,6 +38,7 @@ local_require "ssk.RGDisplay"
 local_require "ssk.RGEasyInterfaces"
 local_require "ssk.RGMath2D"
 
+local_require "ssk.actions.RGActions"
 -- Meaure Final Cost of SSK (if enabled)
 if( ssk.__measureSSK ) then require("ssk.measureSSK").summary() end
 

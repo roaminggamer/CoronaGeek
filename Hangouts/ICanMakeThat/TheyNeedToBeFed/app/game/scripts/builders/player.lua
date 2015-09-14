@@ -188,6 +188,11 @@ function builder.create( layers, data, pieces )
 		Runtime:addEventListener( "enterFrame", player.myArrow )
 	end
 
+	-- Add a flag marking this as the player
+	player.isPlayer = true
+
+	-- Put reference to current player in common so other objects can see it
+	common.currentPlayer = player
 
 	return player
 end

@@ -22,6 +22,10 @@ builders.player 	= require "scripts.builders.player"
 builders.round 		= require "scripts.builders.round"
 builders.charles 	= require "scripts.builders.charles"
 
+builders.laserturret		 = require "scripts.builders.laserturret"
+builders.rotatinglaserturret = require "scripts.builders.rotatinglaserturret"
+builders.rocketturret 		 = require "scripts.builders.rocketturret"
+
 builders.square 	= require "scripts.builders.square"
 builders.timedround = require "scripts.builders.timedround"
 builders.hpath 		= require "scripts.builders.hpath"
