@@ -10,7 +10,7 @@ local builder = {}
 -- =============================================
 -- The Builder (Create) Function
 -- =============================================
-function builder.create( layers, data, pieces )
+function builder.create( layers, data )
 	local aPiece
 
 	-- Create an object (basic or pretty) to represent this world object
@@ -56,7 +56,7 @@ function builder.create( layers, data, pieces )
 		post( "onSFX", { sfx = "coin1" } )
 		-- Tip: We're only handling the first phase of the collision, so remove listener right away.
 		self:removeEventListener( "collision" )
-		Runtime:dispatchEvent( { name = "onPickup" } )
+		Runtime:dispatchEvent( { name = "onPickup", pickupType = "coin" } )
 		timer.performWithDelay(1, function() display.remove(self) end ) -- Remove the object
 		return true
 	end

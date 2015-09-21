@@ -5,22 +5,23 @@
 -- =============================================================
 local common 	= require "scripts.common"
 local utils 	= require "scripts.builders.builder_utils"
+local math2d	= require "plugin.math2d"
 
 
 -- Localize math2d functions for an execution speedup
-local scaleVec 		= ssk.math2d.scale
-local subVec		= ssk.math2d.sub
-local normVec		= ssk.math2d.normalize
-local vector2Angle	= ssk.math2d.vector2Angle
-local angle2Vector	= ssk.math2d.angle2Vector
-local normalVecs	= ssk.math2d.normals
+local scaleVec 		= math2d.scale
+local subVec		= math2d.diff
+local normVec		= math2d.normalize
+local vector2Angle	= math2d.vector2Angle
+local angle2Vector	= math2d.angle2Vector
+local normalVecs	= math2d.normals
 
 local builder = {}
 
 -- =============================================
 -- The Builder (Create) Function
 -- =============================================
-function builder.create( layers, data, pieces )
+function builder.create( layers, data )
 	local aPiece
 
 	-- Create an object (basic or pretty) to represent this world object
@@ -51,9 +52,9 @@ function builder.create( layers, data, pieces )
 		             { density = 1, bounce = 0, friction = 1, radius = common.turretSize/2,
 		               filter = common.myCC:getCollisionFilter( "platform" ) } )
 
-	-- This is a platform object, so add it to the 'pieces' list.  The player scans this list for nearby 'gravity' objects.
+	-- This is a platform object, so add it to the 'common.pieces' list.  The player scans this list for nearby 'gravity' objects.
 	--
-	pieces[#pieces+1] = aPiece
+	common.pieces[#common.pieces+1] = aPiece
 
 
 	-- Create an object to act as our turret

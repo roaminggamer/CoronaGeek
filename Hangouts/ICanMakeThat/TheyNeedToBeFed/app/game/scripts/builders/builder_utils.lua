@@ -5,16 +5,24 @@
 -- =============================================================
 local mFloor = math.floor
 
+local math2d	= require "plugin.math2d"
+
+
+-- Localize math2d functions for an execution speedup
+local scaleVec 		= math2d.scale
+local subVec		= math2d.diff
+local normVec		= math2d.normalize
+local vector2Angle	= math2d.vector2Angle
+local angle2Vector	= math2d.angle2Vector
+local normalVecs	= math2d.normals
+local lenVec 		= math2d.length
+
 local utils = {}
-
-
 
 utils.calculateDistanceToPlayer = function( turret, player )
 	if( not player or player.x == nil ) then return math.huge end
 	if( not turret or turret.x == nil ) then return math.huge end
 
-	local subVec	= ssk.math2d.sub
-	local lenVec	= ssk.math2d.length
 
 	-- Cacluate distance
 	local dist = subVec( player, turret )

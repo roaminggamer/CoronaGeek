@@ -11,17 +11,22 @@ local calculateMyGravity
 local onLeft
 local onRight
 local onJump
+local onFire
+local onPickup
 local onEnterFrame
 
 
--- Localize math2d functions for an execution speedup
-local scaleVec 		= ssk.math2d.scale
-local subVec		= ssk.math2d.sub
-local normVec		= ssk.math2d.normalize
-local vector2Angle	= ssk.math2d.vector2Angle
-local angle2Vector	= ssk.math2d.angle2Vector
-local normalVecs	= ssk.math2d.normals
+local math2d	= require "plugin.math2d"
 
+
+-- Localize math2d functions for an execution speedup
+local scaleVec 		= math2d.scale
+local subVec		= math2d.diff
+local normVec		= math2d.normalize
+local vector2Angle	= math2d.vector2Angle
+local angle2Vector	= math2d.angle2Vector
+local normalVecs	= math2d.normals
+local lenVec 		= math2d.length
 
 -- Load and Config Player Sprite Data
 local playerInfo 	= require "images.tmbf_player"
@@ -40,7 +45,7 @@ local builder = {}
 -- =============================================
 -- The Builder (Create) Function
 -- =============================================
-function builder.create( layers, data, pieces )
+function builder.create( layers, data )
 	-- 
 	-- Create a circle as our player
 	--
@@ -51,6 +56,8 @@ function builder.create( layers, data, pieces )
 	player.isVisible = not common.niceGraphics
 	player.animState = "idle" -- Starting animation state (used for animation changing logic below)
 	player.isJumping = false -- Assume we are not 'jumping' to start
+	player.isPlayer = true
+	player.decoyCount = 0
 
 
 	-- Initialize player's movement++ values (used later to move player)
@@ -58,7 +65,6 @@ function builder.create( layers, data, pieces )
 	player.myAngularVelocity 	= 0
 	player.myGravityAngle 		= 0
 	player.myGravityMagnitude 	= 0
-	player.pieces 				= pieces
 	player.layers				= layers
 
 	-- Add a basic 'dynamic' body with no bounce and 100% friction
@@ -81,6 +87,12 @@ function builder.create( layers, data, pieces )
 
 	player.onJump = onJump -- Jump button pushed
 	Runtime:addEventListener( "onJump", player )
+
+	player.onFire = onFire -- Fire button pushed
+	Runtime:addEventListener( "onFire", player )
+
+	player.onPickup = onPickup -- Pickup Event
+	Runtime:addEventListener( "onPickup", player )
 
 	player.enterFrame = onEnterFrame -- enterFrame event
 	Runtime:addEventListener( "enterFrame", player )
@@ -201,16 +213,14 @@ end
 -- Function Definitions
 -- =============================================
 -- 
--- These helper functions are used to sort the pieces list, by nearest to farthest
--- relative to the player. i.e. pieces[1] is nearest, 2 second nearest, etc.
+-- These helper functions are used to sort the common.pieces list, by nearest to farthest
+-- relative to the player. i.e. common.pieces[1] is nearest, 2 second nearest, etc.
 --
 local function compare(a,b) return a.dist2Player < b.dist2Player end
-calculateDistanceToPieces = function( player, pieces )
-	local subVec	= ssk.math2d.sub
-	local lenVec	= ssk.math2d.length
+calculateDistanceToPieces = function( player )
 
 	-- Cacluate distances
-	for k,v in pairs( pieces ) do
+	for k,v in pairs( common.pieces ) do
 		v.dist2Player = subVec( player, v )
 		v.dist2Player = lenVec( v.dist2Player )
 
@@ -221,10 +231,10 @@ calculateDistanceToPieces = function( player, pieces )
 		end
 	end
 
-	table.sort( pieces, compare )
+	table.sort( common.pieces, compare )
 
 	if( common.debugEn ) then
-		pieces[1]:setFillColor(0,1,0)
+		common.pieces[1]:setFillColor(0,1,0)
 	end
 end
 
@@ -232,9 +242,9 @@ end
 --
 -- This helper calculates the players current 'myGravity' direction and magnitude
 --
-calculateMyGravity = function( player, pieces )
+calculateMyGravity = function( player )
 	-- Get the nearest piece, abort of not found
-	local nearest = pieces[1]	
+	local nearest = common.pieces[1]	
 	if( not nearest ) then return end
 
 	-- Calculate force vector (myGravity)
@@ -299,8 +309,6 @@ onJump = function( self, event )
 	end
 	-- Can't jump if we are already jumping
 	if( event.phase == "began" and not self.isJumping ) then 
-		local angle2Vector 	= ssk.math2d.angle2Vector
-		local scaleVec 		= ssk.math2d.scale
 
 		local impulseVec 	= angle2Vector( self.myGravityAngle, true )
 		impulseVec			= scaleVec( impulseVec, -common.jumpMag * self.mass )
@@ -312,11 +320,48 @@ onJump = function( self, event )
 	end
 end
 
+
+--
+-- 'Fire' Button Press Event Listener
+--
+onFire = function( self, event )
+	if( self.removeSelf == nil ) then
+		Runtime:removeEventListener( "onFire", self )
+		return
+	end
+	-- Can't fire, we have no decoys
+	if( event.phase == "began" and self.decoyCount > 0 ) then 
+
+		local decoy	= display.newImageRect( self.parent, "images/kenney/particle.png", 
+			                                common.decoySize, common.decoySize )
+		decoy.x = self.x
+		decoy.y = self.y
+		physics.addBody( decoy, "dynamic", 
+		             	{ density = 1, bounce = 1, friction = 0, radius = common.decoySize/2,
+		               	  filter = common.myCC:getCollisionFilter( "decoy" ) } )
+		decoy.linearDamping = common.decoyLinearDamping
+		decoy.angluarDamping = common.decoyAngularDamping
+		decoy.angularVelocity = 90
+		decoy.isDecoy = true
+
+		self.decoyCount = self.decoyCount - 1
+		post("onUsedDecoy")
+
+
+		common.decoys[decoy] = decoy
+
+		local impulseVec 	= angle2Vector( self.myGravityAngle, true )
+		impulseVec			= scaleVec( impulseVec, -common.decoyImpulseMag * decoy.mass )
+		decoy:applyLinearImpulse( impulseVec.x, impulseVec.y, decoy.x, decoy.y )
+	end
+end
+
+
 --
 -- 'enterFrame' Listener (for player)
 -- 
 -- Every frame:
--- 1. Calculate distance to all game pieces (things we can 'walk' on)
+-- 1. Calculate distance to all game common.pieces (things we can 'walk' on)
 -- 2. Apply a personal force (myGravity) to the player in the direction of the nearest game piece.
 -- 3. Orient the player
 onEnterFrame = function( self ) 
@@ -324,8 +369,8 @@ onEnterFrame = function( self )
 		Runtime:removeEventListener( "enterFrame", self )
 		return
 	end
-	calculateDistanceToPieces( self, self.pieces )
-	calculateMyGravity( self, self.pieces )
+	calculateDistanceToPieces( self )
+	calculateMyGravity( self )
 
 	-- Apply 'myGravity'
 	self:applyForce( self.myGravity.x, self.myGravity.y, self.x, self.y )
@@ -395,7 +440,7 @@ onEnterFrame = function( self )
 				display.remove( v )
 			end
 		end
-		local vec = ssk.math2d.angle2Vector( self.myGravityAngle, true )
+		local vec = angle2Vector( self.myGravityAngle, true )
 		self.myNormals = {}
 		local n1, n2 = normalVecs( vec )
 		self.myNormals[1] = display.newLine( self.parent, self.x, self.y, self.x + n1.x * common.blockSize/2, self.y + n1.y * common.blockSize/2 )
@@ -427,6 +472,14 @@ onEnterFrame = function( self )
 
 end
 
+--
+-- onPickup listenter - Increment our decoy count when we get this event for 'decoys'
+--
+onPickup = function( self, event )
+	if( autoIgnore( "onPickup", self ) ) then return end
+	if( event.pickupType ~= "decoy" ) then return end
+	self.decoyCount = self.decoyCount + 1
+end
 
 
 return builder

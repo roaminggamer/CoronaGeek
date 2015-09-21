@@ -10,7 +10,7 @@ local builder = {}
 -- =============================================
 -- The Builder (Create) Function
 -- =============================================
-function builder.create( layers, data, pieces )
+function builder.create( layers, data )
 	local aPiece
 
 	-- Create an object (basic or pretty) to represent this world object
@@ -45,9 +45,9 @@ function builder.create( layers, data, pieces )
 		             { density = 1, bounce = 0, friction = 1, radius = common.blockSize/2,
 		               filter = common.myCC:getCollisionFilter( "platform" ) } )
 
-	-- This is a platform object, so add it to the 'pieces' list.  The player scans this list for nearby 'gravity' objects.
+	-- This is a platform object, so add it to the 'common.pieces' list.  The player scans this list for nearby 'gravity' objects.
 	--
-	pieces[#pieces+1] = aPiece
+	common.pieces[#common.pieces+1] = aPiece
 
 	-- This piece self-destructs 10 seconds after you jump on it
 	--
@@ -55,10 +55,10 @@ function builder.create( layers, data, pieces )
 		if( event.phase == "began" ) then
 			aPiece:removeEventListener( "collision" )
 			local function selfDestruct( obj )				
-				local index = table.indexOf( pieces, self )				
+				local index = table.indexOf( common.pieces, self )				
 				if( index ) then 
 					print("GOODBYE CRUEL WORLD")
-					table.remove( pieces, index )
+					table.remove( common.pieces, index )
 					display.remove(self.indicator)
 					transition.to( self, { alpha = 0, time = 250, onComplete = display.remove } )					
 				end				

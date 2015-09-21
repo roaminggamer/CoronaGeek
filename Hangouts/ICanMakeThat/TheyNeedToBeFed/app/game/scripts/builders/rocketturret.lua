@@ -5,15 +5,16 @@
 -- =============================================================
 local common 	= require "scripts.common"
 local utils 	= require "scripts.builders.builder_utils"
+local math2d	= require "plugin.math2d"
+
 
 -- Localize math2d functions for an execution speedup
-local scaleVec 		= ssk.math2d.scale
-local subVec		= ssk.math2d.sub
-local normVec		= ssk.math2d.normalize
-local vector2Angle	= ssk.math2d.vector2Angle
-local angle2Vector	= ssk.math2d.angle2Vector
-local normalVecs	= ssk.math2d.normals
-
+local scaleVec 		= math2d.scale
+local subVec		= math2d.diff
+local normVec		= math2d.normalize
+local vector2Angle	= math2d.vector2Angle
+local angle2Vector	= math2d.angle2Vector
+local normalVecs	= math2d.normals
 
 local calculateDistanceToPlayer = utils.calculateDistanceToPlayer
 
@@ -22,7 +23,7 @@ local builder = {}
 -- =============================================
 -- The Builder (Create) Function
 -- =============================================
-function builder.create( layers, data, pieces )
+function builder.create( layers, data )
 	local aPiece
 
 	-- Create an object (basic or pretty) to represent this world object
@@ -52,9 +53,9 @@ function builder.create( layers, data, pieces )
 		             { density = 1, bounce = 0, friction = 1, radius = common.turretSize/2,
 		               filter = common.myCC:getCollisionFilter( "platform" ) } )
 
-	-- This is a platform object, so add it to the 'pieces' list.  The player scans this list for nearby 'gravity' objects.
+	-- This is a platform object, so add it to the 'common.pieces' list.  The player scans this list for nearby 'gravity' objects.
 	--
-	pieces[#pieces+1] = aPiece
+	common.pieces[#common.pieces+1] = aPiece
 
 
 	-- Create an object to act as our turret
@@ -117,13 +118,47 @@ function builder.create( layers, data, pieces )
 		--
 		rocket.enterFrame = function( self )			
 			if( self.removeSelf == nil  or
-				common.currentPlayer.removeSelf == nil or
+				--common.currentPlayer.removeSelf == nil or
 				self.setLinearVelocity == nil  ) then		
 				Runtime:removeEventListener( "enterFrame", self )
 				return
 			end
 
-			ssk.actions.face( self, { target = common.currentPlayer, rate = 120 } )
+			-- Once a rocket has locked onto a target, it will not let go unless the target
+			-- is destroyed.
+			--
+			-- However, when it scans for targets, it will prefer a decoy over the player.
+
+
+			-- If we have a target, check that it wasn't destroyed
+			if( self.target and self.target.removeSelf == nil ) then
+				-- Was destroyed.  Clear it
+				self.target = nil
+			end
+				
+			-- If we don't have a target at this point, try to acquire a nearby decoy
+			if( not self._target ) then
+				ssk.actions.target.acquireNearest( self, { targets = common.decoys, maxDist = common.rocketAcquireDistance } )
+			end
+
+			-- If we don't have a target at this point, set the target as the player if it is close enought
+			if( not self._target ) then
+				ssk.actions.target.acquireNearest( self, { targets = {common.currentPlayer}, maxDist = common.rocketAcquireDistance } )
+			end
+
+
+			-- If we have a target, try to face it
+			if( self._target ) then
+				--ssk.actions.face( self, { target = common.currentPlayer, rate = 120 } )
+				ssk.actions.face( self, { target = self._target,  rate = 120 } )
+
+				if( common.debugEn or common.turretDebug ) then
+					ssk.actions.target.drawDebugLine( self, { parent = self.parent } )
+					ssk.actions.target.drawDebugAngleDistanceLabel( self, { parent = self.parent, yOffset = 30 } )
+				end
+			end
+
+			-- Thrust forward and lay a particle trail
 			ssk.actions.movep.forward( self, { rate = common.rocketSpeed } )
     		utils.rocketTrail( self, 6 )	
 		end
@@ -141,8 +176,15 @@ function builder.create( layers, data, pieces )
 				-- Tip: We're only handling the first phase of the collision, so remove listener right away.
 				self:removeEventListener( "collision" )
 				timer.performWithDelay( 100, function()  Runtime:dispatchEvent( { name = "onReloadLevel" } )  end )
+			
+			elseif( other.isDecoy ) then
+				common.decoys[other] = nil
+				display.remove( other )
+				display.remove( self )
+			
 			elseif( not self.ignorePlatforms ) then
 				display.remove( self )
+			
 			end
 			return true
 		end

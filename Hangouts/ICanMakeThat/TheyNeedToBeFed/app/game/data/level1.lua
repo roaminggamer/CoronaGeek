@@ -15,6 +15,7 @@
 
 -- X - Spikes
 
+-- D - Decoy 
 -- C - Coin
 -- M - Monster
 

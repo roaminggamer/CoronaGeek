@@ -10,6 +10,7 @@ local inputs = {}
 local leftButton
 local rightButton
 local jumpButton
+local fireButton
 
 
 --
@@ -122,6 +123,22 @@ function inputs.create( layers, data )
 	jumpButton.indicator.y = jumpButton.y
 	jumpButton.indicator.rotation = 0
 	jumpButton.indicator.alpha = 0.25
+
+
+	-- Fire Button
+	--
+	fireButton = display.newRoundedRect( layers.overlay, common.right - 1.5 * size - 60, leftButton.y, size, size, 12 )
+	fireButton.strokeWidth = 3
+	fireButton:setFillColor( 0, 0, 0, 0.1 )
+	fireButton.myEvent = "onFire"
+	fireButton.touch = onTouch
+	fireButton:addEventListener( "touch" )
+	fireButton.indicator = display.newImageRect( layers.overlay, "images/kenney/particle.png",  size * 0.8, size * 0.8 )
+	fireButton.indicator.x = fireButton.x
+	fireButton.indicator.y = fireButton.y
+	fireButton.indicator.rotation = 0
+	fireButton.indicator.alpha = 0.25
+
 end
 
 --
@@ -136,6 +153,7 @@ function inputs.destroy()
 	leftButton = nil
 	rightButton = nil
 	jumpButton = nil
+	fireButton = nil
 end
 
 -- Set up keyboard inputs to trigger buttons (for debug only)
@@ -144,7 +162,7 @@ end
 --   1. I listen for 'key' events on these keys: a,d,w,left,right,up,space
 --   2. I ignore all other key inputs.
 --   3. I convert the 'event' record for key inputs into an acceptable touch event.
---   4. I call the touch method on leftButton, rightButton, or jumpButton depending on the key touched.
+--   4. I call the touch method on leftButton, rightButton, jumpButton, or fireButton depending on the key touched.
 --   5. I pass the modified event into the touch method I'm calling.
 --   6. The touch code does the rest of the lifting.  Done!
 --
@@ -191,7 +209,7 @@ end
 Runtime:addEventListener( "key", onRight )
 
 local function onJump( event )
-	if( not (event.descriptor == "w" or event.descriptor == "up" or event.descriptor == "space" ) ) then
+	if( not (event.descriptor == "w" or event.descriptor == "up"  ) ) then
 		return false
 	end
 
@@ -208,6 +226,23 @@ local function onJump( event )
 end
 Runtime:addEventListener( "key", onJump )
 
+local function onFire( event )
+	if( event.descriptor ~= "space" ) then
+		return false
+	end
+
+	-- Verify button is still valid
+	if( fireButton and fireButton.removeSelf ~= nil and fireButton.touch ) then
+		-- Convert this key event into a useable touch event
+		event.target = fireButton
+		event.x = fireButton.x
+		event.y = fireButton.y
+		event.phase = phaseConvert[event.phase]
+		fireButton:touch( event )
+	end
+	return true
+end
+Runtime:addEventListener( "key", onFire )
 
 
 return inputs

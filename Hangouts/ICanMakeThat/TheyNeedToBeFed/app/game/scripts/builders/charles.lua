@@ -10,7 +10,7 @@ local builder = {}
 -- =============================================
 -- The Builder (Create) Function
 -- =============================================
-function builder.create( layers, data, pieces )
+function builder.create( layers, data )
 	local aPiece
 
 	-- Create an object (basic or pretty) to represent this world object
@@ -54,9 +54,9 @@ function builder.create( layers, data, pieces )
 	aPiece:addEventListener( "collision" )
 
 
-	-- This is a platform object, so add it to the 'pieces' list.  The player scans this list for nearby 'gravity' objects.
+	-- This is a platform object, so add it to the 'common.pieces' list.  The player scans this list for nearby 'gravity' objects.
 	--
-	pieces[#pieces+1] = aPiece
+	common.pieces[#common.pieces+1] = aPiece
 
 	-- Return a reference to this object 
 	--

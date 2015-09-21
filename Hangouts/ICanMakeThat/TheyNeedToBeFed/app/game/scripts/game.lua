@@ -32,6 +32,7 @@ builders.hpath 		= require "scripts.builders.hpath"
 builders.vpath 		= require "scripts.builders.vpath"
 
 builders.coins 		= require "scripts.builders.coins"
+builders.decoys 	= require "scripts.builders.decoys"
 builders.monster 	= require "scripts.builders.monster"
 builders.spikes 	= require "scripts.builders.spikes"
 
@@ -40,9 +41,9 @@ builders.spikes 	= require "scripts.builders.spikes"
 ----------------------------------------------------------------------
 -- Variables
 local layers
-local pieces
 local currentLevel 		= 1
 local coinsCollected 	= 0
+local decoysCollected 	= 0
 
 -- Forward Declarations
 local onReloadLevel 
@@ -64,13 +65,20 @@ local lastGroup
 function public.create( levelNum, group )	
 	group = group or lastGroup or display.currentStage
 	lastGroup = group
+	
 	--
-	-- 1. Destroy old level if it exists
+	-- 1. Load the level data
+	--
+	local levels 	= require "scripts.levelLoader"
+	local levelData = levels.get( levelNum )	
+
+	--
+	-- 2. Destroy old level if it exists
 	--
 	public.destroy()
 
 	--
-	-- 2. Create rendering layers for our game with this
+	-- 3. Create rendering layers for our game with this
 	--    final Layer Order (bottom-to-top)
 	--
 	--[[
@@ -95,31 +103,14 @@ function public.create( levelNum, group )
 
 
 	--
-	-- 3. Draw blue background
+	-- 4. Draw blue background
 	--
 	local back = display.newRect( layers.underlay, centerX, centerY, fullw, fullh )
 	back:setFillColor( 0.2, 0.6, 1 )
 
-	-- 
-	-- 4. Build the level
-	-- 
-	local levels 	= require "scripts.levelLoader"
-	local levelData = levels.get( levelNum )	
-	pieces = {}
-	for i = 1, #levelData do		
-		table.dump(levelData[i])
-		local data 		= levelData[i]
-		local builder 	= builders[data.type]
-		local tmp 		= builder.create( layers, data, pieces )
-	end
-
-	-- 
-	-- 5. Create Buttons (for inputs)
-	-- 
-	inputs.create( layers )
 
 	--
-	-- 6. Add a 'coin' counter with some event listeners to count picked up coins and count clearing.	
+	-- 5. Add a 'coin' counter with some event listeners to count picked up coins and count clearing.	
 	--
 	coinsCollected 			= 0
 	local maxCoins 			= levels.countCoins( levelNum ) or 3
@@ -149,13 +140,64 @@ function public.create( levelNum, group )
 
 		updateHUD()
 		
-		lastImage.onPickup = function( self )
+		lastImage.onPickup = function( self, event  )
 			if( autoIgnore( "onPickup", self ) ) then return end
+			if( event.pickupType ~= "coin" ) then return end
+
 			coinsCollected = coinsCollected + 1
 			updateHUD()
 		end
 		listen( "onPickup", lastImage )
 	end
+
+
+	--
+	-- 6. Add a 'decoy' counter with some event listeners to count picked/used decoys and count clearing.	
+	--
+	decoysCollected 		= 0
+	local maxDecoys 		= levels.countDecoys( levelNum ) or 3
+	local onDecoys 			= {}
+	local offDecoys 		= {}
+
+	if( maxDecoys > 0 ) then
+		local function updateHUD()
+			for i = 1, maxDecoys do
+				onDecoys[i].isVisible  = (decoysCollected >= i)
+				offDecoys[i].isVisible = (i > decoysCollected)
+			end
+		end
+
+		local lastImage
+		for i = 1, maxDecoys do
+			onDecoys[i] = display.newImageRect( layers.overlay, "images/kenney/particleHUD2.png", 50, 50 )
+			onDecoys[i].x = left + 40 + 60 * (i - 1)
+			onDecoys[i].y = top + 120
+
+			offDecoys[i] = display.newImageRect(  layers.overlay, "images/kenney/particleHUD1.png", 50, 50 )
+			offDecoys[i].x = left + 40 + 60 * (i - 1)
+			offDecoys[i].y = top + 120
+
+			lastImage = offDecoys[i]
+		end
+
+		updateHUD()
+		
+		lastImage.onPickup = function( self, event )
+			if( autoIgnore( "onPickup", self ) ) then return end
+			if( event.pickupType ~= "decoy" ) then return end
+			decoysCollected = decoysCollected + 1
+			updateHUD()
+		end
+		listen( "onPickup", lastImage )
+
+		lastImage.onUsedDecoy = function( self, event )
+			if( autoIgnore( "onUsedDecoy", self ) ) then return end
+			decoysCollected = decoysCollected - 1
+			updateHUD()
+		end
+		listen( "onUsedDecoy", lastImage )
+	end
+
 
 	--
 	-- 7. Add a 'level' indicator
@@ -168,6 +210,25 @@ function public.create( levelNum, group )
 	--
 	currentLevel =  levelNum
 
+
+	-- 
+	-- 9. Build the level
+	-- 
+	common.pieces = {}
+	common.decoys = {}
+	for i = 1, #levelData do		
+		table.dump(levelData[i])
+		local data 		= levelData[i]
+		local builder 	= builders[data.type]
+		local tmp 		= builder.create( layers, data )
+	end
+
+	-- 
+	-- 10. Create Buttons (for inputs)
+	-- 
+	inputs.create( layers )
+
+
 end
 
 -- 
@@ -177,7 +238,8 @@ function public.destroy( )
 	inputs.destroy()
 	display.remove( layers )
 	layers = nil
-	pieces = nil
+	common.pieces = {}
+	common.decoys = {}
 end
 
 --

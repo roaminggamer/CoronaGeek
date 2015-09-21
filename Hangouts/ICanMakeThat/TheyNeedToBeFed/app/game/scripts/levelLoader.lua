@@ -36,6 +36,7 @@ builderFiles.L = "rocketturret"
 builderFiles.X = "spikes"
 
 -- Pickups, Monsters
+builderFiles.D = "decoys"
 builderFiles.C = "coins"
 builderFiles.M = "monster"
 
@@ -179,6 +180,36 @@ function public.countCoins( levelNum )
 
 	return coinCount 
 end
+
+-- 
+-- countDecoys() - Examines level and count all decoys.
+--
+function public.countDecoys( levelNum )	
+
+	local decoyCount = 0
+
+	local tableNames = { "platforms", "dangers", "other" }
+
+	for i = 1, #tableNames do
+		local input = require("data.level" .. levelNum )[tableNames[i]]
+
+		for j = 1, #input do
+			local entry = input[j]
+
+			-- Convert symbols to table then massage
+			entry = string.split( entry, "_" )			
+
+			--print( entry[1])
+
+			if( entry[1] == "D" ) then
+				decoyCount = decoyCount + 1
+			end
+		end
+	end
+
+	return decoyCount 
+end
+
 
 
 return public

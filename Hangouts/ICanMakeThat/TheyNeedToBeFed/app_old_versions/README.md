@@ -1,5 +1,3 @@
-** TEMPORARILY REMOVED **
-
 
 This folder contains all OLD builds of the game. 
 

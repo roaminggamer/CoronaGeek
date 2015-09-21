@@ -20,7 +20,10 @@ local strGSub   = string.gsub
 local strSub    = string.sub
 local strFormat = string.format
 local mFloor    = math.floor
-local isValid; timer.performWithDelay(1, function() isValid  = display.isValid end )
+local isValid   = function(obj) return obj.removeSelf ~= nil end
+-- Replace w/ more sophisticated variant in one frame
+timer.performWithDelay(1, function() isValid  = display.isValid end )
+
 -- ==
 --    fnn( ... ) - Return first argument from list that is not nil.
 --    ... - Any number of any type of arguments.
