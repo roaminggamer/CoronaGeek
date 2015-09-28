@@ -65,23 +65,8 @@ function builder.create( layers, data )
 	aPiece.turret = turret
 
 	-- Orient based on subtype
-	if( data.subtype == 1 ) then
-		turret.rotation = 0
-	elseif( data.subtype == 2 ) then
-		turret.rotation = 90
-	elseif( data.subtype == 3 ) then
-		turret.rotation = 180
-	elseif( data.subtype == 4 ) then
-		turret.rotation = 270
-	elseif( data.subtype == 5 ) then
-		turret.rotation = 45
-	elseif( data.subtype == 6 ) then
-		turret.rotation = 135
-	elseif( data.subtype == 7 ) then
-		turret.rotation = 225
-	elseif( data.subtype == 8 ) then
-		turret.rotation = 315
-	end
+	local rotations = { 0, 45, 90, 135, 180, 225, 270, 315 }
+	turret.rotation = rotations[data.subtype]
 
 
 	-- Add 'timed' code to fire lasers in facing direction

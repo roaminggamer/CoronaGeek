@@ -13,7 +13,7 @@ common.decoys = {}
 --
 -- Game Variables
 --
-common.maxLevels 	= 7
+common.maxLevels 	= 2
 
 common.debugEn		= false
 common.turretDebug	= true

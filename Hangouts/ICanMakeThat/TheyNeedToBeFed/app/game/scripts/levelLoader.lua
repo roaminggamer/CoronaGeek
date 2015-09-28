@@ -15,32 +15,6 @@ local common 		= require "scripts.common"
 ----------------------------------------------------------------------
 -- Variables
 
-local builderFiles = {}
--- Player Start
-builderFiles.B = "start"
-
--- Level Blocks
-builderFiles.R = "round"
-builderFiles.I = "charles"
-builderFiles.S = "square"
-builderFiles.T = "timedround"
-builderFiles.H = "hpath"
-builderFiles.V = "vpath"
-
-builderFiles.J = "laserturret"
-builderFiles.K = "rotatinglaserturret"
-builderFiles.L = "rocketturret"
-
-
--- Dangers
-builderFiles.X = "spikes"
-
--- Pickups, Monsters
-builderFiles.D = "decoys"
-builderFiles.C = "coins"
-builderFiles.M = "monster"
-
-
 -- Forward Declarations
 
 -- Localizations
@@ -57,52 +31,56 @@ function public.get( levelNum )
 
 	local level = {}
 
-	local function convertToLevelRecords( input )
-		--table.print_r(input)
+	local levelData = table.load( "data/level" .. levelNum .. ".txt", system.ResourceDirectory )	
+
+	local function convertToLevelRecords( )
 
 		-- Pass 1 - Translate into builder records.  x and y are row and column for now
 		--
-		local row = 1
-		local col = 1
 		local centerRow = 1
 		local centerCol = 1
-		for i = 1, #input do
-			local entry = input[i]
 
-			-- Convert symbols to table then massage
-			entry = string.split( entry, "_" )			
+		for i = 1, #levelData do
+			local entry = levelData[i]
+			table.print_r(entry)
 
-			local record
-
-			if( entry[1] == "" ) then
-				--table.dump(entry)
-				-- Do nothing
-
-			else
-				--table.dump(entry)
-				if( entry[1] == "B" ) then
-					centerRow = row
-					centerCol = col					
-				end
-				record = { type = builderFiles[entry[1]], subtype = tonumber(entry[2]), x = col, y = row  }
-				
-			end
-
-			if( record ) then
+			if( entry.otype == "start" ) then
+				centerRow = entry.row
+				centerCol = entry.col					
+				local buildType = entry.otype
+				local record = { type = entry.otype, subtype = tonumber(entry.subtype), x = entry.col, y = entry.row  }
+				level[#level+1] = record
+			elseif( entry.otype and entry.otype ~= "none" ) then
+				centerRow = entry.row
+				centerCol = entry.col					
+				local buildType = entry.otype
+				local record = { type = entry.otype, subtype = tonumber(entry.subtype), x = entry.col, y = entry.row  }
 				level[#level+1] = record
 			end
 
-			col = col + 1
-			if( col  > common.levelGrid ) then
-				col = 1
-				row = row +1
+			for i = 1, 4 do
+				if( entry.coins[i] ) then
+					local record = { type = "coins", subtype = tonumber(i), x = entry.col, y = entry.row  }
+					level[#level+1] = record
+				end
+				if( entry.decoys[i] ) then
+					local record = { type = "decoys", subtype = tonumber(i), x = entry.col, y = entry.row  }
+					level[#level+1] = record
+				end
+				if( entry.monster[i] ) then
+					local record = { type = "monster", subtype = tonumber(i), x = entry.col, y = entry.row  }
+					level[#level+1] = record
+				end
 			end
+
 		end
+
+		table.print_r( level )
 
 		return centerRow, centerCol
 	end
 
-
+	
 	local function finalizeLevel( centerRow, centerCol )
 
 		-- Pass 2 - Now that we have the records and know the starting center, we
@@ -130,24 +108,24 @@ function public.get( levelNum )
 			end
 		end
 	end
-
+	
 	--
 	-- Place the Platforms
 	--	
-	local centerRow, centerCol = convertToLevelRecords( require("data.level" .. levelNum ).platforms )
+	local centerRow, centerCol = convertToLevelRecords()
 
-	if( common.loadDangers ) then
-		convertToLevelRecords( require("data.level" .. levelNum ).dangers )
-	end
+	--if( common.loadDangers ) then
+		--convertToLevelRecords( require("data.level" .. levelNum ).dangers )
+	--end
 
-	if( common.loadOther ) then
-		convertToLevelRecords( require("data.level" .. levelNum ).other )
-	end
+	--if( common.loadOther ) then
+		--convertToLevelRecords( require("data.level" .. levelNum ).other )
+	--end
 
 	finalizeLevel( centerRow, centerCol )
 
 	--table.print_r(level)
-
+	
 
 	return level 
 end
@@ -159,24 +137,18 @@ function public.countCoins( levelNum )
 
 	local coinCount = 0
 
-	local tableNames = { "platforms", "dangers", "other" }
+	local levelData = table.load( "data/level" .. levelNum .. ".txt", system.ResourceDirectory )	
 
-	for i = 1, #tableNames do
-		local input = require("data.level" .. levelNum )[tableNames[i]]
+		for i = 1, #levelData do
+			local entry = levelData[i]
 
-		for j = 1, #input do
-			local entry = input[j]
-
-			-- Convert symbols to table then massage
-			entry = string.split( entry, "_" )			
-
-			--print( entry[1])
-
-			if( entry[1] == "C" ) then
-				coinCount = coinCount + 1
+			for i = 1, 4 do
+				if( entry.coins[i] ) then
+					coinCount = coinCount + 1
+				end
 			end
+
 		end
-	end
 
 	return coinCount 
 end
@@ -188,26 +160,21 @@ function public.countDecoys( levelNum )
 
 	local decoyCount = 0
 
-	local tableNames = { "platforms", "dangers", "other" }
+	local levelData = table.load( "data/level" .. levelNum .. ".txt", system.ResourceDirectory )	
 
-	for i = 1, #tableNames do
-		local input = require("data.level" .. levelNum )[tableNames[i]]
+		for i = 1, #levelData do
+			local entry = levelData[i]
 
-		for j = 1, #input do
-			local entry = input[j]
-
-			-- Convert symbols to table then massage
-			entry = string.split( entry, "_" )			
-
-			--print( entry[1])
-
-			if( entry[1] == "D" ) then
-				decoyCount = decoyCount + 1
+			for i = 1, 4 do
+				if( entry.decoys[i] ) then
+					decoyCount = decoyCount + 1
+				end
 			end
+
 		end
-	end
 
 	return decoyCount 
+
 end
 
 
