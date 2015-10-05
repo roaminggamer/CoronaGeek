@@ -37,5 +37,5 @@ physics.setGravity( 0, 0 )
 ----------------------------------------------------------------------
 local editor 	= require "scripts.editor"
 
-editor.create( 1 )
+editor.create( )
 

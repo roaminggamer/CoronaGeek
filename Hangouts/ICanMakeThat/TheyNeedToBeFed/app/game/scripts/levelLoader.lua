@@ -51,8 +51,6 @@ function public.get( levelNum )
 				local record = { type = entry.otype, subtype = tonumber(entry.subtype), x = entry.col, y = entry.row  }
 				level[#level+1] = record
 			elseif( entry.otype and entry.otype ~= "none" ) then
-				centerRow = entry.row
-				centerCol = entry.col					
 				local buildType = entry.otype
 				local record = { type = entry.otype, subtype = tonumber(entry.subtype), x = entry.col, y = entry.row  }
 				level[#level+1] = record

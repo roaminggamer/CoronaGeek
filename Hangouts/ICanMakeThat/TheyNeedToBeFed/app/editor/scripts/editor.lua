@@ -4,6 +4,7 @@
 -- 
 -- =============================================================
 local public = {}
+local private = {}
 
 ----------------------------------------------------------------------
 --								REQUIRES							--
@@ -16,20 +17,15 @@ local common 		= require "scripts.common"
 ----------------------------------------------------------------------
 -- Variables
 local savesEnabled  = false
-local currentLevelNum = 1
 local layers
 local gridSize = 60
 local pieceSize = 45
 local gridPieces = {}
 local lastDrop
 local dtg
-
+local drawimg = {}
 
 -- Forward Declarations
-local refreshDetailTray
-local refreshGrid
-local pieceDragger
-local editGridTouch
 local firstGrid
 
 -- Localizations
@@ -40,12 +36,19 @@ local pairs             = pairs
 ----------------------------------------------------------------------
 --								DEFINITIONS							--
 ----------------------------------------------------------------------
+
+-- 
+-- destroy() - Destroys the current level
+--
+function public.destroy( )	
+	display.remove( layers )
+	layers = nil
+end
+
 -- 
 -- create() - Creates a new level.
 --
-function public.create( levelNum  )	
-	currentLevelNum = levelNum or 1
-
+function public.create(  )	
 	public.destroy()
 
 	layers 				= display.newGroup()
@@ -59,18 +62,20 @@ function public.create( levelNum  )
 	local back = display.newRect( layers.underlay, centerX, centerY, fullw, fullh )
 	back:setFillColor( 0.2, 0.6, 1 )
 
-	public.drawEditGrid()
-	public.drawPieceTray()
-	public.drawDetailsTray()
+	private.drawEditGrid()
+	private.drawPieceTray()
+	private.drawDetailsTray()
 
-	public.restore()
+	private.restore()
 
 	savesEnabled = true
 
-	refreshDetailTray( firstGrid )
+	private.refreshDetailTray( firstGrid )
 end
 
-function public.drawEditGrid()
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+function private.drawEditGrid()
 	local editGrid = display.newGroup()
 	layers.content:insert(editGrid)
 	
@@ -97,16 +102,19 @@ function public.drawEditGrid()
 			grid.monster = { false, false, false, false }
 			grid.subtype = 1
 
-			grid.touch = editGridTouch
+			grid.touch = private.editGridTouch
 			grid:addEventListener( "touch" )
 
-			grid.refresh = refreshGrid
+			grid.refresh = private.refreshGrid
 
 			gridPieces[grid] = grid
 
 			if( not firstGrid ) then 
 				firstGrid = grid 
 				grid:setStrokeColor(0,1,0)
+				grid.xScale = 0.95
+				grid.yScale = 0.95
+				grid.strokeWidth = 2
 			end
 
 		end
@@ -118,7 +126,9 @@ function public.drawEditGrid()
 	editGrid.y = common.levelGrid/2 * gridSize + gridSize/2 + 15
 end
 
-function public.drawPieceTray()
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+function private.drawPieceTray()
 	local tray = display.newRoundedRect( layers.overlay, 5, h - 5, w - 10, 130, 12  )
 	tray.anchorX = 0
 	tray.anchorY = 1
@@ -136,7 +146,7 @@ function public.drawPieceTray()
 	-- Round Platform
 	local button = display.newRect( layers.overlay, col(1), row1, pieceSize, pieceSize )
 	button.otype = "none"
-	button.touch = pieceDragger
+	button.touch = private.pieceDragger
 	button:addEventListener( "touch" )
 	button:setFillColor(1,0,1)
 
@@ -145,7 +155,8 @@ function public.drawPieceTray()
 	button.x = col(2)	
 	button.y = row1
 	button.otype = "start"
-	button.touch = pieceDragger
+	drawimg["start"] = "start"
+	button.touch = private.pieceDragger
 	button:addEventListener( "touch" )
 
 	-- Round Platform
@@ -153,7 +164,8 @@ function public.drawPieceTray()
 	button.x = col(3)	
 	button.y = row1
 	button.otype = "round"
-	button.touch = pieceDragger
+	drawimg["round"] = "round"
+	button.touch = private.pieceDragger
 	button:addEventListener( "touch" )
 
 	-- Square Platform
@@ -161,15 +173,36 @@ function public.drawPieceTray()
 	button.x = col(4)
 	button.y = row1
 	button.otype = "square"
-	button.touch = pieceDragger
+	drawimg["square"] = "square"
+	button.touch = private.pieceDragger
 	button:addEventListener( "touch" )
+
+	-- Timed Dispearing Round Platform
+	local button = display.newImageRect( layers.overlay, "images/editor/timedround.png", pieceSize, pieceSize )
+	button.x = col(5)
+	button.y = row1
+	button.otype = "timedround"
+	drawimg["timedround"] = "timedround"
+	button.touch = private.pieceDragger
+	button:addEventListener( "touch" )
+
+	-- Charles' invisible platform
+	local button = display.newImageRect( layers.overlay, "images/editor/charles.png", pieceSize, pieceSize )
+	button.x = col(6)
+	button.y = row1
+	button.otype = "charles"
+	drawimg["charles"] = "charles"
+	button.touch = private.pieceDragger
+	button:addEventListener( "touch" )
+
 
 	-- Laser Turret
 	local button = display.newImageRect( layers.overlay, "images/editor/laserturret.png", pieceSize, pieceSize )
 	button.x = col(1)	
 	button.y = row2
 	button.otype = "laserturret"
-	button.touch = pieceDragger
+	drawimg["laserturret"] = "laserturret"
+	button.touch = private.pieceDragger
 	button:addEventListener( "touch" )
 
 	-- Rotating Laser Turret
@@ -177,7 +210,8 @@ function public.drawPieceTray()
 	button.x = col(2)	
 	button.y = row2
 	button.otype = "rotatinglaserturret"
-	button.touch = pieceDragger
+	drawimg["rotatinglaserturret"] = "rotatinglaserturret"
+	button.touch = private.pieceDragger
 	button:addEventListener( "touch" )
 
 	-- Rocket Turret
@@ -185,12 +219,34 @@ function public.drawPieceTray()
 	button.x = col(3)	
 	button.y = row2
 	button.otype = "rocketturret"
-	button.touch = pieceDragger
+	drawimg["rocketturret"] = "rocketturret"
+	button.touch = private.pieceDragger
 	button:addEventListener( "touch" )
+
+	-- Horizontal Path
+	local button = display.newImageRect( layers.overlay, "images/editor/hpath.png", pieceSize, pieceSize )
+	button.x = col(4)	
+	button.y = row2
+	button.otype = "hpath"
+	drawimg["hpath"] = "round"
+	button.touch = private.pieceDragger
+	button:addEventListener( "touch" )
+
+	-- Vertical Path
+	local button = display.newImageRect( layers.overlay, "images/editor/vpath.png", pieceSize, pieceSize )
+	button.x = col(5)	
+	button.y = row2
+	button.otype = "vpath"
+	drawimg["vpath"] = "round"
+	button.touch = private.pieceDragger
+	button:addEventListener( "touch" )
+
 
 end
 
-function public.drawDetailsTray( )
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+function private.drawDetailsTray( )
 	local tray = display.newRoundedRect( layers.overlay, w - 5, 15, 450, 475, 12  )
 	tray.anchorX = 1
 	tray.anchorY = 0
@@ -205,16 +261,9 @@ function public.drawDetailsTray( )
 	function dtg.cy( val ) return tray.y + val end 
 end
 
--- 
--- destroy() - Destroys the current level
---
-function public.destroy( )	
-	display.remove( layers )
-	layers = nil
-end
-
-
-pieceDragger = function( self, event )
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+private.pieceDragger = function( self, event )
 	if( event.phase == "began" ) then
 		self.x0 = self.x
 		self.y0 = self.y
@@ -237,7 +286,9 @@ pieceDragger = function( self, event )
 	return false
 end
 
-editGridTouch = function( self, event )
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+private.editGridTouch = function( self, event )
 	if( event.phase == "ended" ) then		
 		if( lastDrop ) then 
 			print("Drop @ grid ", self.col, self.row, lastDrop )
@@ -249,18 +300,25 @@ editGridTouch = function( self, event )
 			print("Select grid ", self.col, self.row )
 		end
 
-		refreshDetailTray( self )
+		private.refreshDetailTray( self )
 
 		for k, v in pairs( gridPieces ) do
 			v:setStrokeColor(1,0,0,0.5)
+			v.xScale = 1
+			v.yScale = 1
+			v.strokeWidth = 1
 		end
 		self:setStrokeColor(0,1,0)
+		self.xScale = 0.95
+		self.yScale = 0.95
+		self.strokeWidth = 2
 	end
 	return false
 end
 
-
-refreshDetailTray = function( grid )
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+private.refreshDetailTray = function( grid )
 	while( dtg.numChildren > 0 ) do
 		display.remove(dtg[1])
 	end
@@ -271,7 +329,7 @@ refreshDetailTray = function( grid )
 
 	-- Draw grid label
 
-	local posLabel = display.newText( dtg, "< " .. grid.col .. ", " .. grid.row .. " >", cx( 20 ), cy( 20 ), native.systemFontBold, 22 )
+	local posLabel = display.newText( dtg, "col: " .. grid.col .. "  row: " .. grid.row, cx( 20 ), cy( 20 ), native.systemFontBold, 22 )
 	posLabel.anchorX = 0
 	posLabel.anchorY = 0
 
@@ -290,7 +348,7 @@ refreshDetailTray = function( grid )
 		tmp.x = cx( i * pieceSize ) - pieceSize/2
 		tmp.y = cy( 80 )
 		tmp:setStrokeColor(1,0,0)
-		tmp.strokeWidth = 1
+		tmp.strokeWidth = 2
 		tmp.pos = i
 		if( grid.coins[i] == true ) then
 			tmp:setStrokeColor(0,1,0)
@@ -303,7 +361,7 @@ refreshDetailTray = function( grid )
 			 	else
 			 		self:setStrokeColor(1,0,0)
 			 	end
-			 	refreshGrid(grid)
+			 	private.refreshGrid(grid)
 			end
 			return false
 		end
@@ -317,7 +375,7 @@ refreshDetailTray = function( grid )
 		tmp.x = 200 + cx( i * pieceSize ) - pieceSize/2
 		tmp.y = cy( 80 )
 		tmp:setStrokeColor(1,0,0)
-		tmp.strokeWidth = 1
+		tmp.strokeWidth = 2
 		tmp.pos = i
 		if( grid.decoys[i] == true ) then
 			tmp:setStrokeColor(0,1,0)
@@ -330,7 +388,7 @@ refreshDetailTray = function( grid )
 			 	else
 			 		self:setStrokeColor(1,0,0)
 			 	end
-			 	refreshGrid(grid)
+			 	private.refreshGrid(grid)
 			end
 			return false
 		end
@@ -344,7 +402,7 @@ refreshDetailTray = function( grid )
 		tmp.x = cx( i * pieceSize ) - 5
 		tmp.y = cy( 130 )
 		tmp:setStrokeColor(1,0,0)
-		tmp.strokeWidth = 1
+		tmp.strokeWidth = 2
 		tmp.pos = i
 		if( grid.spikes[i] == true ) then
 			tmp:setStrokeColor(0,1,0)
@@ -357,7 +415,7 @@ refreshDetailTray = function( grid )
 			 	else
 			 		self:setStrokeColor(1,0,0)
 			 	end
-			 	refreshGrid(grid)			 	
+			 	private.refreshGrid(grid)			 	
 			end
 			return false
 		end
@@ -367,12 +425,12 @@ refreshDetailTray = function( grid )
 	-- Monster Markers
 	for i = 1, 4 do
 		local tmp = display.newImageRect( dtg, "images/editor/monster.png", pieceSize - 10, pieceSize - 10 )		
-		tmp.anchorX = 0
-		tmp.x = 200 + cx( i * pieceSize ) - pieceSize/2
+		tmp.x = 215 + cx( i * pieceSize ) - pieceSize/2
 		tmp.y = cy( 130 )
 		tmp:setStrokeColor(1,0,0)
-		tmp.strokeWidth = 1
+		tmp.strokeWidth = 2
 		tmp.pos = i
+		tmp.rotation = (i-1) * 90
 		if( grid.monster[i] == true ) then
 			tmp:setStrokeColor(0,1,0)
 		end
@@ -384,7 +442,7 @@ refreshDetailTray = function( grid )
 			 	else
 			 		self:setStrokeColor(1,0,0)
 			 	end
-			 	refreshGrid(grid)
+			 	private.refreshGrid(grid)
 			end
 			return false
 		end
@@ -407,7 +465,7 @@ refreshDetailTray = function( grid )
 			buttons[tmp] = tmp
 			tmp.rotation = (i-1) * 90
 			tmp:setStrokeColor(1,0,0)
-			tmp.strokeWidth = 1
+			tmp.strokeWidth = 2
 			tmp.subtype = i
 			if( grid.subtype == i ) then
 				tmp:setStrokeColor(0,1,0)
@@ -419,8 +477,8 @@ refreshDetailTray = function( grid )
 					end
 				 	grid.subtype = self.subtype
 				 	self:setStrokeColor(0,1,0)
-				 	refreshGrid(grid)
-				 	refreshDetailTray(grid)
+				 	private.refreshGrid(grid)
+				 	private.refreshDetailTray(grid)
 				end
 				return false
 			end
@@ -442,7 +500,7 @@ refreshDetailTray = function( grid )
 			buttons[tmp] = tmp
 			tmp.rotation = (i-1) * 90
 			tmp:setStrokeColor(1,0,0)
-			tmp.strokeWidth = 1
+			tmp.strokeWidth = 2
 			tmp.subtype = i
 			if( grid.subtype == i ) then
 				tmp:setStrokeColor(0,1,0)
@@ -454,14 +512,50 @@ refreshDetailTray = function( grid )
 					end
 				 	grid.subtype = self.subtype
 				 	self:setStrokeColor(0,1,0)
-				 	refreshGrid(grid)
-				 	refreshDetailTray(grid)
+				 	private.refreshGrid(grid)
+				 	private.refreshDetailTray(grid)
+				end
+				return false
+			end
+			tmp:addEventListener("touch")
+		end
+
+	elseif( grid.otype == "hpath" or  grid.otype == "vpath" ) then
+
+		local subTypeLabel = display.newText( dtg, "Subtype:", 0, cy(240), native.systemFontBold, 22 )
+		--subTypeLabel.anchorX = 0
+		subTypeLabel.x = cx(10 + subTypeLabel.contentWidth/2)
+		local maxSubTypes
+		local buttons = {}
+		for i = 1, 6 do
+			local tmp = display.newRect( dtg, subTypeLabel.x + subTypeLabel.contentWidth/2 + (i * (pieceSize-10)) - 5, subTypeLabel.y , pieceSize - 20, pieceSize - 20 )		
+			local tmp2 = display.newText( dtg, i, tmp.x, tmp.y, native.systemFontBold, 10 )
+			tmp2:setFillColor(0,0,0)
+
+			buttons[tmp] = tmp
+			tmp.rotation = (i-1) * 90
+			tmp:setStrokeColor(1,0,0)
+			tmp.strokeWidth = 2
+			tmp.subtype = i
+			if( grid.subtype == i ) then
+				tmp:setStrokeColor(0,1,0)
+			end
+			tmp.touch = function( self, event )
+				if( event.phase == "ended" ) then
+					for k,v in pairs( buttons ) do
+						v:setStrokeColor(1,0,0)
+					end
+				 	grid.subtype = self.subtype
+				 	self:setStrokeColor(0,1,0)
+				 	private.refreshGrid(grid)
+				 	private.refreshDetailTray(grid)
 				end
 				return false
 			end
 			tmp:addEventListener("touch")
 		end
 	end
+
 	if( grid.otype == "laserturret" ) then
 		local rotations = { 0, 45, 90, 135, 180, 225, 270, 315 }
 		local subTypeLabelDescription = display.newText( dtg, "Fixed Angle " .. rotations[grid.subtype] .. " degrees", cx(10), cy(280), native.systemFontBold, 22 )
@@ -478,11 +572,36 @@ refreshDetailTray = function( grid )
 		local subTypeLabelDescription = display.newText( dtg, "Fixed Angle " .. rotations[grid.subtype] .. " degrees", cx(10), cy(280), native.systemFontBold, 22 )
 		subTypeLabelDescription.anchorX = 0		
 
+
+	elseif( grid.otype == "hpath" ) then
+		local pathlen = { "Short", "Short", "Short", "Short", "Long", "Long" }
+		local offset = { "None", "Left", "Left", "Right", "None", "Right" }
+		local starts = { "Left", "Left", "Left", "Right", "Right", "Right" }
+		print(grid.subtype)
+		local subTypeLabelDescription = display.newText( dtg, pathlen[grid.subtype] .. " path; " ..
+			                                                  "Offset " .. offset[grid.subtype] .. "; " ..
+			                                                  "Starts " .. starts[grid.subtype], 
+			                                                  cx(10), cy(280), native.systemFontBold, 18 )
+		subTypeLabelDescription.anchorX = 0		
+
+	elseif( grid.otype == "vpath" ) then
+		local pathlen = { "Short", "Short", "Long", "Short", "Short", "Long" }
+		local offset = { "Down", "Up", "None", "Down", "Up", "None" }
+		local starts = { "Up", "Up", "Up", "Down", "Down", "Down" }
+		print(grid.subtype)
+		local subTypeLabelDescription = display.newText( dtg, pathlen[grid.subtype] .. " path; " ..
+			                                                  "Offset " .. offset[grid.subtype] .. "; " ..
+			                                                  "Starts " .. starts[grid.subtype],
+			                                                   cx(10), cy(280), native.systemFontBold, 18 )
+		subTypeLabelDescription.anchorX = 0		
+
 	end
 end
 
-refreshGrid = function( self )
-	--print("refreshing Grid")
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+private.refreshGrid = function( self )
+	--print("refreshing Grid"
 	-- Purge all old art 
 	for k, v in pairs( self.parts ) do
 		display.remove(v)
@@ -490,7 +609,7 @@ refreshGrid = function( self )
 	self.parts = {}
 
 	if( self.otype and self.otype ~= "none" ) then
-		local tmp = display.newImageRect( self.parent, "images/editor/" .. self.otype .. ".png", pieceSize/2, pieceSize/2 )
+		local tmp = display.newImageRect( self.parent, "images/editor/" .. drawimg[self.otype] .. ".png", pieceSize/2, pieceSize/2 )
 		tmp.x = self.x
 		tmp.y = self.y	
 		self.parts[tmp]	= tmp
@@ -499,6 +618,7 @@ refreshGrid = function( self )
 		if( self.otype == "laserturret" ) then
 			local rotations = { 0, 45, 90, 135, 180, 225, 270, 315 }
 			tmp.rotation = rotations[self.subtype]		
+		
 		elseif( self.otype == "rotatinglaserturret" ) then
 			if( self.subtype == 1 ) then
 				function tmp.onComplete( self )
@@ -543,6 +663,200 @@ refreshGrid = function( self )
 		elseif( self.otype == "rocketturret" ) then
 			local rotations = { 45, 135, 225, 315 }
 			tmp.rotation = rotations[self.subtype]		
+
+		elseif( self.otype == "hpath" ) then
+			if( self.subtype == 1 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, gridSize, pieceSize/8 )
+				track.anchorX = 0
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x, tmp.y, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x + gridSize, tmp.y, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+
+			elseif( self.subtype == 2 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, gridSize, pieceSize/8 )
+				track.anchorX = 1
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x-gridSize, tmp.y, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x, tmp.y, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+
+			elseif( self.subtype == 3 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, gridSize * 2, pieceSize/8 )
+				--track.anchorX = 0
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x - gridSize, tmp.y, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x + gridSize, tmp.y, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+
+			elseif( self.subtype == 4 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, gridSize, pieceSize/8 )
+				track.anchorX = 0
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x+ gridSize, tmp.y, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x , tmp.y, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+			
+			elseif( self.subtype == 5 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, gridSize, pieceSize/8 )
+				track.anchorX = 1
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x, tmp.y, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x-gridSize, tmp.y, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+
+			elseif( self.subtype == 6 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, gridSize * 2, pieceSize/8 )
+				--track.anchorX = 0
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x + gridSize, tmp.y, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x - gridSize, tmp.y, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+			end
+
+		elseif( self.otype == "vpath" ) then
+			if( self.subtype == 1 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, pieceSize/8, gridSize )
+				track.anchorY = 0
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x, tmp.y, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x, tmp.y + gridSize, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+
+			elseif( self.subtype == 2 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, pieceSize/8, gridSize )
+				track.anchorY = 1
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x, tmp.y-gridSize, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x, tmp.y, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+
+			elseif( self.subtype == 3 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, pieceSize/8, gridSize * 2 )
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x, tmp.y- gridSize, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x, tmp.y + gridSize, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+
+			elseif( self.subtype == 4 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, pieceSize/8, gridSize )
+				track.anchorY = 0
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x, tmp.y + gridSize, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x , tmp.y, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+			
+			elseif( self.subtype == 5 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, pieceSize/8, gridSize )
+				track.anchorY = 1
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x, tmp.y, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x, tmp.y - gridSize, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+
+			elseif( self.subtype == 6 ) then
+				local track = display.newRect( self.parent, tmp.x, tmp.y, pieceSize/8, gridSize * 2 )
+				track:setFillColor(0)
+				track:setStrokeColor(1)
+				track.strokeWidth = 2
+				self.parts[track]	= track
+				tmp:toFront()
+				local startPoint = display.newCircle( self.parent, tmp.x, tmp.y + gridSize, pieceSize/10)
+				startPoint:setFillColor(0,1,0)
+				self.parts[startPoint]	= startPoint
+
+				local endPoint = display.newCircle( self.parent, tmp.x, tmp.y - gridSize, pieceSize/10)
+				endPoint:setFillColor(1,0,0)
+				self.parts[endPoint]	= endPoint
+			end
 		end
 	end
 
@@ -646,15 +960,16 @@ refreshGrid = function( self )
 	end
 
 	if( savesEnabled ) then
-		public.save()
+		private.save()
 	end
 end
 
-function public.restore()
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+function private.restore()
 	print("Restoring @ ", getTimer() )
 
-	-- currentLevelNum
-	local level = table.load( "level" .. currentLevelNum .. ".txt" ) or  {}	
+	local level = table.load( "level.txt" ) or  {}	
 	for k,v in pairs( gridPieces ) do
 		for i = 1, #level do			
 			if( level[i].row == v.row and level[i].col == v.col ) then
@@ -665,13 +980,15 @@ function public.restore()
 				v.monster = level[i].monster or { false, false, false, false }
 				v.decoys = level[i].decoys or { false, false, false, false }
 				v.spikes = level[i].spikes or { false, false, false, false }
-				refreshGrid( v )
+				private.refreshGrid( v )
 		 	end
 		end
 	end		
 end
 
-function public.save()
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+function private.save()
 	local level = {}
 	print("Saving @ ", getTimer() )
 	for k,v in pairs( gridPieces ) do		
@@ -696,7 +1013,7 @@ function public.save()
 		end
 	end
 
-	table.save( level, "level" .. currentLevelNum .. ".txt" )
+	table.save( level, "level.txt" )
 end
 
 
