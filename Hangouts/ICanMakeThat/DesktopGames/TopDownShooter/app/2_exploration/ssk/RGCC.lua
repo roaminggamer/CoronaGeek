@@ -116,9 +116,18 @@ function ccmgr:newCalculator()
 	--
 	--     Returns true if named type was successfully added to known colliders list, false otherwise.
 	-- ==
-	function collisionsCalculator:collidesWith( colliderNameA, ... )
+	function collisionsCalculator:collidesWith_legacy( colliderNameA, ... )
 		for key, value in ipairs(arg) do
         	self:configureCollision( colliderNameA, value )
+		end
+	end
+
+	function collisionsCalculator:collidesWith( colliderName, otherColliders )
+		colliderName = string.lower(colliderName)
+		for key, value in ipairs(otherColliders) do
+
+			value = string.lower(value)
+        	self:configureCollision( colliderName, value )
 		end
 	end
 

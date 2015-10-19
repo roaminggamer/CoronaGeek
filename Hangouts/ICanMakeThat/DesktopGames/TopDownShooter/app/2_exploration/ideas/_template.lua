@@ -144,9 +144,9 @@ function public.create( group )
 	--
 	-- Attach a camera to the player	
 	--
-	--ssk.camera.tracking( player, layers.world, { debugEn = true } )
+	ssk.camera.tracking( player, layers.world, { debugEn = true } )
 	--ssk.camera.trackingLooseSquare( player, layers.world, { debugEn = true } )
-	ssk.camera.trackingLooseCircle( player, layers.world, { debugEn = true } )
+	--ssk.camera.trackingLooseCircle( player, layers.world, { debugEn = true } )
 
 	--
 	-- Mark idea as running
@@ -195,7 +195,6 @@ function public.createPlayer()
 	--
 	function player.enterFrame( self, event )		
 		if( not public.isRunning ) then return end
-		if( autoIgnore( "enterFrame", self ) ) then return end 
 		--local logger = require "scripts.logger"
 		--logger._print(public.isRunning, self.moveX, self.moveY)
 		--print(public.isRunning, self.moveX, self.moveY)
@@ -226,7 +225,7 @@ function public.createBack()
 	local worldSize 	= common.worldSize
 	local startX 		= centerX - (worldSize * gridSize)/2 - gridSize/2
 	local startY 		= centerY - (worldSize * gridSize)/2 - gridSize/2
-	local gridColors 	= common.gridColors2
+	local gridColors 	= common.gridColors
 	local curX			= startX
 	local curY			= startY
 	local gridNum 		= 0

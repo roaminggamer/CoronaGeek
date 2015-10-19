@@ -27,6 +27,8 @@ _print("============================================\n")
 
 local logger = {}
 
+logger._print = _print
+
 logger.data = {}
 
 _G.print = function( ... )
@@ -40,6 +42,12 @@ _G.print = function( ... )
 		if resultType == "table" then
 			--_print(i, "In Table convert")
 			dataToShow = table.toString(dataToShow,true)
+		--elseif( resultType == "boolean" ) then
+			--dataToShow = tostring( dataToShow )
+		--elseif( resultType == "number" ) then
+			--dataToShow = tostring( dataToShow )
+		elseif( resultType ~= "string" ) then
+			dataToShow = tostring( dataToShow )
 		else
 			local jsonDecoded = json.decode(dataToShow)
 			if jsonDecoded ~= nil then
