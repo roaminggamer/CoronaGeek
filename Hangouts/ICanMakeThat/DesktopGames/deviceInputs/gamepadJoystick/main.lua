@@ -24,60 +24,156 @@ local getTimer = system.getTimer
 local G = { 0, 1, 0 }
 local W = { 1, 1, 1 }
 
---
--- Visual Feedback
---
-local tmp 	= display.newText( "Phase Name:", 30, 50 + 0 * 50, native.systemFont, 20 )
-tmp.anchorX = 0
-local phaseNameLabel = display.newText( "", tmp.x + tmp.contentWidth + 10, tmp.y, native.systemFont, 20 )
-phaseNameLabel.anchorX = 0
 
-local tmp 	= display.newText( "Key Name:", 30, 50 + 1 * 50, native.systemFont, 20 )
-tmp.anchorX = 0
-local keyNameLabel 	= display.newText( "", tmp.x + tmp.contentWidth + 10, tmp.y, native.systemFont, 20 )
-keyNameLabel.anchorX = 0
+-- ==============================================================
+-- 		Buttons (digital inputs)
+-- ==============================================================
+local function createKeyListeners( list,x  )
+	list = list or {}
+	x 			= x or left + 20	
+	local y 	= top + 20
+	local dy 	= 40
 
-local tmp 	= display.newText( "Key Code:", 30, 50 + 2 * 50, native.systemFont, 20 )
-tmp.anchorX = 0
-local keyCodeLabel = display.newText( "", tmp.x + tmp.contentWidth + 10, tmp.y, native.systemFont, 20 )
-keyCodeLabel.anchorX = 0
+	for i = 1, #list do
+		local keyName =  list[i].keyName
+		if( keyName == "*" ) then
+			local bubble 	= display.newRect( x, y + (i-1) * dy, 30, 30 )
+			local label 	= display.newText( keyName, x + 30, bubble.y, native.systemFont, 14 )
+			label.anchorX 	= 0
+			bubble.label 	= label
 
+			function bubble.key( self, event ) 
+				local key 			= event.keyName
+				local device 		= event.device
+				local keyCode 		= event.nativeKeyCode
+				local phase 		= event.phase
 
+				self.label.text = key .. " ( code: " .. tostring( keyCode) .. "; phase: " .. tostring( phase ) .. " ) "				
+				if( phase == "down" ) then		
+					self:setFillColor(unpack(_G_))
+				elseif( phase == "up" ) then		
+					self:setFillColor(unpack(_R_))
+				end
+				return false
+			end
+			timer.performWithDelay( 100, function()  Runtime:addEventListener( "key", bubble ) end )			
 
+		else 
+			local bubble 	= display.newCircle( x, y + (i-1) * dy, 15 )
+			local label 	= display.newText( keyName, x + 30, bubble.y, native.systemFont, 14 )
+			label.anchorX 	= 0
+			bubble.label 	= label
+			bubble.keyName 	= keyName
 
---
--- The Axis Listener -- https://docs.coronalabs.com/daily/api/event/axis/index.html
---
-local function onAxis( event ) 
+			function bubble.key( self, event ) 
+				local watchKey 		= self.keyName
+				local key 			= event.keyName
+				local device 		= event.device
+				local keyCode 		= event.nativeKeyCode
+				local phase 		= event.phase
 
-	print("\n ---------------------------- onKey() @ ", getTimer() )
-	table.dump(event)
+				if( watchKey ~= key ) then return false end
+				self.label.text = key .. " ( code: " .. tostring( keyCode) .. "; phase: " .. tostring( phase ) .. " ) "				
+				if( phase == "down" ) then		
+					self:setFillColor(unpack(_G_))
+				elseif( phase == "up" ) then		
+					self:setFillColor(unpack(_R_))
+				end
+				return false
+			end
+			timer.performWithDelay( 100, function()  Runtime:addEventListener( "key", bubble ) end )			
+		end
+	end
 end
 
-timer.performWithDelay( 100, function()  Runtime:addEventListener( "axis", onAxis ) end )
-
-
---
--- The Key Listener - https://docs.coronalabs.com/daily/api/event/key/index.html
---
-local function onKey( event ) 
-
-	local key 			= event.keyName
-	local device 		= event.device
-	local keyCode 		= event.nativeKeyCode
-	local phase 		= event.phase
-
-	-- Update Visual Feedback:
-	phaseNameLabel.text = phase
+local buttonList = 
+{
+	{ keyName = "*" },
+	{ keyName = "left"	},
+	{ keyName = "right"	},
+	{ keyName = "up"	},
+	{ keyName = "down"	},
+	{ keyName = "buttonA"	},
+	{ keyName = "buttonB"	},
+	{ keyName = "buttonX"	},
+	{ keyName = "buttonY"	},
+	{ keyName = "leftShoulderButton1"	},
+	{ keyName = "leftShoulderButton2"	},
+	{ keyName = "rightShoulderButton1"	},
+	{ keyName = "rightShoulderButton2"	},
+	{ keyName = "buttonSelect"	},
+	{ keyName = "buttonStart"	},
+	{ keyName = "buttonMode"	},
+	{ keyName = "leftJoystickButton"	},
+	{ keyName = "rightJoystickButton"	},
 	
-	if( phase == "down" ) then		
-		keyNameLabel.text = key
-		keyCodeLabel.text = keyCode
+}
+
+createKeyListeners( buttonList )
+
+
+
+-- ==============================================================
+-- 		Joysticks and Triggers (analog inputs)
+-- ==============================================================
+
+
+-- This works universally on OS X and Windows
+
+--[[
+local gamePads = {}
+
+local function discoverGamePads()
+	-- Fetch all input devices currently connected to the system
+	local inputDevices = system.getInputDevices()
+
+	-- Traverse all input devices
+	for i = 1, #inputDevices do
+		local descriptor 	= inputDevices[i].descriptor
+		local displayName 	= inputDevices[i].displayName				
+		local isGamePad = string.find( string.lower( descriptor ), "gamepad"  )
+		--print( i, descriptor, displayName, string.lower( descriptor ), isGamePad )
+		if( isGamePad ) then
+			local nameParts = string.split( descriptor, " " )
+			print("Found GamePad ", descriptor, displayName )
+			local gamePad = { player = nameParts[2], 
+			                  device = inputDevices[i], 
+			                  connected = inputDevices[i].isConnected,
+			                  connectionState = inputDevices[i].connectionState,
+			                  id = inputDevices[i].permanentId,
+			                  canVibrate = inputDevices[i].canVibrate,
+			                  axes = inputDevices[i]:getAxes()  }
+			--table.print_r( inputDevices[i] )
+			gamePads[#gamePads+1] = gamePad
+		end
 	end
 
+end
+discoverGamePads()
 
-	print("\n ---------------------------- onKey() @ ", getTimer() )
-	table.dump(event)
+table.print_r(gamePads)
+
+--]]
+
+-- This works universally on OS X and Windows
+
+--[[
+-- Use this for discovering new inputs or re-connecting yanked devices
+local function onInputDeviceStatusChanged( event )
+	print( event.device.displayName .. ": " .. event.device.connectionState )
+	table.print_r( event )
+end
+Runtime:addEventListener( "inputDeviceStatus", onInputDeviceStatusChanged )
+--]]
+
+-- This only works on universally on OS X right now .. 2015.2742
+
+--[[
+local function onAxisEvent( event )
+    print( event.axis.descriptor .. ": Normalized Value = " .. tostring(event.normalizedValue) )
 end
 
-timer.performWithDelay( 100, function()  Runtime:addEventListener( "key", onKey ) end )
+-- Add the axis event listener
+Runtime:addEventListener( "axis", onAxisEvent )
+
+--]]

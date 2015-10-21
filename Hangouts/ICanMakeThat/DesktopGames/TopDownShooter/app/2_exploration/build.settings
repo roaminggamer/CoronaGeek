@@ -20,17 +20,12 @@ settings = {
 		suspendWhenMinimized 	= true,
 		enableMaximizeButton 	= true,
 
-		-- WARNING!! -- From here: https://docs.coronalabs.com/daily/guide/distribution/win32Build/index.html#featurebehavior-notes
-		-- 
-		-- Just like mobile device builds, Win32 desktop builds support an orientation table within the project's build.settings file. 
-		-- If defined, the width and height defined in the config.lua file (guide) will be relative to portrait orientation, just like		
-		-- iOS and Android. This means that for a landscape-oriented app, width is the height of the window and height is the width of
-		-- the window, making your project settings portable to both desktop and mobile devices.
+		-- WARNING!! -- As of build 2015.2741, the width/height values are now ignorant of landscape or portrait.
 		--
-		defaultViewWidth 		= 640,  -- This is the HEIGHT for desktop when using a 'landcape orientation'
-		defaultViewHeight 		= 960,  -- This is the WIDTH for desktop when using a 'landcape orientation'
-		minViewWidth 			= 320,  -- Similar note to above.
-		minViewHeight			= 480,  -- Similar note to above.
+		defaultViewWidth 		= 960,  
+		defaultViewHeight 		= 640,  
+		minViewWidth 			= 480,  
+		minViewHeight			= 320,  
 
 		titleText = {
 			default 		= "Top Down Shooter 1",
