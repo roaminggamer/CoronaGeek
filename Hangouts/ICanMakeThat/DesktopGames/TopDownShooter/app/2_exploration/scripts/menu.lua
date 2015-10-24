@@ -104,10 +104,10 @@ function public.create( group )
 	end
 
 	local oy = 60
-	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 0 * oy , 250, 50, "Idea 1", onTouch, { idea = "idea1" } )
+	easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 0 * oy , 250, 50, "Idea 1", onTouch, { idea = "idea1" } )
 	easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 1 * oy , 250, 50, "Idea 2", onTouch, { idea = "idea2" } )
-
-	--tmp:toggle()
+	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 2 * oy , 250, 50, "Idea 3", onTouch, { idea = "idea3" } )	
+	tmp:toggle()
 
 end
 
@@ -139,5 +139,6 @@ Runtime:addEventListener( "resize",
 		end
 	end  )
 Runtime:addEventListener( "onEscape", private.show )
+Runtime:addEventListener( "onDied", private.show )
 
 return public
