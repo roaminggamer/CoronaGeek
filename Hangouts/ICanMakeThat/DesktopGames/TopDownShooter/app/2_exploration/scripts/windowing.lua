@@ -27,7 +27,7 @@ local function onKey( event )
 	end
 
 	if( phase == "up" and key == "escape" ) then -- and isAltDown ) then
-		print("Escsape")
+		print("Escape")
 		post("onEscape")		
 	end
 

@@ -262,9 +262,9 @@ function table.dump(theTable, padding, marker ) -- Sorted
 		for i,n in ipairs(tmp) do 		
 
 			local key = tmp[i]
-			local keyType = type(key)
-			local valueType = type(theTable[key])
 			local value = tostring(theTable[key])
+			local keyType = type(key)
+			local valueType = type(value)
 			local keyString = tostring(key) .. " (" .. keyType .. ")"
 			local valueString = tostring(value) .. " (" .. valueType .. ")" 
 
@@ -473,7 +473,7 @@ function table.toString ( t, flat )
 	local tmp = output
 	output = ""
 	for i = 1, #tmp do
-		output = ouput .. tmp[i]
+		output = output .. tmp[i]
 	end
     return output
 end

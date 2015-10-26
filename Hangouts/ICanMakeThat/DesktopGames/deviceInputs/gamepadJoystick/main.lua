@@ -168,8 +168,9 @@ Runtime:addEventListener( "inputDeviceStatus", onInputDeviceStatusChanged )
 
 -- This only works on universally on OS X right now .. 2015.2742
 
---[[
+----[[
 local function onAxisEvent( event )
+	table.dump(event)
     print( event.axis.descriptor .. ": Normalized Value = " .. tostring(event.normalizedValue) )
 end
 

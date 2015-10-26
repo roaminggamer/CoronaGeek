@@ -20,7 +20,7 @@ local strGSub   = string.gsub
 local strSub    = string.sub
 local strFormat = string.format
 local mFloor    = math.floor
-local isValid; timer.performWithDelay(1, function() isValid  = display.isValid end )
+
 -- ==
 --    fnn( ... ) - Return first argument from list that is not nil.
 --    ... - Any number of any type of arguments.
@@ -80,7 +80,7 @@ local pairs = _G.pairs
 _G.listen = function( name, listener ) Runtime:addEventListener( name, listener ) end
 _G.ignore = function( name, listener ) Runtime:removeEventListener( name, listener ) end
 _G.autoIgnore = function( name, obj ) 
-    if( not isValid( obj ) ) then
+    if( not display.isValid( obj ) ) then
       ignore( name, obj )
       obj[name] = nil
       return true

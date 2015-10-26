@@ -26,7 +26,6 @@ local strFormat 	= string.format
 local mFloor		= math.floor
 local angle2Vector	= ssk.math2d.angle2Vector
 local scaleVec		= ssk.math2d.scale
-local isValid 		= display.isValid
 
 -- ==
 --		noErrorAlerts(	) - Turns off those annoying error popups! :)
@@ -156,12 +155,24 @@ function misc.popDisplayDefault( defaultName )
 end
 
 
+misc.shortenString = function( text, maxLen, appendMe )
+  if not text then return "" end
+  --print( text, maxLen, appendMe )
+  appendMe = appendMe or ""
+  local outText = text
+  if(outText:len() > maxLen) then
+    outText = outText:sub(1,maxLen) .. appendMe
+  end
+  return outText
+end
+
+
 misc.fitText = function( obj, origText, maxWidth )
 	origText = origText or ""
 	local textLen = string.len( origText )
 	while(obj.contentWidth > maxWidth and textLen > 1 ) do
 			textLen = textLen - 1
-			obj.text = shortenString( origText, textLen, "..." )
+			obj.text = misc.shortenString( origText, textLen, "..." )
 			--if( textLen < 12 ) then
 				-- return
 			--end

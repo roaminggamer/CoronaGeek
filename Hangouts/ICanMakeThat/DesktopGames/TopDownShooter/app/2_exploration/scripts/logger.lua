@@ -69,6 +69,10 @@ _G.print = function( ... )
 
 	logger.data[#logger.data + 1] = inString 
 
+	if( #logger.data > 200 ) then
+		table.remove(logger.data,1)
+	end
+
 	--[[
 	local inString = ""	
 	for i = 1, #arg do		

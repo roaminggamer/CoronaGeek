@@ -5,6 +5,7 @@ application = {
 		height = 960,
 		scale = "letterbox",
 		fps = 60
+		--fps = 30
 	},
 }
 
