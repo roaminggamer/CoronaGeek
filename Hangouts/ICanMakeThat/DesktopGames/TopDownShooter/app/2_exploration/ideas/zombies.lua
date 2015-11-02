@@ -15,9 +15,10 @@ local public = {}
 local physics 			= require "physics"
 local common 			= require "scripts.common"
 local bulletTrails 		= require "scripts.bulletTrails"
-local redZombieMaker 	= require "scripts.redzombie"
-local greenZombieMaker 	= require "scripts.greenzombie"
-local greenArcherMaker	= require "scripts.greenarcher"
+local spriteMaker 		= require 'scripts.spriteMaker'
+local redZombieMaker 	= require "scripts.redZombieMaker"
+local greenZombieMaker 	= require "scripts.greenZombieMaker"
+local greenArcherMaker	= require "scripts.greenArcherMaker"
 
 ----------------------------------------------------------------------
 --								DECLARATIONS						--

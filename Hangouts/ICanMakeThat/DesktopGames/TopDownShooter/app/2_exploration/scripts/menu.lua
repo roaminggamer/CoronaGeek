@@ -104,13 +104,14 @@ function public.create( group )
 	end
 
 	local oy = 60
-	easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 0 * oy , 250, 50, "1 - Initial Test + Cameras", onTouch, { idea = "start" } )
-	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 1 * oy , 250, 50, "2 - Basics no Reticle", onTouch, { idea = "basic_noreticle" } )	
-	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 2 * oy , 250, 50, "3 - Basics alt no Reticle", onTouch, { idea = "basic_altnoreticle" } )	
-	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 3 * oy , 250, 50, "4 - Basics w/ Reticle", onTouch, { idea = "basic_reticle" } )	
-	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 4 * oy , 250, 50, "5 - Zombies + Mistake", onTouch, { idea = "zombies" } )	
-	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 150, top + 200 + 5 * oy , 250, 50, "6 - Zombies + Partial Fix", onTouch, { idea = "zombies2" } )	
-	--tmp:toggle()
+	easyIFC:presetPush( layers.interfaces, "default", left + 225, top + 200 + 0 * oy , 350, 50, "1 - Initial Test + Cameras", onTouch, { idea = "start" } )
+	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 225, top + 200 + 1 * oy , 350, 50, "2 - Basics no Reticle", onTouch, { idea = "basic_noreticle" } )	
+	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 225, top + 200 + 2 * oy , 350, 50, "3 - Basics alt no Reticle", onTouch, { idea = "basic_altnoreticle" } )	
+	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 225, top + 200 + 3 * oy , 350, 50, "4 - Basics w/ Reticle", onTouch, { idea = "basic_reticle" } )	
+	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 225, top + 200 + 4 * oy , 350, 50, "5 - Zombies + Mistake", onTouch, { idea = "zombies" } )	
+	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 225, top + 200 + 5 * oy , 350, 50, "6 - Zombies + Partial Fix", onTouch, { idea = "zombies2" } )	
+	local tmp = easyIFC:presetPush( layers.interfaces, "default", left + 225, top + 200 + 5 * oy , 350, 50, "6 - First Game - Another Zombie Shooter (AZS)", onTouch, { idea = "theFirstGame", labelColor = _G_})	
+	tmp:toggle()
 
 end
 
