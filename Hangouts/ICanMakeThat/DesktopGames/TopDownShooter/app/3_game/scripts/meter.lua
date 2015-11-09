@@ -1,9 +1,16 @@
+-- =============================================================
+-- Copyright Roaming Gamer, LLC. 2009-2015 
+-- =============================================================
+-- This content produced for Corona Geek Hangouts audience.
+-- You may use any and all contents in this example to make a game or app.
+-- =============================================================
+
 -- Extracted from SSK sampler and modified for this example.
 -- https://github.com/roaminggamer/SSKCorona/sampler
 --
-local meter = {}
+local public = {}
 local getTimer = system.getTimer
-function meter.create_fps()
+function public.create_fps()
 	local fpsMeter = display.newGroup()
 	fpsMeter.back = display.newRect( fpsMeter, left + 2, top + 2, 100, 25 )
 	fpsMeter.back.anchorX = 0
@@ -41,7 +48,7 @@ function meter.create_fps()
 end
 
 
-function meter.create_mem()
+function public.create_mem()
 	local hud = display.newGroup()
 	local hudFrame = display.newRect( hud, 0, 0, 240, 80)
 	hudFrame:setFillColor(0.2,0.2,0.2)
@@ -78,5 +85,5 @@ function meter.create_mem()
 	end; listen( "enterFrame", hud )
 
 end
-return meter
+return public
 

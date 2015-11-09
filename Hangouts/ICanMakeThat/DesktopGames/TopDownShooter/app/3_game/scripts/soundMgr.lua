@@ -1,10 +1,11 @@
 -- =============================================================
 -- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
--- 
+-- This content produced for Corona Geek Hangouts audience.
+-- You may use any and all contents in this example to make a game or app.
 -- =============================================================
 local audio = require "audio"
-local sound = {}
+local public = {}
 
 -- Local storage for handles to sound files
 --
@@ -13,7 +14,7 @@ local effects = {}
 -- Sound Effects Enable
 --
 local sfxEn = false
-sound.enableSFX = function( enable )
+public.enableSFX = function( enable )
 	sfxEn = enable 
 end
 
@@ -31,7 +32,7 @@ local function onSFX( event )
 	end
 end; listen( "onSFX", onSFX )
 
-function sound.init()
+function public.init()
 	effects["win"] 			= audio.loadSound("sounds/sfx/win.wav")
 	effects["lose"] 		= audio.loadSound("sounds/sfx/lose.wav")
 
@@ -51,7 +52,7 @@ end
 -- Set the sound track file
 --
 local firstPlay = true
-sound.playSoundTrack = function( path )
+public.playSoundTrack = function( path )
 	if( firstPlay ) then
 		firstPlay = false
 		local soundTrack = audio.loadStream( path )
@@ -61,8 +62,8 @@ sound.playSoundTrack = function( path )
 	end
 end
 
-sound.pauseSoundTrack = function( )
+public.pauseSoundTrack = function( )
 	audio.pause( 1 )
 end
 
-return sound
+return public

@@ -1,8 +1,9 @@
+require("mobdebug").start()
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2015
+-- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
--- =============================================================
--- main.lua
+-- This content produced for Corona Geek Hangouts audience.
+-- You may use any and all contents in this example to make a game or app.
 -- =============================================================
 
 ----------------------------------------------------------------------
@@ -26,7 +27,6 @@ local ssk 		= require "ssk.loadSSK"
 
 local common 	= require "scripts.common"
 
-
 -- Start listening for key inputs that affect windowing (full screen, minimize, maximize, etc. )
 require "scripts.windowing"
 
@@ -41,15 +41,15 @@ physics.setGravity( 0, 0 )
 ----------------------------------------------------------------------
 -- Start Game
 ----------------------------------------------------------------------
-local sound = require "scripts.sound"
-local game 	= require "scripts.game"
-
-sound.init()
---sound.enableSFX( true )
+--[[
+local soundMgr = require "scripts.soundMgr"
+soundMgr.init()
+--soundMgr.enableSFX( true )
 -- Play a sound track
---sound.playSoundTrack( "sounds/music/Call to Adventure.mp3" )
-
+--soundMgr.playSoundTrack( "sounds/music/Call to Adventure.mp3" )
+--]]
 
 -- Start the game and the numbered level.
+local game 	   = require "scripts.game"
 game.create()
 

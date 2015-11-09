@@ -1,24 +1,12 @@
 -- =============================================================
 -- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
--- 
+-- This content produced for Corona Geek Hangouts audience.
+-- You may use any and all contents in this example to make a game or app.
 -- =============================================================
 local mFloor = math.floor
 
 local common = {}
-
---
--- Game Variables
---
-common.debugEn		= false
-
-
--- World Settings
-common.gridSize 	= 160
-common.worldSize 	= 80 -- 40 x 40 Grids
-
-common.gridColors = { {1,1,1,0.2}, {0,1,1,0.2}, }
-common.gridColors2 = { {1,1,1,0.2}, {1,0,1,0.2}, }
 
 --
 -- Helper Variables
@@ -45,6 +33,28 @@ common.right			= mFloor(common.right+0.5)
 common.bottom			= mFloor(common.bottom+0.5)
 common.fullw			= mFloor(common.fullw+0.5)
 common.fullh			= mFloor(common.fullh+0.5)
+
+--
+-- Game Variables
+--
+common.debugEn		= false
+
+
+-- World Settings
+common.gridSize 	= 160
+common.worldSize 	= 80 -- 40 x 40 Grids
+
+--
+-- Player Settings
+--
+common.leftLimit = common.centerX - common.gridSize * 1
+common.rightLimit = common.centerX + common.gridSize * 1
+common.upLimit = common.centerY - common.gridSize * 1
+common.downLimit = common.centerY + common.gridSize * 1
+
+common.gridColors = { {1,1,1,0.2}, {0,1,1,0.2}, }
+common.gridColors2 = { {1,1,1,0.2}, {1,0,1,0.2}, }
+
 
 -- Determine design orientation
 common.orientation  	= ( common.w > common.h ) and "landscape"  or "portrait"

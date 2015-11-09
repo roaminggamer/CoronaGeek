@@ -1,6 +1,12 @@
-local spriteMaker = {}
+-- =============================================================
+-- Copyright Roaming Gamer, LLC. 2009-2015 
+-- =============================================================
+-- This content produced for Corona Geek Hangouts audience.
+-- You may use any and all contents in this example to make a game or app.
+-- =============================================================
+local public = {}
 
-function spriteMaker.generateSequence( seqData, name, dir, info, details )
+function public.generateSequence( seqData, name, dir, info, details )
 	--print("Generate sequence for anim: " .. name .. " dir: " .. dir )
 	local newSeq = {}
 
@@ -24,7 +30,7 @@ function spriteMaker.generateSequence( seqData, name, dir, info, details )
 	seqData[#seqData+1] = newSeq
 end
 
-function spriteMaker.angleToDir( angle )
+function public.angleToDir( angle )
 	local split = 45/2
 	if( angle < 45 - split ) then
 		return "n"
@@ -47,7 +53,7 @@ function spriteMaker.angleToDir( angle )
 	end
 end
 
-function spriteMaker.create( group, x, y, scale, imageSheet, seqData )
+function public.create( group, x, y, scale, imageSheet, seqData )
 	local tmp = display.newSprite( imageSheet, seqData )
 	tmp.x = x
 	tmp.y = y
@@ -57,7 +63,7 @@ function spriteMaker.create( group, x, y, scale, imageSheet, seqData )
 	tmp:scale(scale,scale)
 
 	function tmp.playAngleAnim( self, name, angle )		
-		local dir = spriteMaker.angleToDir( angle )
+		local dir = public.angleToDir( angle )
 		local newName = name .. "_" .. dir
 		--print("playAngleAnim() ", angle, dir, newName )
 		if( self.sequence ~= newName ) then
@@ -70,4 +76,4 @@ function spriteMaker.create( group, x, y, scale, imageSheet, seqData )
 end
 
 
-return spriteMaker
+return public

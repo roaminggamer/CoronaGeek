@@ -1,6 +1,12 @@
+-- =============================================================
+-- Copyright Roaming Gamer, LLC. 2009-2015 
+-- =============================================================
+-- This content produced for Corona Geek Hangouts audience.
+-- You may use any and all contents in this example to make a game or app.
+-- =============================================================
 local spriteMaker = require 'scripts.spriteMaker'
 
-local greenZombie = {}
+local public = {}
 
 local info 	= require "images.reiners.greenzombie"
 local sheet 	= info:getSheet()
@@ -22,9 +28,9 @@ for i = 1, #dirs do
 	end
 end
 
-function greenZombie.create( group, x, y, scale )
+function public.create( group, x, y, scale )
 	local tmp = spriteMaker.create( group, x, y, scale, imageSheet, seqData )
 	return tmp
 end
 
-return greenZombie
+return public
