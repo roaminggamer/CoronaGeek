@@ -6,6 +6,13 @@
 settings = {
 	--build = { neverStripDebugInfo = true },
 
+   --[[ -- Sublime Users
+   settings =
+   {
+      corona_sdk_simulator_path = "C:\\Program Files (x86)\\Corona Labs\\Corona SDK\\Corona.Shell.exe",
+   },
+   --]]
+   
     orientation = 
     {
 		default 	= "landscapeRight",

@@ -6,11 +6,15 @@
 -- =============================================================
 local public = {}
 
-local normRot		= ssk.misc.normRot
+local physics 			   = require "physics"
+local common 			   = require "scripts.common"
 
 local info 			= require "images.reiners.arrows"
 local sheet 		= info:getSheet()
-local imageSheet 	=  graphics.newImageSheet("images/reiners/arrows.png", sheet )
+local imageSheet 	= graphics.newImageSheet("images/reiners/arrows.png", sheet )
+
+local normRot     = common.normRot
+
 
 function public.angleToDir( angle )	
 	local subAngle = 360/32

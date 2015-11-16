@@ -30,18 +30,19 @@ function public.create()
    
    local layers = layersMaker.get()
    
-	local gridSize 	= common.gridSize / 2 
-	local worldSize 	= common.worldSize
-	local startX 		= common.centerX - (worldSize * gridSize)/2 - gridSize/2
-	local startY 		= common.centerY - (worldSize * gridSize)/2 - gridSize/2
+	local gridSize 	= common.gridSize 
+	local worldWidth 	= common.worldWidth
+   local worldHeight = common.worldHeight
+	local startX 		= common.centerX - (worldWidth * gridSize)/2 + gridSize/2
+	local startY 		= common.centerY - (worldHeight * gridSize)/2 + gridSize/2
 	local gridColors 	= common.gridColors
-	local curX			= startX
-	local curY			= startY
+	local curX			= startX 
+	local curY			= startY 
 	local gridNum 		= 0
 
-	for col = 1, worldSize do
+	for col = 1, worldWidth do
 		curY = startY
-		for row = 1, worldSize do
+		for row = 1, worldHeight do
 			local tmp = lostGarden.create( layers.underlay, curX, curY, gridSize )
 			tmp:setFillColor( unpack( gridColors[gridNum%2+1] ) )
 			gridNum = gridNum + 1

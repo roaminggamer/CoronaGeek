@@ -51,14 +51,14 @@ local function onKey( event )
       
       -- Move World (Camera)
       if( key == "c" ) then
-         local dx = world.lx - player.x
-         local dy = world.ly - player.y
+         local dx = player.x - world.lx
+         local dy = player.y - world.ly 
          
          world.lx = player.x
          world.ly = player.y
          
-         world.x = world.x + dx
-         world.y = world.y + dy
+         world.x = world.x - dx
+         world.y = world.y - dy
       end
       
    end 

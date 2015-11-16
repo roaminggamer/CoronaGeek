@@ -1,4 +1,4 @@
-require("mobdebug").start()
+--require("mobdebug").start() -- ZeroBrane Users
 -- =============================================================
 -- Copyright Roaming Gamer, LLC. 2009-2015 
 -- =============================================================
@@ -52,4 +52,6 @@ soundMgr.init()
 -- Start the game and the numbered level.
 local game 	   = require "scripts.game"
 game.create()
+
+--timer.performWithDelay( 500 , function() game.create() end )
 

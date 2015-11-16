@@ -13,7 +13,6 @@ local common 			   = require "scripts.common"
 local layersMaker		   = require "scripts.layersMaker"
 local lostGarden		   = require "scripts.lostGarden"
 
-
 -- Localizations
 local mRand             = math.random
 local getTimer          = system.getTimer
@@ -30,6 +29,10 @@ function public.showPlayerMovementLimit()
    limit:setStrokeColor(1,0,0)
    limit.strokeWidth = 4
    
+   local viewLimit = display.newRect( layers.underlay, common.centerX, common.centerY, width * 3, height * 3 )
+   viewLimit:setFillColor(0,0,0,0)
+   viewLimit:setStrokeColor(1,0,1)
+   viewLimit.strokeWidth = 3
 end
 
 return public

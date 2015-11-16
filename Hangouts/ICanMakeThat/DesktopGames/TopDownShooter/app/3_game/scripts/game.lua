@@ -22,6 +22,7 @@ local debugMaker 		   = require "scripts.debugMaker"
 local groundMaker 		= require "scripts.groundMaker"
 local reticleMaker 		= require "scripts.reticleMaker"
 local playerMaker 		= require "scripts.playerMaker"
+local enemyManager 		= require "scripts.enemyManager"
 
 -- Managers
 local cameraMgr 			= require "scripts.cameraMgr"
@@ -47,11 +48,18 @@ local pairs             = pairs
 --
 function public.destroy( )	
 	if( common.isRunning ) then
-		physics.pause() -- safer than stopping which might cause errors in future calls that 
+		--physics.pause() -- safer than stopping which might cause errors in future calls that 
 	   		            -- come in enterFrame, collisio, or timer listeners
 	end
-
-	common.isRunning = false	   
+   
+   common.isRunning = false	 
+   
+	
+   enemyManager.destroy()
+   cameraMgr.detach()
+   playerMaker.destroy()
+   reticleMaker.destroy()
+   layersMaker.destroy()	  
 end
 
 
@@ -63,6 +71,10 @@ function public.create( group )
 	-- Destroy old level if it exists
 	--
 	public.destroy()
+   
+   -- Start Physics
+   --
+   --physics.start() 
    
    --
    -- Set up rendering layers for this 'game'
@@ -79,6 +91,7 @@ function public.create( group )
 	-- 
 	local reticle 	= reticleMaker.create()
 	local player 	= playerMaker.create( reticle )
+   enemyManager.create()
 
    debugMaker.showPlayerMovementLimit()
 
@@ -88,40 +101,23 @@ function public.create( group )
 	cameraMgr.attach( player )
    --cameraMgr.detach()
 	 
-
 	common.isRunning = true
+   
+   enemyManager.generate()
 end
 
-
--- ==
---		Create Background (so we can see we are moving)
--- ==
-function public.createBack()
-	--
-	-- Draw background grid
-	--
-	local gridSize 		= common.gridSize / 2 
-	local worldSize 	= common.worldSize
-	local startX 		= centerX - (worldSize * gridSize)/2 - gridSize/2
-	local startY 		= centerY - (worldSize * gridSize)/2 - gridSize/2
-	local gridColors 	= common.gridColors
-	local curX			= startX
-	local curY			= startY
-	local gridNum 		= 0
-
-	for col = 1, worldSize do
-		curY = startY
-		for row = 1, worldSize do
-			local tmp = lostGarden.create( layers.underlay, curX, curY, gridSize )
-			tmp:setFillColor( unpack( gridColors[gridNum%2+1] ) )
-			gridNum = gridNum + 1
-			curY = curY + gridSize
-		end
-		gridNum = gridNum + 1 -- Force checker pattern
-		curX = curX + gridSize
-	end
+--
+-- Temporary listener to catch 'onDied' event and restart game.
+--
+-- We'll handle this better later, but for now, this gives us a 
+-- reasonable response to getting hit by enemies.
+--
+local function onPlayerDied( )
+   -- Wait till the next frame, then restart (let's this frame's work complete)
+   timer.performWithDelay( 1, function ()  public.create() end )
+   --print("BOB")
 end
-
+listen( "onPlayerDied", onPlayerDied )
 
 
 return public

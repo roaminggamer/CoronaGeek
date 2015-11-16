@@ -14,6 +14,7 @@ local layersMaker		   = require "scripts.layersMaker"
 -- 
 function public.detach()
    local layers = layersMaker.get()
+   if( not common.isValid(layers) ) then return end
    local world = layers.world
    Runtime:removeEventListener( "enterFrame", world )
 end

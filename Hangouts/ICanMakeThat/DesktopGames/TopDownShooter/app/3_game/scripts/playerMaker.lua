@@ -25,6 +25,7 @@ baseWalkingAngle["sw"] = 225
 baseWalkingAngle["w"] = 270
 baseWalkingAngle["nw"] = 315
 
+local arrows = {}
 
 -- Localizations
 local mRand             = math.random
@@ -45,6 +46,13 @@ local scaleVec			   = math2d.scale
 --	 destroy()
 -- 
 function public.destroy()
+   if( common.isValid( common.player ) ) then
+      common.ignore( "enterFrame", common.player )
+      common.ignore( "mouse", common.player )
+      common.ignore( "key", common.player )
+   end
+   common.player = nil
+   arrows = {}
 end
 
 -- 
@@ -56,63 +64,90 @@ function public.create( reticle )
    
    local layers = layersMaker.get()
 
-
 	-- The Player (archer)
 	--
 	local player = greenArcherMaker.create( layers.content, common.centerX, common.centerY, 1 )
 	physics.addBody( player, "dynamic", { radius = 25, filter = common.myCC:getCollisionFilter( "player" ) }  )
-	player.colliderName = "player"
-	player.myAngle = 0
-	player:playAngleAnim( "paused", common.normRot( player.myAngle ) )
-	player.baseAnim = "walking"
+	
+   -- Various player flags and values used in animations, walking, firing, etc.
+   player.colliderName = "player"
+	player.myAngle       = 0	
+	player.baseAnim      = "paused"
+	player.rate 	      = 250
+	player.moveY 	      = 0
+	player.myAngle 	   = 0
+   player.isFiring = false
 
-	player.rate 	= 250
-	player.moveX 	= 0
-	player.moveY 	= 0	
-	player.myAngle 	= 0
-
-	--
-	-- Key listener for player (uses SSKs key event, which is a modified version of 'key' )
+   -- Set player to 'paused' animation to start
+	player:playAngleAnim( player.baseAnim, common.normRot( player.myAngle ) )
+	
+   -- Key listener for player (uses SSKs key event, which is a modified version of 'key' )
 	--
 	function player.key( self, event )
 		if( not common.isRunning ) then return end
-		if( common.autoIgnore( "key", self ) ) then  return end
+      if( not common.isValid( self ) ) then return end
 
 		local descriptor = event.descriptor
 		local phase 	= event.phase
+      
+      if( descriptor == "w" or  descriptor == "up" ) then		
+         if( phase == "down" ) then
+            self.moveY = -1
+         else
+            self.moveY = 0
+         end
+      end
+         
 		
-		if( descriptor == "a" or  descriptor == "left" ) then
-			self.moveX = self.moveX + ( (phase == "down" ) and -1 or 1 )
-		
-		elseif( descriptor == "d" or  descriptor == "right" ) then
-			self.moveX = self.moveX + ( (phase == "down" ) and 1 or -1 )
-
-		elseif( descriptor == "w" or  descriptor == "up" ) then
-			self.moveY = self.moveY + ( (phase == "down" ) and -1 or 1 )
-		
-		elseif( descriptor == "s" or  descriptor == "down" ) then
-			self.moveY = self.moveY + ( (phase == "down" ) and 1 or -1 )
-		end	
 		return false
 	end
 	common.listen( "key", player )
+
+
+	function player.mouse( self, event )
+		if( not common.isRunning ) then return end
+      if( not common.isValid( self ) ) then return end
+
+		local primary 		= event.isPrimaryButtonDown
+
+		if( self.isFiring == false and primary) then
+			self.isFiring = true
+			self.lastBaseAnim = self.baseAnim
+			self.baseAnim = "shooting"
+			timer.performWithDelay( 100,
+				function()						
+					self:fireArrow( )
+					self.fired = true
+				end )
+			timer.performWithDelay( 250,
+				function()												
+					self.isFiring = false
+				end )
+		end
+
+	end
+	common.listen( "mouse", player )
+
 
 	--
 	-- enterFrame Listener
 	--
 	function player.enterFrame( self, event )		
 		if( not common.isRunning ) then return end
-
-		if( common.autoIgnore( "enterFrame", self ) ) then return end 
+      if( not common.isValid( self ) ) then return end
+      if( not self.x or not self.setLinearVelocity ) then
+         print( self.x, self.setLinearVelocity )
+      end
       
-      print( self.x, self.y )
+      -- DEBUG: shows position of player right now
+      --print( self.x, self.y )
 
 		-- Facing 	
 		--	
 		if( reticle and common.isValid( reticle ) ) then
 			local vec 	= diffVec( common.centerX, common.centerY, reticle.x, reticle.y, true )
 			local angle = vector2Angle( vec )
-			player.myAngle = angle 
+			self.myAngle = angle 
 		end
 
 
@@ -124,20 +159,6 @@ function public.create( reticle )
 			local walkAngle 	= common.normRot( self.myAngle )
 			local angleDir 		= spriteMaker.angleToDir( walkAngle )
 			walkAngle = baseWalkingAngle[angleDir]
-
-			-- Modify the 'clean' angle based on touch inputs
-			--
-			-- Only allow forward motion and motion at a forward angle (left or right)
-			--
-			if( self.moveX > 0 ) then -- right
-				walkAngle = walkAngle + 45
-			
-			elseif( self.moveX < 0 ) then -- left
-				walkAngle = walkAngle - 45
-
-			else -- neither left nor right
-				-- No change
-			end
 
 			-- Normalize the angle. i.e. Bring it back into then range [0,360).
 			walkAngle = common.normRot( walkAngle )
@@ -151,15 +172,20 @@ function public.create( reticle )
 
 			-- Set player velocity accordingly
 			self:setLinearVelocity( vec.x, vec.y )
-			player.baseAnim = "walking"
+			self.baseAnim = "walking"
 
 		else
 			self:setLinearVelocity( 0, 0 )
-			player.baseAnim = "paused"
+			self.baseAnim = "paused"
 		end
+      
+      -- Firing Arrows
+		if( self.isFiring ) then
+			self.baseAnim = "shooting"
+		end      
 
 		-- Update Player's Animation
-		player:playAngleAnim( self.baseAnim, common.normRot( player.myAngle ) )
+		self:playAngleAnim( self.baseAnim, common.normRot( self.myAngle ) )
       
       -- Limit Player's Movement
       if( self.x < common.leftLimit ) then 
@@ -175,6 +201,88 @@ function public.create( reticle )
 
 	end
 	common.listen( "enterFrame", player )
+      
+   -- ==
+   --			Create Arrows
+   -- ==
+   local lastArrowTime = getTimer()
+
+   function player.fireArrow( self )
+
+      if( not common.isRunning ) then return end
+
+      -- Are arrow limits enabled?
+      --
+      if( common.maxArrows > 0 and common.tableCount(arrows) >= common.maxArrows ) then return end
+
+      -- Limit fire rate
+      local curTime = getTimer()
+      if( curTime - lastArrowTime < common.arrowPeriod ) then return end
+
+      -- Update arrow time
+      lastArrowTime = curTime
+
+      -- Create a arrow
+      local arrow = arrowMaker.create( layers.content, self.x, self.y, self.myAngle,  1 )
+      physics.addBody( arrow, "dynamic", { radius = 25, density = 0.2, filter = common.myCC:getCollisionFilter( "playerarrow" ) }  )
+      arrow.colliderName = "playerarrow"
+      
+      -- keep track of the arrow so we can count arrows
+      --
+      arrows[arrow] = arrow
+
+      -- Make the arrow move
+      local vec = angle2Vector( self.myAngle, true ) -- no longer rotating player
+      vec = scaleVec( vec, common.arrowSpeed )
+      arrow:setLinearVelocity( vec.x, vec.y )
+
+      -- Auto-destroy arrow after lifetime expires
+      arrow.timer = 
+         function( self )
+            display.remove( self )
+            arrows[self] = nil
+         end
+
+      timer.performWithDelay( common.arrowLifetime, arrow )
+
+      -- Basic collision handler
+      --
+      arrow.collision = function( self, event )
+         local other = event.other
+         
+         if( other.colliderName ~= "enemy" ) then return false end
+
+         display.remove( self )
+         arrows[self] = nil
+
+         -- Stop the enemy
+         transition.cancel(other)
+
+         -- Don't allow any more collisions with this enemy
+         other:removeEventListener("collision")
+         
+         -- Play an animation and then remove
+         other:playAngleAnim( "disintegrate", common.normRot( other.myAngle ) )
+         function other.sprite( self, event )
+            --print()
+            if( event.phase == "ended" ) then
+               self:selfDestruct()
+            end
+         end
+         other:addEventListener( "sprite" )
+
+         return true
+      end
+      arrow:addEventListener( "collision" )
+
+      -- Add a Cool Trail
+      --
+      --arrowTrails.addTrail( arrow, 1 )
+   end
+   
+   
+   -- Store reference to player in common
+   common.player = player
 	
 	return player
 end

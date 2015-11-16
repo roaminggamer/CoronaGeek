@@ -6,6 +6,9 @@
 -- =============================================================
 local public = {}
 
+local common 			   = require "scripts.common"
+
+
 -- Variables
 local layers
 
@@ -39,7 +42,7 @@ function public.create( group )
 	--
 	-- Destroy old level if it exists
 	--
-	--public.destroy()
+	public.destroy()
 
 	--
 	-- Create rendering layers for our game with this
@@ -77,6 +80,9 @@ function public.create( group )
 	layers.world:insert( layers.overlay )
 
 	group:insert( layers )
+   
+   -- For demonstrating extra terrain fill
+   --transition.to( layers, { xScale = 0.5, yScale = 0.5, x = common.w/4, y = common.h/4, time = 2000, delay = 1000 } )
 
    return layers
 end

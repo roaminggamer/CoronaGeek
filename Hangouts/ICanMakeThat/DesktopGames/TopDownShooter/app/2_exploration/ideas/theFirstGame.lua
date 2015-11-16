@@ -12,19 +12,19 @@ local public = {}
 ----------------------------------------------------------------------
 --								REQUIRES							--
 ----------------------------------------------------------------------
-local physics 			= require "physics"
-local common 			= require "scripts.common"
+local physics 			   = require "physics"
+local common 			   = require "scripts.common"
 local bulletTrails 		= require "scripts.bulletTrails"
 local spriteMaker 		= require 'scripts.spriteMaker'
 local redZombieMaker 	= require "scripts.redZombieMaker"
 local greenZombieMaker 	= require "scripts.greenZombieMaker"
 local bowSkelMaker 		= require "scripts.bowSkelMaker"
 local greenArcherMaker	= require "scripts.greenArcherMaker"
-local arrowMaker		= require "scripts.arrowMaker"
-local chestMaker		= require "scripts.chestMaker"
+local arrowMaker		   = require "scripts.arrowMaker"
+local chestMaker		   = require "scripts.chestMaker"
 local laserCannonMaker	= require "scripts.laserCannonMaker"
 local leafStorm			= require "scripts.leafStorm"
-local mouseTrapMaker	= require "scripts.mouseTrapMaker"
+local mouseTrapMaker	   = require "scripts.mouseTrapMaker"
 local trapMaker			= require "scripts.trapMaker"
 local needleTrapMaker	= require "scripts.needleTrapMaker"
 
