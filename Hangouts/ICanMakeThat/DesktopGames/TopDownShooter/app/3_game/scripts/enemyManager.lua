@@ -78,11 +78,11 @@ function public.generate( )
 	local x, y
 
 	local from = math.random(1,4)
-
-	local left 		= player.x - common.fullw/2
-	local right 	= player.x + common.fullw/2
-	local top 		= player.y - common.fullh/2
-	local bottom 	= player.y + common.fullh/2
+   
+	local left 		= player.x - common.fullw/2 + common.enemySpawnOffset
+	local right 	= player.x + common.fullw/2 - common.enemySpawnOffset
+	local top 		= player.y - common.fullh/2 + common.enemySpawnOffset  
+	local bottom 	= player.y + common.fullh/2 - common.enemySpawnOffset
 
 	if( from == 1 ) then
 		-- left
@@ -116,6 +116,11 @@ function public.generate( )
 	end
 	physics.addBody( enemy, "dynamic", { radius = size/2, density = 1, filter = myCC:getCollisionFilter( "enemy" ) }  )
 	enemy.colliderName = "enemy"
+   
+   enemy.myAngle = 0
+   enemy.myLastAngle = -1
+   enemy.speed = math.random( common.enemyMinSpeed, common.enemyMaxSpeed )
+   enemy.timeScale = enemy.speed / common.enemyBaseSpeed
 
 
 	-- track the enemy so we can count enemies
@@ -124,8 +129,6 @@ function public.generate( )
 	if( enemyHUD ) then
 		enemyHUD:update()
 	end
-
-
 
 	-- Basic collision handler
 	--
@@ -147,8 +150,7 @@ function public.generate( )
       enemies[self] = nil      
       display.remove(self)
    end
-   
-   
+      
    -- Simple movement to last player position
    --
    function enemy.moveToPlayer( self ) 
@@ -158,23 +160,50 @@ function public.generate( )
       local angle = vector2Angle( vec ) 
       self.myAngle = angle
       local len = lenVec(vec)
-      local speed = self.speed or math.random( 75, 150 )
-      self.speed = speed
+      local speed = self.speed
       local time = 1000 * len / speed 
       --print( angle, len, speed, time )
       
       self:playAngleAnim( "walking", common.normRot( angle ) )      
-      
       transition.to( self, { x = player.x, y = player.y, time = time , onComplete = self } )
    end
 
+   -- Slightly better movement 
+   --
+   function enemy.moveToPlayer2( self ) 
+      if( not common.isRunning ) then return end 
+      if( not common.isValid( self ) ) then return end      
+      if( self.isDestroyed ) then return end
+      
+      local vec = diffVec( self, player )
+      local angle = vector2Angle( vec ) 
+      self.myAngle = angle      
+      local len = lenVec(vec)local speed = self.speed
+      local time = 1000 * len / speed 
+      --print( angle, len, speed, time )
+      
+      if( time > 600 ) then
+         self.timer = self.moveToPlayer2
+         timer.performWithDelay( 500, self )      
+      end
+      
+      if( self.myAngle == self.myLastAngle ) then
+         return
+      end
+      self.myLastAngle = angle      
+      transition.cancel( self )      
+      self:playAngleAnim( "walking", common.normRot( angle ) )
+      transition.to( self, { x = player.x, y = player.y, time = time , onComplete = self } )
+   end
 
    -- Use selfDestruct as onComplete
-   -- OR keep going after player
+   
    --enemy.onComplete = enemy.selfDestruct
-   enemy.onComplete =  enemy.moveToPlayer
+   
+   -- OR keep going after player
 
-   enemy:moveToPlayer()
+   enemy.onComplete =  enemy.moveToPlayer2
+   enemy:moveToPlayer2()
 
 	-- Make another enemy in a little while
 	--	

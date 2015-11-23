@@ -76,7 +76,7 @@ function public.create( reticle )
 	player.rate 	      = 250
 	player.moveY 	      = 0
 	player.myAngle 	   = 0
-   player.isFiring = false
+   player.isFiring      = false
 
    -- Set player to 'paused' animation to start
 	player:playAngleAnim( player.baseAnim, common.normRot( player.myAngle ) )
@@ -116,7 +116,7 @@ function public.create( reticle )
 			self.baseAnim = "shooting"
 			timer.performWithDelay( 100,
 				function()						
-					self:fireArrow( )
+               self:fireArrow( true ) -- true says 'do debug'
 					self.fired = true
 				end )
 			timer.performWithDelay( 250,
@@ -207,7 +207,7 @@ function public.create( reticle )
    -- ==
    local lastArrowTime = getTimer()
 
-   function player.fireArrow( self )
+   function player.fireArrow( self, doDebug )
 
       if( not common.isRunning ) then return end
 
@@ -224,7 +224,7 @@ function public.create( reticle )
 
       -- Create a arrow
       local arrow = arrowMaker.create( layers.content, self.x, self.y, self.myAngle,  1 )
-      physics.addBody( arrow, "dynamic", { radius = 25, density = 0.2, filter = common.myCC:getCollisionFilter( "playerarrow" ) }  )
+      physics.addBody( arrow, "dynamic", { radius = 10, density = 0.2, filter = common.myCC:getCollisionFilter( "playerarrow" ) }  )
       arrow.colliderName = "playerarrow"
       
       -- keep track of the arrow so we can count arrows
@@ -232,18 +232,71 @@ function public.create( reticle )
       arrows[arrow] = arrow
 
       -- Make the arrow move
-      local vec = angle2Vector( self.myAngle, true ) -- no longer rotating player
-      vec = scaleVec( vec, common.arrowSpeed )
-      arrow:setLinearVelocity( vec.x, vec.y )
+      if( doDebug ) then
+         
+         local vec = angle2Vector( self.myAngle, true ) -- no longer rotating player
+         -- DEBUG STEP 1 - BEGIN
+         local label = display.newText( self.parent, self.myAngle, self.x, self.y - 50, native.systemFont, 22 )
+         local aimVec = scaleVec( vec, 50 )
+         aimVec = addVec( self, aimVec )
+         local aimLine = display.newLine( self.parent, self.x, self.y, aimVec.x, aimVec.y )
+         aimLine.strokeWidth = 3
+         aimLine:setStrokeColor(1,1,0)
+         -- DEBUG STEP 1 - END
+         
+         vec = scaleVec( vec, common.arrowSpeed )
+         
+         nextFrame( 
+            function()
+               -- DEBUG STEP 2 - BEGIN              
+               display.remove( aimLine )
+               local aimVec = normVec( vec )
+               aimVec = scaleVec( aimVec, common.arrowSpeed ) 
+               aimVec = addVec( aimVec, self )
+               aimLine = display.newLine( self.parent, self.x, self.y, aimVec.x, aimVec.y )
+               aimLine.strokeWidth = 3
+               aimLine:setStrokeColor(1,0,0)               
+               -- DEBUG STEP 2 - END
+            end, 400 )
+         
+         -- DEBUG STEP 3 - BEGIN
+         arrow:setLinearVelocity( vec.x, vec.y )
+         -- DEBUG STEP 3 - END
+         
+         -- DEBUG STEP 4 .. 5 - BEGIN
+         timer.performWithDelay( 500, function() 
+                  print( arrow.x, arrow.y )
+               end )
+         timer.performWithDelay( 1000, function() 
+                  print( arrow.x, arrow.y ) 
+                  display.remove( aimLine )
+                  display.remove( label )
+               end)
+         -- DEBUG STEP 4 .. 5 - END
 
-      -- Auto-destroy arrow after lifetime expires
-      arrow.timer = 
-         function( self )
-            display.remove( self )
-            arrows[self] = nil
-         end
+         -- Auto-destroy arrow after lifetime expires
+         arrow.timer = 
+            function( self )
+               display.remove( self )
+               arrows[self] = nil
+            end
 
-      timer.performWithDelay( common.arrowLifetime, arrow )
+         timer.performWithDelay( common.arrowLifetime, arrow )
+      
+      else         
+         local vec = angle2Vector( self.myAngle, true ) -- no longer rotating player
+         vec = scaleVec( vec, common.arrowSpeed )
+         arrow:setLinearVelocity( vec.x, vec.y )
+
+         -- Auto-destroy arrow after lifetime expires
+         arrow.timer = 
+            function( self )
+               display.remove( self )
+               arrows[self] = nil
+            end
+
+         timer.performWithDelay( common.arrowLifetime, arrow )
+      end
 
       -- Basic collision handler
       --
@@ -260,6 +313,10 @@ function public.create( reticle )
 
          -- Don't allow any more collisions with this enemy
          other:removeEventListener("collision")
+         
+         -- Mark enemy as destroyed (to stop AI)
+         --
+         other.isDestroyed = true
          
          -- Play an animation and then remove
          other:playAngleAnim( "disintegrate", common.normRot( other.myAngle ) )
@@ -279,7 +336,6 @@ function public.create( reticle )
       --
       --arrowTrails.addTrail( arrow, 1 )
    end
-   
    
    -- Store reference to player in common
    common.player = player

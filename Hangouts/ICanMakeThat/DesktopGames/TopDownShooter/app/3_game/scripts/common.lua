@@ -58,8 +58,12 @@ common.downLimit = common.centerY + common.gridSize * 6
 --
 -- Enemy Settings
 --
-common.enemyTweenTime = 1000
-common.maxEnemies = 10
+common.enemySpawnOffset = 150 -- For debug ONLY; Should normally be 0 or negative; Large enough values cause enemies to spawn 'on screen'.
+common.enemyTweenTime   = 1000
+common.maxEnemies       = 1
+common.enemyBaseSpeed   = 60
+common.enemyMinSpeed    = 75/2 -- 75
+common.enemyMaxSpeed    = 150/2 -- 150
 
 --
 -- Arrow Settings
@@ -67,7 +71,7 @@ common.maxEnemies = 10
 common.arrowsPerSecond 		= 5
 common.arrowPeriod 			= 1000/common.arrowsPerSecond
 common.arrowLifetime 		= 2000
-common.arrowSpeed 			= 500 -- pixels per seconbd
+common.arrowSpeed 			= 300 -- pixels per seconbd
 common.maxArrows           = 3
 
 

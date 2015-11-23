@@ -36,7 +36,7 @@ require "scripts.windowing"
 local physics = require "physics"
 physics.start()
 physics.setGravity( 0, 0 )
---physics.setDrawMode( "hybrid" )
+physics.setDrawMode( "hybrid" )
 
 ----------------------------------------------------------------------
 -- Start Game
