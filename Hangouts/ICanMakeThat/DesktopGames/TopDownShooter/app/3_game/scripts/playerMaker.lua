@@ -116,7 +116,7 @@ function public.create( reticle )
 			self.baseAnim = "shooting"
 			timer.performWithDelay( 100,
 				function()						
-               self:fireArrow( true ) -- true says 'do debug'
+               self:fireArrow( false ) -- true says 'do debug'
 					self.fired = true
 				end )
 			timer.performWithDelay( 250,
@@ -224,8 +224,10 @@ function public.create( reticle )
 
       -- Create a arrow
       local arrow = arrowMaker.create( layers.content, self.x, self.y, self.myAngle,  1 )
-      physics.addBody( arrow, "dynamic", { radius = 10, density = 0.2, filter = common.myCC:getCollisionFilter( "playerarrow" ) }  )
+      physics.addBody( arrow, "dynamic", { radius =  10, density = 0.2, filter = common.myCC:getCollisionFilter( "playerarrow" ), isBullet = true }  )
       arrow.colliderName = "playerarrow"
+
+      --arrow.strokeWidth = 3
       
       -- keep track of the arrow so we can count arrows
       --
@@ -306,6 +308,7 @@ function public.create( reticle )
          if( other.colliderName ~= "enemy" ) then return false end
 
          display.remove( self )
+
          arrows[self] = nil
 
          -- Stop the enemy
@@ -323,7 +326,8 @@ function public.create( reticle )
          function other.sprite( self, event )
             --print()
             if( event.phase == "ended" ) then
-               self:selfDestruct()
+               --self:selfDestruct()
+               self:delayedSelfDestruct( 100000 )
             end
          end
          other:addEventListener( "sprite" )

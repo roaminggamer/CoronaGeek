@@ -150,6 +150,18 @@ function public.generate( )
       enemies[self] = nil      
       display.remove(self)
    end
+
+   --
+   -- delayedSelfDestruct() - Clean up details about this enemy then destroy it.
+   --
+   function enemy.delayedSelfDestruct( self, delay  )
+      self:toBack()
+      transition.cancel( self )
+      self:removeEventListener( "collision" )
+      physics.removeBody( self )
+      enemies[self] = nil
+      transition.to( self, { delay = delay, time = 500, alpha = 0, onComplete = display.remove } )
+   end
       
    -- Simple movement to last player position
    --

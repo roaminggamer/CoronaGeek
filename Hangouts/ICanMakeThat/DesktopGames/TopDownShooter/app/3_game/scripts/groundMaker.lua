@@ -24,7 +24,7 @@ end
 -- 
 --	 create()
 -- 
-function public.create()
+function public.create( )
    
    public.destroy()
    
@@ -43,8 +43,8 @@ function public.create()
 	for col = 1, worldWidth do
 		curY = startY
 		for row = 1, worldHeight do
-			local tmp = lostGarden.create( layers.underlay, curX, curY, gridSize )
-			tmp:setFillColor( unpack( gridColors[gridNum%2+1] ) )
+			local tmp = lostGarden.create_new( layers.underlay, curX, curY, gridSize )
+			--tmp:setFillColor( unpack( gridColors[gridNum%2+1] ) )
 			gridNum = gridNum + 1
 			curY = curY + gridSize
 		end

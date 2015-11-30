@@ -84,7 +84,9 @@ function public.create( group )
 	--
 	-- Draw Background
 	--
-	groundMaker.create()
+   local lostGarden		   = require "scripts.lostGarden"
+   lostGarden.selectGroup( "S2" )
+	groundMaker.create( )
 
    --
 	-- Draw World Content

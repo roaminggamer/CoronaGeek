@@ -82,15 +82,18 @@ easyGroupTypes["S5"] = "STONE5"
 
 --table.print_r( textureList )
 
---[[
-table.dump(groupTypes,nil,"groupTypes")
-table.dump(transitionTos,nil,"transitionTos")
-table.dump(tileTypes,nil,"tileTypes")
-table.dump(versionTypes,nil,"versionTypes")
-table.dump(mods,nil,"mods")
+----[[
+--table.dump(groupTypes,nil,"groupTypes")
+--table.dump(transitionTos,nil,"transitionTos")
+--table.dump(tileTypes,nil,"tileTypes")
+--table.dump(versionTypes,nil,"versionTypes")
+--table.dump(mods,nil,"mods")
 --]]
 
 local public = {}
+local private = {}
+
+local curTiles = {}
 
 local normRot		= ssk.misc.normRot
 
@@ -104,5 +107,157 @@ function public.create( group, x, y, size )
 	tmp.y = y
 	return tmp
 end
+
+local curGroup = {}
+function public.selectGroup( groupType )
+   curTiles = {}
+   curGroup = {}
+   for i = 1, #textureList do
+      
+      --print(string.sub( textureList[i].groupType, 1, 2 ), groupType)
+      if( string.sub( textureList[i].groupType, 1, 2 ) == groupType ) then
+            if( textureList[i].tileType == "M" ) then
+               --table.dump( textureList[i] ) 
+               curGroup[#curGroup+1] = textureList[i]
+            end            
+      end
+   end
+   --table.print_r( curGroup )
+end
+
+function private.tileToLeft( x, y, size )
+   local leftOfX = x - size
+   for k,v in pairs( curTiles ) do
+      if( v.x == leftOfX  ) then
+         return v.tileData
+      end
+   end
+end
+
+function private.tileAbove( x, y, size )
+   local aboveY = y - size
+   for k,v in pairs( curTiles ) do
+      if( v.y == aboveY  ) then
+         return v.tileData
+      end
+   end
+end
+
+local allTypes = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M" }
+local allowedBelow = {}
+allowedBelow["A"] = { "C", "J", "K" }
+allowedBelow["B"] = { "B", "F", "I" }
+allowedBelow["C"] = { "A", "E", "H", "M" }
+allowedBelow["D"] = { "D", "G", "L" }
+allowedBelow["E"] = { "B", "F", "I" }
+allowedBelow["F"] = { "A", "E", "H", "M" }
+allowedBelow["G"] = { "A", "E", "H", "M" }
+allowedBelow["H"] = { "D", "G", "L" }
+allowedBelow["I"] = { "C", "J", "K" }
+allowedBelow["J"] = { "B", "F", "I" }
+allowedBelow["K"] = { "D", "G", "L" }
+allowedBelow["L"] = { "C", "J", "K" }
+allowedBelow["M"] = { "A", "E", "H", "M" }
+
+local allowedToRight = {}
+allowedToRight["A"] = { "E", "L" }
+allowedToRight["B"] = { "D", "G", "H", "M" }
+allowedToRight["C"] = { "C", "F", "K" }
+allowedToRight["D"] = { "B", "I", "J" }
+allowedToRight["E"] = { "D", "G", "H", "M" }
+allowedToRight["F"] = { "D", "G", "H", "M" }
+allowedToRight["G"] = { "C", "F", "K" }
+allowedToRight["H"] = { "E", "L" }
+allowedToRight["I"] = { "E", "L" }
+allowedToRight["J"] = { "C", "F", "K" }
+allowedToRight["K"] = { "D", "G", "L" }
+allowedToRight["L"] = { "B", "I", "J" }
+allowedToRight["M"] = { "D", "G", "H", "M" }
+
+function private.isInSet( letter, set )
+   for i = 1, #set do
+      if( set[i] == letter ) then 
+         return true
+      end
+   end
+   return false
+end
+
+
+function public.create_new( group, x, y, size )
+   
+   local subGroup = {} -- Table to contain set of all 'allowed' tiles for this placement round
+   
+   local tileToLeft = private.tileToLeft( x, y, size )
+   local tileAbove = private.tileAbove( x, y, size )      
+   if( not tileToLeft and not tileAbove ) then
+      print("A")
+      subGroup = curGroup
+   
+elseif( tileToLeft and tileAbove )  then
+   print("B")
+      local leftType = tileToLeft.tileType
+      local aboveType = tileAbove.tileType
+      local allowedTypes = {}
+  
+       for i = 1, #allowedToRight[leftType] do
+          local curType = allowedToRight[leftType][i]
+          if( private.isInSet( curType, allowedBelow[aboveType] ) ) then
+             allowedTypes[curType] = curType
+          end
+      end
+      
+      for i = 1, #curGroup do
+         if( allowedTypes[curGroup[i].tileType] ) then
+            subGroup[#subGroup+1] = curGroup[i]
+         end
+      end
+
+   elseif( tileAbove )  then
+      print("C")
+      local aboveType = tileAbove.tileType
+      local allowedTypes = {}  
+      for k,v in pairs(allowedBelow[aboveType]) do
+            allowedTypes[v] = v
+      end
+      
+      for i = 1, #curGroup do
+         if( allowedTypes[curGroup[i].tileType] ) then
+            subGroup[#subGroup+1] = curGroup[i]
+         end
+      end
+   
+   else
+      print("D")
+   
+      local leftType = tileToLeft.tileType
+      local allowedTypes = {}  
+       for k,v in pairs(allowedToRight[leftType]) do
+            allowedTypes[v] = v
+      end
+      
+      for i = 1, #curGroup do
+         if( allowedTypes[curGroup[i].tileType] ) then
+            subGroup[#subGroup+1] = curGroup[i]
+         end
+      end
+   end
+
+   print("Total possible tiles = ", #subGroup, tileToLeft, tileAbove )
+   
+   --table.print_r(subGroup)
+
+   
+	--local path = curGroup[1].path
+   --local tileData = curGroup[math.random(1,#curGroup)]
+   local tileData = subGroup[math.random(1,#subGroup)]
+	local tmp = display.newImageRect( group, tileData.path, size, size )
+   tmp.tileData = tileData
+   curTiles[tmp] = tmp
+	tmp.x = x
+	tmp.y = y
+	return tmp
+end
+
 
 return public
