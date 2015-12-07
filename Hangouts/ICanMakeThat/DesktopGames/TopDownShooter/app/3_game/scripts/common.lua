@@ -39,6 +39,23 @@ common.fullh			= mFloor(common.fullh+0.5)
 --
 common.debugEn		= false
 
+common.startLevel    = 1
+common.currentLevel  = common.startLevel 
+
+common.selectedTrap = 1
+common.selectedTrapType = "mouseTrap"
+common.trapCounts = {}
+common.trapCounts.mouseTrap = 0
+common.trapCounts.leafStorm = 0
+common.trapCounts.spikeTrap = 0
+
+common.gemColors = { "red", "blue", "white", "yellow" }
+
+common.hasGem = {}
+common.hasGem.red = false
+common.hasGem.blue = false
+common.hasGem.white = false
+common.hasGem.yellow = false
 
 --
 -- World Settings
@@ -50,20 +67,58 @@ common.worldHeight   = 24 -- # gridSize units tall
 --
 -- Player Settings
 --
-common.leftLimit = common.centerX - common.gridSize * 8
-common.rightLimit = common.centerX + common.gridSize * 8
-common.upLimit = common.centerY - common.gridSize * 6
-common.downLimit = common.centerY + common.gridSize * 6
+common.leftLimit = common.centerX - common.gridSize * 7 
+common.rightLimit = common.centerX + common.gridSize * 7
+common.upLimit = common.centerY - common.gridSize * 5
+common.downLimit = common.centerY + common.gridSize * 5
 
 --
 -- Enemy Settings
 --
-common.enemySpawnOffset = 150 -- For debug ONLY; Should normally be 0 or negative; Large enough values cause enemies to spawn 'on screen'.
+common.chanceToDropChest = 20 
+common.enemySpawnOffset = 0 -- For debug ONLY; Should normally be 0 or negative; Large enough values cause enemies to spawn 'on screen'.
 common.enemyTweenTime   = 1000
-common.maxEnemies       = 10
+common.maxEnemies       = 1
 common.enemyBaseSpeed   = 60
 common.enemyMinSpeed    = 75/2 -- 75
 common.enemyMaxSpeed    = 150/2 -- 150
+
+
+-- Level Based Enemy Distribution
+common.enemyDistro = {}
+for i = 1, 400 do
+   local distro = {}
+   common.enemyDistro[i] = distro
+   distro.maxEnemies = math.ceil(i/2)
+   if( distro.maxEnemies > 100 ) then 
+      distro.maxEnemies = 100
+   end
+   distro.greenZombie = i
+   if( distro.greenZombie > 33 ) then
+      distro.greenZombie = 33
+   end   
+   distro.redZombie = distro.greenZombie + i
+   if( distro.redZombie > 66 ) then
+      distro.redZombie = 66
+   end   
+   
+   distro.maxValue = distro.greenZombie
+   if( i >= 5 ) then
+      distro.maxValue = distro.redZombie
+   end 
+   
+   if( i >= 15 ) then
+      distro.maxValue = distro.redZombie + i - 15
+   end 
+   
+   if( distro.maxValue > 100 ) then
+      distro.maxValue = 100
+   end 
+   table.dump(distro,nil,i)
+end
+   
+
+
 
 --
 -- Arrow Settings
@@ -87,6 +142,20 @@ common.isPortrait 		= ( common.h > common.w )
 -- Further clean up variables
 common.left 			= (common.left>=0) and math.abs(common.left) or common.left
 common.top 				= (common.top>=0) and math.abs(common.top) or common.top
+
+--
+-- Image Sheets
+--
+-- Load and Config Player Sprite Data
+common.mouseTrapInfo 	   = require "images.reiners.mousetrap"
+common.mouseTrapSheet 	   = graphics.newImageSheet("images/reiners/mousetrap.png", common.mouseTrapInfo:getSheet() )
+
+common.leafStormInfo 	   = require "images.reiners.leafstorm"
+common.leafStormSheet 	   = graphics.newImageSheet("images/reiners/leafstorm.png", common.leafStormInfo:getSheet() )
+
+common.needleTrapInfo 	   = require "images.reiners.trap2"
+common.needleTrapSheet 	   = graphics.newImageSheet("images/reiners/trap2.png", common.needleTrapInfo:getSheet() )
+
 
 --
 -- Helper Functions
@@ -161,10 +230,10 @@ end
 local ccmgr = require "plugin.cc"
 
 common.myCC = ccmgr:newCalculator()
-common.myCC:addNames( "player", "enemy", "playerarrow", "enemyarrow", "other" )
-common.myCC:collidesWith( "player", { "enemy", "enemyarrow" } )
-common.myCC:collidesWith( "enemy", { "player", "playerarrow" } )
-common.myCC:collidesWith( "other", { "player", "playerarrow", "enemyarrow" } )
+common.myCC:addNames( "player", "zombie", "skeleton", "playerarrow", "skeletonarrow", "chest", "gem", "trap" )
+common.myCC:collidesWith( "player", { "zombie", "skeleton", "skeletonarrow", "chest", "gem" } )
+common.myCC:collidesWith( "zombie", { "player", "playerarrow", "skeletonarrow", "trap" } )
+common.myCC:collidesWith( "skeleton", { "player", "playerarrow", "trap" } )
 --]]
 
 return common

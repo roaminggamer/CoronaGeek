@@ -191,11 +191,11 @@ function public.create_new( group, x, y, size )
    local tileToLeft = private.tileToLeft( x, y, size )
    local tileAbove = private.tileAbove( x, y, size )      
    if( not tileToLeft and not tileAbove ) then
-      print("A")
+      --print("A")
       subGroup = curGroup
    
 elseif( tileToLeft and tileAbove )  then
-   print("B")
+   --print("B")
       local leftType = tileToLeft.tileType
       local aboveType = tileAbove.tileType
       local allowedTypes = {}
@@ -214,7 +214,7 @@ elseif( tileToLeft and tileAbove )  then
       end
 
    elseif( tileAbove )  then
-      print("C")
+      --print("C")
       local aboveType = tileAbove.tileType
       local allowedTypes = {}  
       for k,v in pairs(allowedBelow[aboveType]) do
@@ -228,7 +228,7 @@ elseif( tileToLeft and tileAbove )  then
       end
    
    else
-      print("D")
+      --print("D")
    
       local leftType = tileToLeft.tileType
       local allowedTypes = {}  
@@ -243,10 +243,9 @@ elseif( tileToLeft and tileAbove )  then
       end
    end
 
-   print("Total possible tiles = ", #subGroup, tileToLeft, tileAbove )
+   --print("Total possible tiles = ", #subGroup, tileToLeft, tileAbove )
    
    --table.print_r(subGroup)
-
    
 	--local path = curGroup[1].path
    --local tileData = curGroup[math.random(1,#curGroup)]

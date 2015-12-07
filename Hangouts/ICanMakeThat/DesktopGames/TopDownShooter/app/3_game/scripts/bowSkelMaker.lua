@@ -12,6 +12,7 @@ local dirs = { "n", "s", "e", "w", "ne", "se", "nw", "sw" }
 
 local anims = {}
 anims["walking"] 		= { frames = 8,  time = 800,  loops = 0 }
+anims["paused"] 		= { frames = 9,  time = 900,  loops = 0 }
 anims["been hit"] 		= { frames = 7,  time = 700,  loops = 1 }
 anims["disintegrate"] 	= { frames = 9,  time = 900,  loops = 1 }
 anims["shooting"] 		= { frames = 13,  time = 250,  loops = 1 }

@@ -58,6 +58,8 @@ local function onKey( event )
 		local logger 	= require "scripts.logger" -- Requires SSK
 		logger.show()
 	end
+   
+   return false
 
 end
 timer.performWithDelay( 100, function()  Runtime:addEventListener( "key", onKey ) end )

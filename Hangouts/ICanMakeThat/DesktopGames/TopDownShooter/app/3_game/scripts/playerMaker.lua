@@ -203,7 +203,7 @@ function public.create( reticle )
 	common.listen( "enterFrame", player )
       
    -- ==
-   --			Create Arrows
+   --			Fire Arrow
    -- ==
    local lastArrowTime = getTimer()
 
@@ -224,7 +224,7 @@ function public.create( reticle )
 
       -- Create a arrow
       local arrow = arrowMaker.create( layers.content, self.x, self.y, self.myAngle,  1 )
-      physics.addBody( arrow, "dynamic", { radius =  10, density = 0.2, filter = common.myCC:getCollisionFilter( "playerarrow" ), isBullet = true }  )
+      physics.addBody( arrow, "dynamic", { radius =  10, density = 2, filter = common.myCC:getCollisionFilter( "playerarrow" ), isBullet = true }  )
       arrow.colliderName = "playerarrow"
 
       --arrow.strokeWidth = 3
@@ -305,7 +305,7 @@ function public.create( reticle )
       arrow.collision = function( self, event )
          local other = event.other
          
-         if( other.colliderName ~= "enemy" ) then return false end
+         if( other.colliderName ~= "zombie" and other.colliderName ~= "skeleton" ) then return false end
 
          display.remove( self )
 
@@ -321,13 +321,17 @@ function public.create( reticle )
          --
          other.isDestroyed = true
          
+         -- Possibly drop a chest
+         --
+         timer.performWithDelay( 1, function() other:dropChest() end )
+         
          -- Play an animation and then remove
          other:playAngleAnim( "disintegrate", common.normRot( other.myAngle ) )
          function other.sprite( self, event )
             --print()
             if( event.phase == "ended" ) then
                --self:selfDestruct()
-               self:delayedSelfDestruct( 100000 )
+               self:delayedSelfDestruct( 10000 )
             end
          end
          other:addEventListener( "sprite" )
