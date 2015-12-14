@@ -58,6 +58,41 @@ function public.getCount()
 end
 
 -- 
+--	 getRandom() - Return a random enemy
+-- 
+function public.getRandom()
+   if( not common.isRunning ) then return nil end
+   local list = {}
+   for k,v in pairs( enemies ) do
+      list[#list+1] = v
+   end
+   if( #list == 0 ) then return nil end
+   return list[mRand(1,#list)]   
+end
+
+
+-- 
+--	 getNearest() - Return a random enemy
+-- 
+function public.getNearest( obj )
+   if( not common.isRunning ) then return nil end
+   
+   local dist = math.huge
+   local nearest   
+   
+   for k,v in pairs( enemies ) do
+      local vec = diffVec( v, obj )
+      local len2 = len2Vec( vec )
+      if( not v.isDestroyed and len2 < dist ) then 
+         dist = len2
+         nearest = v
+      end
+   end   
+   return nearest
+end
+
+
+-- 
 --	 generate()
 -- 
 function public.generate( )
@@ -119,18 +154,21 @@ function public.generate( )
       enemy.chaseMode = "chasing"
       physics.addBody( enemy, "dynamic", { radius = size/2, density = 1, filter = myCC:getCollisionFilter( "skeleton" ) }  )
       enemy.colliderName = "skeleton"
+      common.post( "onSFX", { sfx = "archer" } )
    
    elseif( enemySelect > distro.greenZombie ) then
       enemy = redZombieMaker.create( layers.content, x, y, 1 )
       enemy.myType = "redZombie" -- Smart Zombie
       physics.addBody( enemy, "dynamic", { radius = size/2, density = 1, filter = myCC:getCollisionFilter( "zombie" ) }  )
       enemy.colliderName = "zombie"
+      common.post( "onSFX", { sfx = "zombie" .. mRand(1,3) } )
   
    else
       enemy = greenZombieMaker.create( layers.content, x, y, 1 )
       enemy.myType = "greenZombie" -- Dumb Zombie
       physics.addBody( enemy, "dynamic", { radius = size/2, density = 1, filter = myCC:getCollisionFilter( "zombie" ) }  )
       enemy.colliderName = "zombie"
+      common.post( "onSFX", { sfx = "zombie" .. mRand(1,3) } )
    
    end
 
@@ -162,7 +200,7 @@ function public.generate( )
       local other = event.other
       if( other.colliderName ~= "player" ) then return false end
 
-      post( "onPlayerDied" )
+      common.post( "onPlayerDied" )
       return true
    end
    enemy:addEventListener( "collision" )
@@ -171,6 +209,8 @@ function public.generate( )
    -- selfDestruct() - Clean up details about this enemy then destroy it.
    --
    function enemy.selfDestruct( self )
+      if( self.ranSelfDestruct ) then return end      
+      self.ranSelfDestruct = true      
       transition.cancel( self )
       enemies[self] = nil      
       display.remove(self)
@@ -180,8 +220,11 @@ function public.generate( )
    -- delayedSelfDestruct() - Clean up details about this enemy then destroy it.
    --
    function enemy.delayedSelfDestruct( self, delay  )
-      print('bob', delay )
-      self:toBack()
+      if( self.ranSelfDestruct ) then return end      
+      self.ranSelfDestruct = true      
+      -- Move the enemy into the dead enemies layer to declutter the visuals
+      local layers   = layersMaker.get()
+      layers.deadEnemies:insert( self ) 
       transition.cancel( self )      
       physics.removeBody( self )
       enemies[self] = nil
@@ -215,7 +258,8 @@ function public.generate( )
       local vec = diffVec( self, player )
       local angle = vector2Angle( vec ) 
       self.myAngle = angle      
-      local len = lenVec(vec)local speed = self.speed
+      local len = lenVec(vec)
+      local speed = self.speed
       local time = 1000 * len / speed 
       --print( angle, len, speed, time )
 
@@ -283,6 +327,7 @@ function public.generate( )
          self:playAngleAnim( "shooting", common.normRot( angle ) )
          
          self:fireArrow()
+         common.post( "onSFX", { sfx = "bowfire" } )
          
          self.timer = self.chaseAndShootPlayer
          timer.performWithDelay( 1000, self )      
@@ -330,7 +375,7 @@ function public.generate( )
             local other = event.other
             if( other.colliderName == "player" ) then               
                display.remove( self )            
-               post("onPlayerDied")
+               common.post("onPlayerDied")
                return true 
             elseif( other.colliderName == "zombie" ) then            
                display.remove( self )            
@@ -381,11 +426,9 @@ function public.generate( )
       local chestColors = { "red", "white", "blue" } 
       local chestColor = chestColors[mRand(1,#chestColors)]
       local layers   = layersMaker.get()
-      local chest = chestMaker.create( layers.content, self.x, self.y, chestColor )
-      physics.addBody( chest, "dynamic", { radius =  10, density = 2 , filter = common.myCC:getCollisionFilter( "chest" ) }  )
+      local chest = chestMaker.create( layers.items, self.x, self.y, chestColor )
+      physics.addBody( chest, "dynamic", { radius =  10, filter = common.myCC:getCollisionFilter( "chest" ) }  )
       chest.colliderName = "chest"
-      
-      chest:toBack()     
       
       if( chestColor == "blue" ) then
          chest.myPickup = "mouseTrap"
@@ -403,16 +446,19 @@ function public.generate( )
          
          -- Don't allow any more collisions with this enemy
          self:removeEventListener("collision")
-         
-         display.remove( self )
 
          if( self.myPickup == "mouseTrap" ) then
             common.trapCounts.mouseTrap = common.trapCounts.mouseTrap + 1
+            common.post( "onSFX", { sfx = "coin1" } )
          elseif( self.myPickup == "leafStorm" ) then
             common.trapCounts.leafStorm = common.trapCounts.leafStorm + 1
+            common.post( "onSFX", { sfx = "coin2" } )
          elseif( self.myPickup == "spikeTrap" ) then
             common.trapCounts.spikeTrap = common.trapCounts.spikeTrap + 1
+            common.post( "onSFX", { sfx = "coin3" } )
          end
+         
+         display.remove( self )
 
          return true
       end

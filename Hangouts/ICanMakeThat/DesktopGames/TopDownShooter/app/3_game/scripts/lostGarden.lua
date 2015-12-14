@@ -95,8 +95,6 @@ local private = {}
 
 local curTiles = {}
 
-local normRot		= ssk.misc.normRot
-
 local path = textureList[math.random(1,#textureList)].path
 
 function public.create( group, x, y, size )

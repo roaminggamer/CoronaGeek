@@ -4,8 +4,6 @@
 -- This content produced for Corona Geek Hangouts audience.
 -- You may use any and all contents in this example to make a game or app.
 -- =============================================================
-local curFrame = 0
-listen( "enterFrame", function() curFrame = curFrame + 1 end )
 
 local public = {}
 
@@ -20,20 +18,21 @@ local layersMaker		   = require "scripts.layersMaker"
 local debugMaker 		   = require "scripts.debugMaker"
 
 local groundMaker 		= require "scripts.groundMaker"
+local forestMaker 		= require "scripts.forestMaker"
 local reticleMaker 		= require "scripts.reticleMaker"
 local playerMaker 		= require "scripts.playerMaker"
 local enemyManager 		= require "scripts.enemyManager"
 
 local chestMaker		   = require "scripts.chestMaker"
-local laserCannonMaker	= require "scripts.laserCannonMaker"
-local leafStorm			= require "scripts.leafStorm"
-local mouseTrapMaker	   = require "scripts.mouseTrapMaker"
-local trapMaker			= require "scripts.trapMaker"
-local needleTrapMaker	= require "scripts.needleTrapMaker"
 local gemMaker	         = require "scripts.gemMaker"
 
 -- Managers
 local cameraMgr 			= require "scripts.cameraMgr"
+
+
+local curFrame = 0
+common.listen( "enterFrame", function() curFrame = curFrame + 1 end )
+
 
 ----------------------------------------------------------------------
 --								DECLARATIONS						--
@@ -93,12 +92,13 @@ function public.create( group )
    local layers = layersMaker.create( group )
    
 	--
-	-- Draw Background
+	-- Draw Background + Forest
 	--
    local lostGarden		   = require "scripts.lostGarden"
    lostGarden.selectGroup( "B1" ) -- B0,1; D0,3; G0,3; P0,1; R0; S0,5
 	groundMaker.create( )
-
+   forestMaker.create( )
+   
    --
 	-- Draw World Content
 	-- 
@@ -106,7 +106,7 @@ function public.create( group )
 	local player 	= playerMaker.create( reticle )
    enemyManager.create()
 
-   debugMaker.showPlayerMovementLimit()
+   --debugMaker.showPlayerMovementLimit()
 
    --
    -- Draw HUDS
@@ -136,9 +136,9 @@ end
 function  public.placeGems()
    local layers = layersMaker.get()
    for i = 1, #common.gemColors do
-      local x = (mRand(1,2) == 1) and mRand(common.leftLimit+ 40, centerX - 100) or mRand(centerX + 100, common.rightLimit - 40 )
-      local y = (mRand(1,2) == 1) and mRand(common.upLimit + 40, centerY - 100) or mRand(centerY + 100, common.downLimit - 40 )
-      gemMaker.create( layers.content, x, y, common.gemColors[i] )
+      local x = (mRand(1,2) == 1) and mRand(common.leftLimit+ 40, common.centerX - 100) or mRand(common.centerX + 100, common.rightLimit - 40 )
+      local y = (mRand(1,2) == 1) and mRand(common.upLimit + 40, common.centerY - 100) or mRand(common.centerY + 100, common.downLimit - 40 )
+      gemMaker.create( layers.items, x, y, common.gemColors[i] )
    end
 end
 
@@ -147,6 +147,13 @@ end
 -- drawHUDS() - Basic HUDs for game
 --
 function public.drawHUDs( layers )
+   
+   -- HUD Frame
+   local frame = display.newImageRect( layers.interfaces, "images/hudFrame.png", common.fullw, common.fullh )
+   frame.x = common.centerX
+   frame.y = common.centerY
+   frame:setFillColor( 0.8, 0.2, 0.2 )
+   
    -- Level HUD
    local levelHUDShadow = display.newText( layers.interfaces, "Level " .. common.currentLevel, common.centerX + 4, common.top + 44, gameFont, 60 )   
    levelHUDShadow:setFillColor(0)
@@ -316,7 +323,7 @@ function public.drawHUDs( layers )
    leafStormHUD.myType = "leafStorm"
    trapHUDs[3] = leafStormHUD
    
-   common.selectedTrap = 3
+   common.selectedTrap = 3 -- Flips to 1 below
    function trapHUDs.key( self, event )
       if( not common.isRunning ) then return end
       if( not common.isValid( layers ) ) then
@@ -369,8 +376,9 @@ local function onPlayerDied( )
    -- Wait till the next frame, then restart (let's this frame's work complete)
    timer.performWithDelay( 1, function ()  public.create() end )
    --print("BOB")
+   common.post( "onSFX", { sfx = "died" } )
 end
-listen( "onPlayerDied", onPlayerDied )
+common.listen( "onPlayerDied", onPlayerDied )
 
 
 --
@@ -384,8 +392,9 @@ local function onLevelComplete( )
    -- Wait till the next frame, then restart (let's this frame's work complete)
    --timer.performWithDelay( 1, function ()  public.create() end )
    public.placeGems()   
+   common.post( "onSFX", { sfx = "nextlevel" } )
 end
-listen( "onLevelComplete", onLevelComplete )
+common.listen( "onLevelComplete", onLevelComplete )
 
 
 return public

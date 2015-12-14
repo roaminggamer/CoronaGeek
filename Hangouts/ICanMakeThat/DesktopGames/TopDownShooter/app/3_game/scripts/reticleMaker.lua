@@ -26,7 +26,7 @@ local angle2Vector		= math2d.angle2Vector
 local scaleVec			   = math2d.scale
 
 local curFrame = 0
-listen( "enterFrame", function() curFrame = curFrame + 1 end )
+common.listen( "enterFrame", function() curFrame = curFrame + 1 end )
 
 -- 
 --	 destroy()

@@ -13,7 +13,7 @@ function spriteMaker.generateSequence( seqData, name, dir, info, details )
 	newSeq.name 			= name .. "_" .. dir
 	newSeq.time 			= details.time
 	newSeq.loopCount 		= details.loops
-	newSeq.loopDirection 	= details.direction or "forward"	
+	newSeq.loopDirection = details.direction or "forward"	
 	
 	local frames = {}
 	newSeq.frames = frames
@@ -37,7 +37,7 @@ function spriteMaker.generateSequence2( seqData, name, info, details )
 	newSeq.name 			= name 
 	newSeq.time 			= details.time
 	newSeq.loopCount 		= details.loops
-	newSeq.loopDirection 	= details.direction or "forward"	
+	newSeq.loopDirection = details.direction or "forward"	
 	
 	local frames = {}
 	newSeq.frames = frames

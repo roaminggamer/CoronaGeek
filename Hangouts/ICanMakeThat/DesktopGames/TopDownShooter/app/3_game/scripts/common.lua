@@ -49,6 +49,8 @@ common.trapCounts.mouseTrap = 0
 common.trapCounts.leafStorm = 0
 common.trapCounts.spikeTrap = 0
 
+common.leafStormSpeed = 200
+
 common.gemColors = { "red", "blue", "white", "yellow" }
 
 common.hasGem = {}
@@ -114,7 +116,7 @@ for i = 1, 400 do
    if( distro.maxValue > 100 ) then
       distro.maxValue = 100
    end 
-   table.dump(distro,nil,i)
+   --table.dump(distro,nil,i)
 end
    
 
@@ -170,6 +172,7 @@ end
 
 -- Shorthand for Runtime:*() functions
 --
+local getTimer = system.getTimer
 local pairs = _G.pairs
 function common.isValid( obj ) 
 	return (obj and obj.removeSelf ~= nil)
@@ -179,7 +182,7 @@ function common.listen( name, listener ) Runtime:addEventListener( name, listene
 function common.ignore( name, listener ) Runtime:removeEventListener( name, listener ) end
 function common.autoIgnore( name, obj ) 
     if( not common.isValid( obj ) ) then
-      ignore( name, obj )
+      common.ignore( name, obj )
       obj[name] = nil
       return true
     end
@@ -221,8 +224,6 @@ function common.tableCount( tbl )
    end
    return count
 end
-   
-
 
 --
 -- Collision Calculator For Easy Collision Calculations
@@ -234,6 +235,5 @@ common.myCC:addNames( "player", "zombie", "skeleton", "playerarrow", "skeletonar
 common.myCC:collidesWith( "player", { "zombie", "skeleton", "skeletonarrow", "chest", "gem" } )
 common.myCC:collidesWith( "zombie", { "player", "playerarrow", "skeletonarrow", "trap" } )
 common.myCC:collidesWith( "skeleton", { "player", "playerarrow", "trap" } )
---]]
 
 return common

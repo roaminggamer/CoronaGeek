@@ -26,6 +26,8 @@ function gemMaker.create( group, x, y, color )
          common.hasGem[self.myColor] = true
          display.remove(self)
          
+         common.post( "onSFX", { sfx = "gem" } )
+         
          local hasAll = true
          for k,v in pairs( common.hasGem ) do
             hasAll = hasAll and v
@@ -34,7 +36,7 @@ function gemMaker.create( group, x, y, color )
             timer.performWithDelay( 250,
                function()
                   common.currentLevel = common.currentLevel + 1
-                  post( "onLevelComplete" )                  
+                  common.post( "onLevelComplete" )                  
                end )
          end         
       end

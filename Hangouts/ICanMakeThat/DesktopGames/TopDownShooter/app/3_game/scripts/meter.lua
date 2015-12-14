@@ -82,7 +82,7 @@ function public.create_mem()
 		-- Fill in current texture memory usage
 		local tmem = system.getInfo( "textureMemoryUsed" )
 		tMemLabel.text = "Texture Mem: " .. round(tmem/(1024 * 1024),2) .. " MB"
-	end; listen( "enterFrame", hud )
+	end; Runtime:addEventListener( "enterFrame", hud )
 
 end
 return public

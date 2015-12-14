@@ -4,12 +4,29 @@
 -- This content produced for Corona Geek Hangouts audience.
 -- You may use any and all contents in this example to make a game or app.
 -- =============================================================
-local audio = require "audio"
+local audio    = require "audio"
+local common 	= require "scripts.common"
 local public = {}
+
+local getTimer = system.getTimer
 
 -- Local storage for handles to sound files
 --
 local effects = {}
+
+local minTime = {}
+minTime.zombie1 = 2500
+minTime.zombie2 = 5000
+minTime.zombie3 = 5000
+minTime.archer = 2000
+minTime.bowfire = 150
+local lastTime = {}
+
+local altVolume = {}
+altVolume.zombie2 = 0.25
+altVolume.zombie3 = 0.25
+altVolume.died = 0.5
+altVolume.nextlevel = 0.5
 
 -- Sound Effects Enable
 --
@@ -24,29 +41,39 @@ local function onSFX( event )
 	local sfx = effects[event.sfx]
 	if( not sfx ) then return end
 	if( not sfxEn ) then return end
+   
+   
+   local curTime = getTimer()   
+   print(curTime, minTime[event.sfx], lastTime[event.sfx] )
+   if( minTime[event.sfx] and lastTime[event.sfx] ) then      
+      if( curTime - lastTime[event.sfx] < minTime[event.sfx] ) then
+         return
+      end
+   end
+   lastTime[event.sfx] = curTime
+      
+   
 	local channel = audio.findFreeChannel( 2 )
-	table.dump(event)
+	--table.dump(event)
 
 	if( channel ) then
-		audio.play( sfx,  { channel = channel } )
+      audio.setVolume( altVolume[event.sfx] or 1, { channel = channel  }  )
+		audio.play( sfx,  { channel = channel  } )
 	end
-end; listen( "onSFX", onSFX )
+end; common.listen( "onSFX", onSFX )
 
 function public.init()
-	effects["win"] 			= audio.loadSound("sounds/sfx/win.wav")
-	effects["lose"] 		= audio.loadSound("sounds/sfx/lose.wav")
-
-	effects["coin1"] 		= audio.loadSound("sounds/sfx/Pickup_Coin.wav")
-	effects["coin2"] 		= audio.loadSound("sounds/sfx/Pickup_Coin2.wav")
-	effects["coin3"] 		= audio.loadSound("sounds/sfx/Pickup_Coin3.wav")
-
-	effects["jump1"] 		= audio.loadSound("sounds/sfx/Jump2.wav")
-	effects["jump2"] 		= audio.loadSound("sounds/sfx/Jump3.wav")
-	effects["jump3"] 		= audio.loadSound("sounds/sfx/Jump5.wav")
-
-	effects["good1"] 		= audio.loadSound("sounds/sfx/g1.wav")
-	effects["good2"] 		= audio.loadSound("sounds/sfx/g2.wav")
-	effects["bad"] 			= audio.loadSound("sounds/sfx/b1.wav")
+	effects["coin1"] 		   = audio.loadSound("sounds/sfx/Pickup_Coin.wav")
+	effects["coin2"] 		   = audio.loadSound("sounds/sfx/Pickup_Coin2.wav")
+	effects["coin3"] 		   = audio.loadSound("sounds/sfx/Pickup_Coin3.wav")
+   effects["zombie1"]      = audio.loadSound("sounds/sfx/Zombie Kill You.wav")
+   effects["zombie2"]      = audio.loadSound("sounds/sfx/Zombie Attack Walk.wav")
+   effects["zombie3"]      = audio.loadSound("sounds/sfx/Zombie Moan.wav")
+   effects["archer"]       = audio.loadSound("sounds/sfx/Archer.wav")
+   effects["bowfire"]      = audio.loadSound("sounds/sfx/Bow Fire.wav")
+   effects["died"]         = audio.loadSound("sounds/sfx/died.wav")
+   effects["gem"]          = audio.loadSound("sounds/sfx/gem.wav")
+   effects["nextlevel"]    = audio.loadSound("sounds/sfx/nextlevel.wav")
 end
 
 -- Set the sound track file

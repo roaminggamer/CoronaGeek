@@ -12,6 +12,13 @@ local layersMaker		   = require "scripts.layersMaker"
 local spriteMaker 		= require 'scripts.spriteMaker'
 local greenArcherMaker	= require "scripts.greenArcherMaker"
 local arrowMaker		   = require "scripts.arrowMaker"
+
+local leafStorm			= require "scripts.leafStorm"
+local mouseTrapMaker	   = require "scripts.mouseTrapMaker"
+local spikeTrapMaker	   = require "scripts.spikeTrapMaker"
+-- NOT USED local laserCannonMaker	= require "scripts.laserCannonMaker"
+-- NOT USED local trapMaker			= require "scripts.trapMaker"
+
 local math2d 			   = require "plugin.math2d"
 
 -- Variables
@@ -70,13 +77,14 @@ function public.create( reticle )
 	physics.addBody( player, "dynamic", { radius = 25, filter = common.myCC:getCollisionFilter( "player" ) }  )
 	
    -- Various player flags and values used in animations, walking, firing, etc.
-   player.colliderName = "player"
-	player.myAngle       = 0	
-	player.baseAnim      = "paused"
-	player.rate 	      = 250
-	player.moveY 	      = 0
-	player.myAngle 	   = 0
-   player.isFiring      = false
+   player.colliderName     = "player"
+	player.myAngle          = 0	
+	player.baseAnim         = "paused"
+	player.rate 	         = 250
+	player.moveY 	         = 0
+	player.myAngle 	      = 0
+   player.isFiring         = false
+   player.isDroppingTrap   = false
 
    -- Set player to 'paused' animation to start
 	player:playAngleAnim( player.baseAnim, common.normRot( player.myAngle ) )
@@ -107,16 +115,18 @@ function public.create( reticle )
 	function player.mouse( self, event )
 		if( not common.isRunning ) then return end
       if( not common.isValid( self ) ) then return end
+      
+		local leftMBDown 		= event.isPrimaryButtonDown
+      local rightMBDown 	= event.isSecondaryButtonDown
 
-		local primary 		= event.isPrimaryButtonDown
-
-		if( self.isFiring == false and primary) then
+		if( self.isFiring == false and leftMBDown) then
 			self.isFiring = true
 			self.lastBaseAnim = self.baseAnim
 			self.baseAnim = "shooting"
 			timer.performWithDelay( 100,
 				function()						
                self:fireArrow( false ) -- true says 'do debug'
+               common.post( "onSFX", { sfx = "bowfire" } )
 					self.fired = true
 				end )
 			timer.performWithDelay( 250,
@@ -124,6 +134,39 @@ function public.create( reticle )
 					self.isFiring = false
 				end )
 		end
+      
+      -- RMB Down?  Not waiting to drop a trap yet?  Set flag to 'true'.
+      if( rightMBDown and not self.isDroppingTrap ) then
+         player.isDroppingTrap = true
+      
+      -- Waiting drop a trap?  If 'true', and RMB released (up) drop it!
+      elseif( self.isDroppingTrap and not rightMBDown ) then
+         player.isDroppingTrap = false
+                  
+         local selectedTrap      = common.selectedTrap
+         local selectedTrapType  = common.selectedTrapType
+         local selectedTrapCount = common.trapCounts[selectedTrapType]
+         
+         print( selectedTrap, selectedTrapType, selectedTrapCount )
+         
+         -- No traps left?  If so, abort this drop
+         if( selectedTrapCount == 0 ) then
+            return 
+         end
+         
+         -- Decrement trap count
+         common.trapCounts[selectedTrapType] = selectedTrapCount - 1
+         
+         -- Drop appropriate trap
+         if( selectedTrapType == "mouseTrap" ) then
+            mouseTrapMaker.create( layers.items, self.x, self.y, 1 )
+         elseif( selectedTrapType == "spikeTrap" ) then
+            spikeTrapMaker.create( layers.items, self.x, self.y, 1 )
+         elseif( selectedTrapType == "leafStorm" ) then
+            leafStorm.create( layers.items, self.x, self.y, 1 )
+         end
+         
+      end
 
 	end
 	common.listen( "mouse", player )
@@ -209,7 +252,8 @@ function public.create( reticle )
 
    function player.fireArrow( self, doDebug )
 
-      if( not common.isRunning ) then return end
+      if( not common.isRunning ) then return end      
+      if( not common.isValid( self ) ) then return end
 
       -- Are arrow limits enabled?
       --

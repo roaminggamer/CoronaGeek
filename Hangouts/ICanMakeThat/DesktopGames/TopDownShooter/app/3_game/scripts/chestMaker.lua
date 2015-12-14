@@ -22,7 +22,6 @@ for i = 1, #dirs do
 end
 
 
-
 function chests.create( group, x, y, color, scale )
    color = color or "blue"
    scale = scale or 1

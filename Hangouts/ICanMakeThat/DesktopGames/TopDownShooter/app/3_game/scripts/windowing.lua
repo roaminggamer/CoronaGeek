@@ -29,7 +29,7 @@ local function onKey( event )
 
 	if( phase == "up" and key == "escape" ) then -- and isAltDown ) then
 		print("Escape")
-		post("onEscape")		
+      Runtime:dispatchEvent( { name = "onEscape" } )
 	end
 
 
