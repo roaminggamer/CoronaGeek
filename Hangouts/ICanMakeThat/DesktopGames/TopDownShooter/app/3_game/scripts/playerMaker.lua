@@ -49,6 +49,8 @@ local vector2Angle		= math2d.vector2Angle
 local angle2Vector		= math2d.angle2Vector
 local scaleVec			   = math2d.scale
 
+local mAbs              = math.abs
+
 -- 
 --	 destroy()
 -- 
@@ -68,183 +70,277 @@ end
 function public.create( reticle )
 
    public.destroy()
-   
+
    local layers = layersMaker.get()
 
-	-- The Player (archer)
-	--
-	local player = greenArcherMaker.create( layers.content, common.centerX, common.centerY, 1 )
-	physics.addBody( player, "dynamic", { radius = 25, filter = common.myCC:getCollisionFilter( "player" ) }  )
-	
+   -- The Player (archer)
+   --
+   local player = greenArcherMaker.create( layers.content, common.centerX, common.centerY, 1 )
+   physics.addBody( player, "dynamic", { radius = 25, filter = common.myCC:getCollisionFilter( "player" ) }  )
+
    -- Various player flags and values used in animations, walking, firing, etc.
    player.colliderName     = "player"
-	player.myAngle          = 0	
-	player.baseAnim         = "paused"
-	player.rate 	         = 250
-	player.moveY 	         = 0
-	player.myAngle 	      = 0
+   player.myAngle          = 0	
+   player.baseAnim         = "paused"
+   player.rate 	         = 250
+   player.moveY 	         = 0
+   player.myAngle 	      = 0
    player.isFiring         = false
    player.isDroppingTrap   = false
 
    -- Set player to 'paused' animation to start
-	player:playAngleAnim( player.baseAnim, common.normRot( player.myAngle ) )
-	
-   -- Key listener for player (uses SSKs key event, which is a modified version of 'key' )
-	--
-	function player.key( self, event )
-		if( not common.isRunning ) then return end
-      if( not common.isValid( self ) ) then return end
+   player:playAngleAnim( player.baseAnim, common.normRot( player.myAngle ) )
 
-		local descriptor = event.descriptor
-		local phase 	= event.phase
-      
-      if( descriptor == "w" or  descriptor == "up" ) then		
-         if( phase == "down" ) then
+   if( common.inputStyle == "keyboardAndMouse" ) then
+
+      --
+      -- KEYBOARD AND MOUSE
+      --
+
+      -- Key listener for player (uses SSKs key event, which is a modified version of 'key' )
+      --
+      function player.key( self, event )
+         if( not common.isRunning ) then return end
+         if( not common.isValid( self ) ) then return end
+
+         local descriptor = event.descriptor
+         local phase 	= event.phase
+
+         if( descriptor == "w" or  descriptor == "up" ) then		
+            if( phase == "down" ) then
+               self.moveY = -1
+            else
+               self.moveY = 0
+            end
+         end
+         return false
+      end
+      common.listen( "key", player )
+
+      function player.mouse( self, event )
+         if( not common.isRunning ) then return end
+         if( not common.isValid( self ) ) then return end
+
+         local leftMBDown 		= event.isPrimaryButtonDown
+         local rightMBDown 	= event.isSecondaryButtonDown
+
+         if( self.isFiring == false and leftMBDown) then
+            self.isFiring = true
+            self.lastBaseAnim = self.baseAnim
+            self.baseAnim = "shooting"
+            timer.performWithDelay( 100,
+               function()						
+                  self:fireArrow( false ) -- true says 'do debug'
+                  common.post( "onSFX", { sfx = "bowfire" } )
+                  self.fired = true
+               end )
+            timer.performWithDelay( 250,
+               function()												
+                  self.isFiring = false
+               end )
+         end
+
+         -- RMB Down?  Not waiting to drop a trap yet?  Set flag to 'true'.
+         if( rightMBDown and not self.isDroppingTrap ) then
+            player.isDroppingTrap = true
+
+            -- Waiting drop a trap?  If 'true', and RMB released (up) drop it!
+         elseif( self.isDroppingTrap and not rightMBDown ) then
+            player.isDroppingTrap = false
+
+            local selectedTrap      = common.selectedTrap
+            local selectedTrapType  = common.selectedTrapType
+            local selectedTrapCount = common.trapCounts[selectedTrapType]
+
+            print( selectedTrap, selectedTrapType, selectedTrapCount )
+
+            -- No traps left?  If so, abort this drop
+            if( selectedTrapCount == 0 ) then
+               return 
+            end
+
+            -- Decrement trap count
+            common.trapCounts[selectedTrapType] = selectedTrapCount - 1
+
+            -- Drop appropriate trap
+            if( selectedTrapType == "mouseTrap" ) then
+               mouseTrapMaker.create( layers.items, self.x, self.y, 1 )
+            elseif( selectedTrapType == "spikeTrap" ) then
+               spikeTrapMaker.create( layers.items, self.x, self.y, 1 )
+            elseif( selectedTrapType == "leafStorm" ) then
+               leafStorm.create( layers.items, self.x, self.y, 1 )
+            end
+
+         end
+
+      end
+      common.listen( "mouse", player )
+
+   else
+      --
+      -- CONTROLLER 
+      -- 
+
+      --
+      -- onLeftJoystick is a custom event (see gamePad.lua) where extract axis values and package them up to easier consumption.
+      --
+      function player.onLeftJoystick( self, event )
+         local vec = normVec( event.vec )
+         local len = lenVec( event.vec )
+         if( len > common.moveLen ) then 
             self.moveY = -1
          else
             self.moveY = 0
          end
       end
-         
-		
-		return false
-	end
-	common.listen( "key", player )
+      common.listen( "onLeftJoystick", player )
 
+      -- Key listener for player (uses SSKs key event, which is a modified version of 'key' )
+      --
+      function player.key( self, event )
+         if( not common.isRunning ) then return end
+         if( not common.isValid( self ) ) then return end
 
-	function player.mouse( self, event )
-		if( not common.isRunning ) then return end
-      if( not common.isValid( self ) ) then return end
-      
-		local leftMBDown 		= event.isPrimaryButtonDown
-      local rightMBDown 	= event.isSecondaryButtonDown
+         --table.dump(event)
 
-		if( self.isFiring == false and leftMBDown) then
-			self.isFiring = true
-			self.lastBaseAnim = self.baseAnim
-			self.baseAnim = "shooting"
-			timer.performWithDelay( 100,
-				function()						
-               self:fireArrow( false ) -- true says 'do debug'
-               common.post( "onSFX", { sfx = "bowfire" } )
-					self.fired = true
-				end )
-			timer.performWithDelay( 250,
-				function()												
-					self.isFiring = false
-				end )
-		end
-      
-      -- RMB Down?  Not waiting to drop a trap yet?  Set flag to 'true'.
-      if( rightMBDown and not self.isDroppingTrap ) then
-         player.isDroppingTrap = true
-      
-      -- Waiting drop a trap?  If 'true', and RMB released (up) drop it!
-      elseif( self.isDroppingTrap and not rightMBDown ) then
-         player.isDroppingTrap = false
-                  
-         local selectedTrap      = common.selectedTrap
-         local selectedTrapType  = common.selectedTrapType
-         local selectedTrapCount = common.trapCounts[selectedTrapType]
-         
-         print( selectedTrap, selectedTrapType, selectedTrapCount )
-         
-         -- No traps left?  If so, abort this drop
-         if( selectedTrapCount == 0 ) then
-            return 
-         end
-         
-         -- Decrement trap count
-         common.trapCounts[selectedTrapType] = selectedTrapCount - 1
-         
-         -- Drop appropriate trap
-         if( selectedTrapType == "mouseTrap" ) then
-            mouseTrapMaker.create( layers.items, self.x, self.y, 1 )
-         elseif( selectedTrapType == "spikeTrap" ) then
-            spikeTrapMaker.create( layers.items, self.x, self.y, 1 )
-         elseif( selectedTrapType == "leafStorm" ) then
-            leafStorm.create( layers.items, self.x, self.y, 1 )
-         end
-         
+         local keyName     = event.keyName
+         local descriptor  = event.descriptor
+         local phase 	   = event.phase
+
+         if( keyName == "buttonA" ) then		
+            if( self.isFiring == false and phase == "down" ) then
+               self.isFiring = true
+               self.lastBaseAnim = self.baseAnim
+               self.baseAnim = "shooting"
+               timer.performWithDelay( 100,
+                  function()						
+                     self:fireArrow( false ) -- true says 'do debug'
+                     common.post( "onSFX", { sfx = "bowfire" } )
+                     self.fired = true
+                  end )
+               timer.performWithDelay( 250,
+                  function()												
+                     self.isFiring = false
+                  end )
+            end   
+
+         elseif( keyName == "buttonB" ) then
+            print("BILLY:", self.isDroppingTrap )
+            
+            -- Button B Down?  Not waiting to drop a trap yet?  Set flag to 'true'.
+            if( phase == "down" and  not self.isDroppingTrap ) then
+               player.isDroppingTrap = true
+
+               -- Waiting drop a trap?  If 'true', and Button B released (up) drop it!
+            elseif( self.isDroppingTrap and phase == "up" ) then
+               self.isDroppingTrap = false
+
+               local selectedTrap      = common.selectedTrap
+               local selectedTrapType  = common.selectedTrapType
+               local selectedTrapCount = common.trapCounts[selectedTrapType]
+
+               print( selectedTrap, selectedTrapType, selectedTrapCount )
+
+               -- No traps left?  If so, abort this drop
+               if( selectedTrapCount == 0 ) then
+                  return 
+               end
+
+               -- Decrement trap count
+               common.trapCounts[selectedTrapType] = selectedTrapCount - 1
+
+               -- Drop appropriate trap
+               if( selectedTrapType == "mouseTrap" ) then
+                  mouseTrapMaker.create( layers.items, self.x, self.y, 1 )
+               elseif( selectedTrapType == "spikeTrap" ) then
+                  spikeTrapMaker.create( layers.items, self.x, self.y, 1 )
+               elseif( selectedTrapType == "leafStorm" ) then
+                  leafStorm.create( layers.items, self.x, self.y, 1 )
+               end
+
+            end         
+         end           
+
+         return false
       end
+      common.listen( "key", player )
 
-	end
-	common.listen( "mouse", player )
+   end
 
 
-	--
-	-- enterFrame Listener
-	--
-	function player.enterFrame( self, event )		
-		if( not common.isRunning ) then return end
+   --
+   -- enterFrame Listener
+   --
+   function player.enterFrame( self, event )		
+      if( not common.isRunning ) then return end
       if( not common.isValid( self ) ) then return end
       if( not self.x or not self.setLinearVelocity ) then
          print( self.x, self.setLinearVelocity )
       end
-      
+
       -- DEBUG: shows position of player right now
       --print( self.x, self.y )
 
-		-- Facing 	
-		--	
-		if( reticle and common.isValid( reticle ) ) then
-			local vec 	= diffVec( common.centerX, common.centerY, reticle.x, reticle.y, true )
-			local angle = vector2Angle( vec )
-			self.myAngle = angle 
-		end
+      -- Facing 	
+      --	
+      if( reticle and common.isValid( reticle ) ) then
+         local vec 	= diffVec( common.centerX, common.centerY, reticle.x, reticle.y, true )
+         local angle = vector2Angle( vec )
+         self.myAngle = angle 
+      end
 
 
-		-- Movement & Animation
-		--
-		if( self.moveY < 0 ) then			
+      -- Movement & Animation
+      --
+      if( self.moveY < 0 ) then			
 
-			-- Start with a 'clean' angle.
-			local walkAngle 	= common.normRot( self.myAngle )
-			local angleDir 		= spriteMaker.angleToDir( walkAngle )
-			walkAngle = baseWalkingAngle[angleDir]
+         -- Start with a 'clean' angle.
+         local walkAngle 	= common.normRot( self.myAngle )
+         local angleDir 		= spriteMaker.angleToDir( walkAngle )
+         walkAngle = baseWalkingAngle[angleDir]
 
-			-- Normalize the angle. i.e. Bring it back into then range [0,360).
-			walkAngle = common.normRot( walkAngle )
-			--print("3 - walkAngle", walkAngle, self.myAngle)
+         -- Normalize the angle. i.e. Bring it back into then range [0,360).
+         walkAngle = common.normRot( walkAngle )
+         --print("3 - walkAngle", walkAngle, self.myAngle)
 
-			-- Forth, convert walking angle to a vector
-			local vec = angle2Vector( walkAngle, true )
+         -- Forth, convert walking angle to a vector
+         local vec = angle2Vector( walkAngle, true )
 
-			-- Scale the vector
-			vec = scaleVec( vec, self.rate )
+         -- Scale the vector
+         vec = scaleVec( vec, self.rate )
 
-			-- Set player velocity accordingly
-			self:setLinearVelocity( vec.x, vec.y )
-			self.baseAnim = "walking"
+         -- Set player velocity accordingly
+         self:setLinearVelocity( vec.x, vec.y )
+         self.baseAnim = "walking"
 
-		else
-			self:setLinearVelocity( 0, 0 )
-			self.baseAnim = "paused"
-		end
-      
+      else
+         self:setLinearVelocity( 0, 0 )
+         self.baseAnim = "paused"
+      end
+
       -- Firing Arrows
-		if( self.isFiring ) then
-			self.baseAnim = "shooting"
-		end      
+      if( self.isFiring ) then
+         self.baseAnim = "shooting"
+      end      
 
-		-- Update Player's Animation
-		self:playAngleAnim( self.baseAnim, common.normRot( self.myAngle ) )
-      
+      -- Update Player's Animation
+      self:playAngleAnim( self.baseAnim, common.normRot( self.myAngle ) )
+
       -- Limit Player's Movement
       if( self.x < common.leftLimit ) then 
          self.x = common.leftLimit 
       elseif( self.x > common.rightLimit ) then 
          self.x = common.rightLimit 
-         end 
+      end 
       if( self.y < common.upLimit ) then 
          self.y = common.upLimit 
       elseif( self.y > common.downLimit ) then 
          self.y = common.downLimit 
       end 
 
-	end
-	common.listen( "enterFrame", player )
-      
+   end
+   common.listen( "enterFrame", player )
+
    -- ==
    --			Fire Arrow
    -- ==
@@ -272,14 +368,14 @@ function public.create( reticle )
       arrow.colliderName = "playerarrow"
 
       --arrow.strokeWidth = 3
-      
+
       -- keep track of the arrow so we can count arrows
       --
       arrows[arrow] = arrow
 
       -- Make the arrow move
       if( doDebug ) then
-         
+
          local vec = angle2Vector( self.myAngle, true ) -- no longer rotating player
          -- DEBUG STEP 1 - BEGIN
          local label = display.newText( self.parent, self.myAngle, self.x, self.y - 50, native.systemFont, 22 )
@@ -289,9 +385,9 @@ function public.create( reticle )
          aimLine.strokeWidth = 3
          aimLine:setStrokeColor(1,1,0)
          -- DEBUG STEP 1 - END
-         
+
          vec = scaleVec( vec, common.arrowSpeed )
-         
+
          nextFrame( 
             function()
                -- DEBUG STEP 2 - BEGIN              
@@ -304,31 +400,31 @@ function public.create( reticle )
                aimLine:setStrokeColor(1,0,0)               
                -- DEBUG STEP 2 - END
             end, 400 )
-         
+
          -- DEBUG STEP 3 - BEGIN
          arrow:setLinearVelocity( vec.x, vec.y )
          -- DEBUG STEP 3 - END
-         
+
          -- DEBUG STEP 4 .. 5 - BEGIN
          timer.performWithDelay( 500, function() 
-                  print( arrow.x, arrow.y )
-               end )
+               print( arrow.x, arrow.y )
+            end )
          timer.performWithDelay( 1000, function() 
-                  print( arrow.x, arrow.y ) 
-                  display.remove( aimLine )
-                  display.remove( label )
-               end)
+               print( arrow.x, arrow.y ) 
+               display.remove( aimLine )
+               display.remove( label )
+            end)
          -- DEBUG STEP 4 .. 5 - END
 
          -- Auto-destroy arrow after lifetime expires
          arrow.timer = 
-            function( self )
-               display.remove( self )
-               arrows[self] = nil
-            end
+         function( self )
+            display.remove( self )
+            arrows[self] = nil
+         end
 
          timer.performWithDelay( common.arrowLifetime, arrow )
-      
+
       else         
          local vec = angle2Vector( self.myAngle, true ) -- no longer rotating player
          vec = scaleVec( vec, common.arrowSpeed )
@@ -336,10 +432,10 @@ function public.create( reticle )
 
          -- Auto-destroy arrow after lifetime expires
          arrow.timer = 
-            function( self )
-               display.remove( self )
-               arrows[self] = nil
-            end
+         function( self )
+            display.remove( self )
+            arrows[self] = nil
+         end
 
          timer.performWithDelay( common.arrowLifetime, arrow )
       end
@@ -348,7 +444,7 @@ function public.create( reticle )
       --
       arrow.collision = function( self, event )
          local other = event.other
-         
+
          if( other.colliderName ~= "zombie" and other.colliderName ~= "skeleton" ) then return false end
 
          display.remove( self )
@@ -360,15 +456,15 @@ function public.create( reticle )
 
          -- Don't allow any more collisions with this enemy
          other:removeEventListener("collision")
-         
+
          -- Mark enemy as destroyed (to stop AI)
          --
          other.isDestroyed = true
-         
+
          -- Possibly drop a chest
          --
          timer.performWithDelay( 1, function() other:dropChest() end )
-         
+
          -- Play an animation and then remove
          other:playAngleAnim( "disintegrate", common.normRot( other.myAngle ) )
          function other.sprite( self, event )
@@ -388,11 +484,11 @@ function public.create( reticle )
       --
       --arrowTrails.addTrail( arrow, 1 )
    end
-   
+
    -- Store reference to player in common
    common.player = player
-	
-	return player
+
+   return player
 end
 
 

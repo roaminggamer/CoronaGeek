@@ -20,7 +20,7 @@ _G.gameFont = "AdelonSerial"
 --	Requires
 ----------------------------------------------------------------------
 -- Include SSK
---local ssk 		= require "ssk.loadSSK"
+local ssk 		= require "ssk.loadSSK"
 
 local common 	= require "scripts.common"
 
@@ -39,11 +39,16 @@ physics.setGravity( 0, 0 )
 -- Start Game
 ----------------------------------------------------------------------
 local soundMgr = require "scripts.soundMgr"
-soundMgr.init()
-soundMgr.enableSFX( true )
+--soundMgr.init()
+--soundMgr.enableSFX( true )
 
 -- Play a sound track
-soundMgr.playSoundTrack( "sounds/music/8bit Dungeon Level.mp3" )
+--soundMgr.playSoundTrack( "sounds/music/8bit Dungeon Level.mp3" )
+
+if( common.inputStyle == "controller" ) then
+   require "scripts.gamePad"
+end
+
 
 -- Start the game and the numbered level.
 local game 	   = require "scripts.game"

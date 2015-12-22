@@ -63,8 +63,7 @@ function public.destroy( )
 	end
    
    common.isRunning = false	 
-   
-	
+   	
    enemyManager.destroy()
    cameraMgr.detach()
    playerMaker.destroy()
@@ -102,7 +101,7 @@ function public.create( group )
    --
 	-- Draw World Content
 	-- 
-	local reticle 	= reticleMaker.create()
+	local reticle  = reticleMaker.create()
 	local player 	= playerMaker.create( reticle )
    enemyManager.create()
 
@@ -332,6 +331,10 @@ function public.drawHUDs( layers )
       end
       if( event.keyName ==  "tab" and event.phase == "up" ) then
          self:selectNext()
+      
+      elseif( event.keyName == "buttonX" and event.phase == "up" ) then
+         self:selectNext()
+
       end
       
       return false

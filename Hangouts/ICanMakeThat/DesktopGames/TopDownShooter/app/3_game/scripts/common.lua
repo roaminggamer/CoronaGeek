@@ -9,6 +9,14 @@ local mFloor = math.floor
 local common = {}
 
 --
+-- Icput Control
+--
+--common.inputStyle = "keyboardAndMouse"
+common.inputStyle    = "controller"
+common.reticleDist   = 150 
+common.moveLen       = 0.7
+
+--
 -- Helper Variables
 --
 common.w 				   = display.contentWidth
@@ -45,9 +53,9 @@ common.currentLevel  = common.startLevel
 common.selectedTrap = 1
 common.selectedTrapType = "mouseTrap"
 common.trapCounts = {}
-common.trapCounts.mouseTrap = 0
-common.trapCounts.leafStorm = 0
-common.trapCounts.spikeTrap = 0
+common.trapCounts.mouseTrap = 100
+common.trapCounts.leafStorm = 100
+common.trapCounts.spikeTrap = 100
 
 common.leafStormSpeed = 200
 
@@ -224,6 +232,29 @@ function common.tableCount( tbl )
    end
    return count
 end
+
+-- ==
+--    string:split( tok ) - Splits token (tok) separated string into integer indexed table.
+-- ==
+function common.split(str,tok)
+	local t = {}  -- NOTE: use {n = 0} in Lua-5.0
+	local ftok = "(.-)" .. tok
+	local last_end = 1
+	local s, e, cap = str:find(ftok, 1)
+	while s do
+		if s ~= 1 or cap ~= "" then
+			table.insert(t,cap)
+		end
+		last_end = e+1
+		s, e, cap = str:find(ftok, last_end)
+	end
+	if last_end <= #str then
+		cap = str:sub(last_end)
+		table.insert(t, cap)
+	end
+	return t
+end
+
 
 --
 -- Collision Calculator For Easy Collision Calculations

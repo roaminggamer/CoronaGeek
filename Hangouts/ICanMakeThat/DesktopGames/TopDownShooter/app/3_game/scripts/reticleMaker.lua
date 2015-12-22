@@ -49,18 +49,40 @@ function public.create()
 
 	reticle.lastMouseFrame = curFrame - 1
 
-	-- Mouse Listener - Reticle tracks position of mouse
-	function reticle.mouse( self, event )
-		if( self.lastMouseFrame == curFrame ) then return false end
-		self.lastMouseFrame = curFrame
+   if( common.inputStyle == "keyboardAndMouse" ) then
+      -- Mouse Listener - Reticle tracks position of mouse
+      function reticle.mouse( self, event )
+         if( self.lastMouseFrame == curFrame ) then return false end
+         self.lastMouseFrame = curFrame
 
-		if( not common.isRunning ) then return end
+         if( not common.isRunning ) then return end
 
-		if( common.autoIgnore( "mouse", self ) ) then  return end
-		self.x = event.x
-		self.y = event.y
-	end
-	common.listen( "mouse", reticle )
+         if( common.autoIgnore( "mouse", self ) ) then  return end
+         self.x = event.x
+         self.y = event.y
+      end
+      common.listen( "mouse", reticle )
+   else
+      --
+      -- onJoystick is a custom event (see gamePad.lua) where extract axis values and package them up to easier consumption.
+      --
+      function reticle.onLeftJoystick( self, event )
+         --table.dump(event)
+         local angle = vector2Angle( event.vec )
+         angle = common.normRot( angle ) 
+         local len = lenVec( event.vec )
+         if( len > 1 ) then 
+            len = 1
+         end         
+         
+         local vec = normVec( event.vec )
+         vec = scaleVec( vec, common.reticleDist * len )
+         
+         self.x = common.centerX + vec.x
+         self.y = common.centerY + vec.y
+      end
+      common.listen( "onLeftJoystick", reticle )
+   end
 
 	return reticle
 end
