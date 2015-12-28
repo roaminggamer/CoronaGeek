@@ -1,0 +1,80 @@
+
+
+http://www.mobygames.com/game/geometry-wars-retro-evolved
+
+http://www.ign.com/wikis/geometry-wars-retro-evolved/Enemies
+
+https://www.youtube.com/watch?v=OxtZUURTHzs
+
+
+Game Overview
+
+- Goals 
+  -- Stay alive.
+  -- Destroy enemies.
+  -- Earn more lives.  
+
+- Game Logic
+  -- 3 Lives (more can be earned at point levels).
+  -- Game ends when player is out of lives.
+  -- Points earned for killing enemies.
+  -- No specific levels, but difficulty metric increases based on time.  
+  -- Difficulty resets temporarily, when the player loses a life but ramps up fast.
+  -- All on-screen enemies are destroyed when the player loses a life, temporarily clearing the level.
+
+- Inputs - Twin-Stick (Neon) Shooter
+  -- Dual On-screen joysticks for mobile version. (SSK or other)
+
+- Player - Image using physics for movement and collision.
+  -- Moves in any direction based on left stick input.
+  -- Moves in any direction based on right stick input.
+
+- Enemies - 7 varieties, also using image a physics for movement and collision.
+  -- http://www.ign.com/wikis/geometry-wars-retro-evolved/Enemies 
+
+- Enemy AI - We'll be using a new approach for this game, where 'brains' are in external modules.
+
+- Enemy Spawning - Enemies randomly spawned in quadrant player is not inhabitting.
+  -- Not exactly like game.
+
+- Obstacles - Black holes are both obstacles and strategic elements.  They appear randomly at higher difficulties.  
+  -- Firing on them activates them.
+  -- Once activated, they stay alive for a fixed amount of time, sucking in anything nearby, including enemies and player.
+  -- Firing at an activated hole for a prolonged period will destroy it.
+
+-- Weapons 
+  -- Blaster - Starts as dual projectile, speeds up and increases projectile count and spread (randomly) based on points earned.
+     --- Upgrades only last for short time, then weapon goes back to default starter config.
+  -- Mines - When a 'mine' is deployed, all enemies on screen are destroyed.  
+     -- You start with 3 mines and more are earned via points.     
+
+- Camera - Fixed (Tracks Player)
+  -- Parallax Stars Effect
+
+- World - Bounded area, slightly larger than screen.  Player may not move beyond bounds.
+  -- Parallax starfield
+  -- Perturbable grid.
+  -- Neon border.
+
+- Effects 
+   -- Radial Particles and/or animated explosions.
+   -- Grid perturbation.  Probably won't cover this.
+
+-- HUDs - Score, High Score, Lives, Mines 
+
+
+
+Topic List:
+- Joystick Input
+- Player Movement
+- Player Firing
+- Bullets and Re-use
+- Enemies Movement 1, 2, 3, ...
+- Camera & Parallax
+- Particles and Re-use
+- Scoring
+- Levelling Up/Down
+
+
+
+
