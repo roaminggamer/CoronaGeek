@@ -14,15 +14,19 @@ system.activate("multitouch")
 io.output():setvbuf("no") 
 math.randomseed(os.time());
 
-_G.gameFont = "AdelonSerial"
+----------------------------------------------------------------------
+--	Globals
+----------------------------------------------------------------------
+_G.gameFont    = "Aileron Thin"
+--_G.gameFont    = "Space Cruiser Pro"
+_G.fontColor   = { 0xa4/255, 0xee/255, 0x47/255 }
+_G.fontColor2  = { 1, 1, 1 }
 
 ----------------------------------------------------------------------
 --	Requires
 ----------------------------------------------------------------------
--- Include SSK
-local ssk 		= require "ssk.loadSSK"
-
-
+-- Include SSK Core (Features I just can't live without.)
+--local ssk 		= require "ssk.loadSSK"
 require("ssk_core.globals.variables")
 require("ssk_core.globals.functions")
 require("ssk_core.extensions.display")
@@ -36,28 +40,43 @@ local common 	= require "scripts.common"
 local gamePad  = require "scripts.gamePad" 
 local math2d   = require "plugin.math2d"
 
-
--- Localizations
-local mRand             = math.random
-local getTimer          = system.getTimer
-local pairs             = pairs
-local isValid           = display.isValid
-
-local addVec			   = math2d.add
-local subVec			   = math2d.sub
-local diffVec			   = math2d.diff
-local lenVec			   = math2d.length
-local len2Vec			   = math2d.length2
-local normVec			   = math2d.normalize
-local vector2Angle		= math2d.vector2Angle
-local angle2Vector		= math2d.angle2Vector
-local scaleVec			   = math2d.scale
-
---require "scripts.joyTest"
-
+-- Push Button and Toggle Button OOP Classes (from a prior hangout)
+require "scripts.buttonClasses.pushButtonClass"
+require "scripts.buttonClasses.toggleButtonClass"
+require "scripts.buttonClasses.controllerPushButtonClass"
 
 -- Start listening for key inputs that affect windowing (full screen, minimize, maximize, etc. )
-require "scripts.windowing"
+if( not onSimulator ) then
+   require "scripts.windowing"
+end
+
+
+
+----------------------------------------------------------------------
+-- Sound
+----------------------------------------------------------------------
+if( common.meterEn ) then
+   local meter = require "scripts.meter"
+   meter.create_fps()
+   meter.create_mem()
+end
+  
+  
+----------------------------------------------------------------------
+-- Sound
+----------------------------------------------------------------------
+local soundMgr = require "scripts.soundMgr"
+--soundMgr.init()
+--soundMgr.enableSFX( true )
+--soundMgr.playSoundTrack( "sounds/music/8bit Dungeon Level.mp3" )
+
+
+----------------------------------------------------------------------
+-- Inputs
+----------------------------------------------------------------------
+if( common.inputStyle == "controller" ) then
+   require "scripts.gamePad"
+end
 
 ----------------------------------------------------------------------
 -- Physics
@@ -68,25 +87,15 @@ physics.setGravity( 0, 0 )
 --physics.setDrawMode( "hybrid" )
 
 ----------------------------------------------------------------------
--- Start Game
+-- Composer
 ----------------------------------------------------------------------
-local soundMgr = require "scripts.soundMgr"
---soundMgr.init()
---soundMgr.enableSFX( true )
+-- http://docs.coronalabs.com/daily/api/library/composer/index.html
+local composer 	= require "composer" 
+--composer.isDebug = true
+--composer.recycleOnLowMemory = false
+--composer.recycleOnSceneChange = true
 
--- Play a sound track
---soundMgr.playSoundTrack( "sounds/music/8bit Dungeon Level.mp3" )
+composer.gotoScene( "ifc.splash" )
+--composer.gotoScene( "ifc.mainMenu", { params = { skipAnimation = true } } )
+--composer.gotoScene( "ifc.playGUI" )
 
-if( common.inputStyle == "controller" ) then
-   require "scripts.gamePad"
-end
-
-
--- Start the game and the numbered level.
-local game 	   = require "scripts.game"
-game.create()
-
--- Uncomment to test that destroy/create works fine
---timer.performWithDelay( 500 , function() game.create() end )
-
---]]

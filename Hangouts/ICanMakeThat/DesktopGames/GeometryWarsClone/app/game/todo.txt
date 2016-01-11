@@ -1,0 +1,40 @@
+Remaining Work (TO DO) List
+---------------------------
+[  ] Mines
+[  ] Virtual Joystick
+[  ] Gamepad aware Toggle Button Class
+[  ] Platform Auto-sensing and appropriate input selection
+[  ] Options Interface
+[  ] Quit Game Button Response (hide on mobile)
+[  ] Difficulty Ramping
+[  ] Performance Evaluation: New particles versus caching.
+[  ] Balancing Analysis for hangout talk
+[  ] Highest Score HUD
+[  ] 
+[  ] 
+[  ] 
+[  ] 
+
+Optional
+--------
+[  ] Third Enemy Type ?
+[  ] Third Explosion Style ?
+[  ] Sound
+[  ] Special Effects - Grid ++
+[  ] Pausing
+[  ] 
+[  ] 
+
+Last
+----
+[  ] Bug Hunting
+[  ] Cleanup, Comment, and Polish
+[  ] 
+[  ] 
+
+
+
+
+
+
+

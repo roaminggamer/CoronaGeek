@@ -48,17 +48,6 @@ local function onKey( event )
 		native.setProperty( "windowMode", "maximized" )  -- fullscreen, maximized, normal
 	end
 
-	if( phase == "down" and key == "l" and isCtrlDown and isShiftDown  ) then 
-		local logger 	= require "scripts.logger" -- Requires SSK
-		logger.purge()
-		print("Cleared Logger ..")
-	
-	elseif( phase == "down" and key == "l" and isCtrlDown  ) then 
-		--print("Showing Logger ..")
-		local logger 	= require "scripts.logger" -- Requires SSK
-		logger.show()
-	end
-   
    return false
 
 end

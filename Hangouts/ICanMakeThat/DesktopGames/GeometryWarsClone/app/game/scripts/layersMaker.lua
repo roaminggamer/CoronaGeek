@@ -56,6 +56,8 @@ function public.create( group )
 							|---\world 
 							|		|---\underlay
 							|		|
+							|		|---\spawnGrid
+							|		|
 							|		|---\content 
 							|		|
 							|		|---\overlay
@@ -67,6 +69,7 @@ function public.create( group )
 	layers.background 	= display.newGroup()
 	layers.world 		   = display.newGroup()
 	layers.underlay 	   = display.newGroup()
+   layers.spawnGrid 	   = display.newGroup()
 	layers.content 		= display.newGroup()
 	layers.overlay 		= display.newGroup()
 	layers.interfaces 	= display.newGroup()
@@ -76,6 +79,7 @@ function public.create( group )
 	layers:insert( layers.interfaces )
 
 	layers.world:insert( layers.underlay )
+   layers.world:insert( layers.spawnGrid )
 	layers.world:insert( layers.content )
 	layers.world:insert( layers.overlay )
 

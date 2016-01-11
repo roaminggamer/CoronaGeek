@@ -9,11 +9,11 @@ local isValid        = display.isValid
 local gamePad = {}
 
 local joyAxisValues = {}
-joyAxisValues[1] =  { x = 0, y = 0 }
-joyAxisValues[2] =  { x = 0, y = 0 }
-joyAxisValues[3] =  { x = 0, y = 0 }
-joyAxisValues[4] =  { x = 0, y = 0 }
-
+for i = 1, 4 do   
+   joyAxisValues[i]        =  {}
+   joyAxisValues[i].left   = { x = 0, y = 0 }
+   joyAxisValues[i].right  = { x = 0, y = 0 }
+end
 --
 -- Note: 'key' events from game pad are being captured in individual modules (playerMaker.lua, etc.).
 --
@@ -22,16 +22,19 @@ local buttons        = { "buttonA", "buttonB",  "buttonX", "buttonY", "buttonSta
 local dpad           = { "left", "right", "up", "down"  }
 local phaseConvert   = { down = "began", up = "ended" }
 local onKey = function( event )   
-   --table.print_r(event)         
+   --table.dump( event )
+   table.print_r(event)         
    -- Check for buttons we care about
    local i = 1
    local button 
+   
    while( not button and i <= #buttons  ) do
       if( event.keyName == buttons[i] ) then
          button = buttons[i]
       end
       i = i + 1
    end
+   
    if( not button ) then
       local i = 1
       while( not button and i <= #dpad  ) do
@@ -41,10 +44,11 @@ local onKey = function( event )
          i = i + 1
       end
    end
-   if( button ~= nil ) then 
-      
+   
+   if( button ~= nil ) then       
       -- Extract 'player' number from descriptor
-      local player = string.split( event.descriptor, " " )    
+      local player = string.split( event.descriptor, " " )
+      if( not player or #player < 2) then return end
       player = strGSub( player[2], ":", "" )
       player = tonumber(player)
       
@@ -98,30 +102,37 @@ local function onAxis( event )
    
    local axisLetter
    local details
+   
+   local playerAxisValues  = joyAxisValues[player]   
+   
+   --print( isLeftJoy, isRightJoy, player, axisLetter )   
+   
    if( isLeftJoy ) then
-      
-      axisLetter = strGSub( axisType, "left", "" )
-      joyAxisValues[player][axisLetter] = axisValue
-      details = {}
-      details.player    = player
-      details.stick     = "left"
-      details.x         = joyAxisValues[player].x
-      details.y         = joyAxisValues[player].y
-      details.time      = time
-      --print( "Left ", axisLetter, axisNum, player, axisValue )      
-      
+      local jostickValues        = playerAxisValues.left      
+      axisLetter                 = strGSub( axisType, "left", "" )   
+      jostickValues[axisLetter]  = axisValue
+      details                    = {}
+      details.player             = player
+      details.stick              = "left"
+      details.x                  = jostickValues.x
+      details.y                  = jostickValues.y
+      details.time               = time
+      --print( "Left ", axisLetter, axisNum, player, axisValue )            
       post( "onLeftJoystick", details )
+      
    elseif( isRightJoy ) then
-      axisLetter = strGSub( axisType, "right", "" )
-      joyAxisValues[player][axisLetter] = axisValue
-      details = {}
-      details.player    = player
-      details.stick     = "right"
-      details.x         = joyAxisValues[player].x
-      details.y         = joyAxisValues[player].y
-      details.time      = time
-      post( "onRightJoystick", details )
+      local jostickValues        = playerAxisValues.right      
+      axisLetter                 = strGSub( axisType, "right", "" )   
+      jostickValues[axisLetter]  = axisValue
+      details                    = {}
+      details.player             = player
+      details.stick              = "right"
+      details.x                  = jostickValues.x
+      details.y                  = jostickValues.y
+      details.time               = time
       --print( "Right ", axisLetter, axisNum, player, axisValue )            
+      post( "onRightJoystick", details )
+      
    end
    --print( player, axisLetter, axisValue )
    
@@ -130,6 +141,7 @@ local function onAxis( event )
       post( "onJoystick", details )      
       --table.dump(details)
    end
+   
    
    return false
 end

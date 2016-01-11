@@ -95,8 +95,14 @@ function bulletMaker.create( self )
       shooter.parent:insert( bullet )
       bullet.x = shooter.x 
       bullet.y = shooter.y
-      bullet.xScale = shooter.bulletWidth
-      bullet.yScale = shooter.bulletHeight
+      if( common.particleStyle == 1 ) then
+         bullet.xScale = shooter.bulletWidth
+         bullet.yScale = shooter.bulletHeight
+      else
+         bullet.xScale = shooter.bulletWidth/20
+         bullet.yScale = shooter.bulletHeight/20
+      end
+      
       bullet:toBack()
       bullet:setFillColor(unpack(shooter.bulletColor))
       bullet.rotation = fireAngle      

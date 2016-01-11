@@ -53,10 +53,10 @@ function playerMaker.create()
 
    -- The Player
    --
-   local player = display.newImageRect( layers.content, "images/arrow.png", 50, 50 )
+   local player = display.newImageRect( layers.content, "images/player.png", common.playerSize, common.playerSize )
    player.x = centerX
    player.y = centerY
-   physics.addBody( player, "dynamic", { radius = 22, filter = common.myCC:getCollisionFilter( "player" ) }  )
+   physics.addBody( player, "dynamic", { radius = common.playerSize/2 - 3, filter = common.myCC:getCollisionFilter( "player" ) }  )
 
    -- Various player flags and values used in animations, walking, firing, etc.
    player.colliderName        = "player"
@@ -75,7 +75,7 @@ function playerMaker.create()
    player.bulletColor         = { 1, 1, 0 }
    player.bulletSpeed         = 1000
    player.bulletSpeedVariance = 100
-
+   
    -- Left Joystick Listener
    --
    function player.onLeftJoystick( self, event )      
@@ -135,11 +135,17 @@ function playerMaker.create()
             particle.onComplete = function( self )
                self:release()               
             end
+            local toScale 
+            if( common.particleStyle == 1 ) then
+               toScale = 6
+            else
+               toScale = 1
+            end
             transition.to( particle, 
                            { 
                               x = particle.x + mRand( -5, 5 ), y = particle.y + mRand( -5, 5 ), 
                               alpha = 0.5, 
-                              xScale = 6, yScale = 6, 
+                              xScale = toScale, yScale = toScale, 
                               time = mRand(500, 1000), onComplete = particle } )
          end
          

@@ -29,9 +29,8 @@ local angle2Vector		= math2d.angle2Vector
 local scaleVec			   = math2d.scale
 local mAbs              = math.abs
 
-local freeParticles = {}
-local usedParticles = {}
-
+local freeParticles = { }
+local usedParticles = { }
 
 -- 
 --	 reset()
@@ -59,7 +58,16 @@ function particleMgr.get()
       particle = freeParticles[#freeParticles]
       table.remove( freeParticles, #freeParticles )
    else
-      particle = display.newRect( 10000, 10000, 1, 1 )
+      if( common.particleStyle == 1 ) then
+         particle = display.newRect( 100000, 100000, 1, 1 )
+      else
+         particle = display.newCircle( 1, 1, 10 )
+         particle.xScale = 0.05
+         particle.yScale = 0.05
+         particle.x = 100000
+         particle.y = 100000
+      end
+      
       function particle.release(self)
          if( not isValid( self ) ) then return end
          if( not self.inUse ) then return end
@@ -79,6 +87,11 @@ function particleMgr.get()
          self.alpha = 1
          self.xScale = 1
          self.yScale = 1
+         if( common.particleStyle == 1 ) then
+         else
+            self.strokeWidth = 0            
+         end
+         
          table.remove( usedParticles, table.indexOf( usedParticles, self ) )
          freeParticles[#freeParticles+1] = self
          display.currentStage:insert( self )

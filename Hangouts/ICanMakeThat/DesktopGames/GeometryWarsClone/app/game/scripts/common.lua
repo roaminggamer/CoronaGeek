@@ -7,6 +7,24 @@
 
 local common = {}
 
+common.meterEn = false
+
+common.enemies = {}
+
+common.nextLife      = 10000
+common.nextMine      = 15000
+
+common.showSpawnGrid = false
+
+common.particleStyle = 1
+
+common.maxEnemies    = 10
+
+common.startLives    = 3
+common.startMines    = 3
+common.curLives      = common.startLives
+common.curMines      = common.startMines
+
 --
 -- Input Control
 --
@@ -25,7 +43,7 @@ common.currentLevel  = common.startLevel
 --
 -- World Settings
 --
-common.gridSize 	   = 36 -- set to 40 for debugging and demo 80 otherwise
+common.gridSize 	   = 30 --36 -- set to 40 for debugging and demo 80 otherwise
 common.worldWidth 	= 45 --25-- # gridSize units wide
 common.worldHeight   = 35 --15 -- # gridSize units tall
 
@@ -42,10 +60,12 @@ common.downLimit     = common.downBorder - common.gridSize/2
 --
 -- Player Settings
 --
+common.playerSize = 50
 
 --
 -- Enemy Settings
 --
+common.enemySize        = 40
 common.enemyTweenTime   = 500
 common.enemySpawnOffset = 150
 
@@ -62,14 +82,61 @@ listen( "enterFrame", function() common.curFrame = common.curFrame + 1 end )
 local ccmgr = require "plugin.cc"
 
 common.myCC = ccmgr:newCalculator()
-common.myCC:addNames( "player", "enemy", "playerbullet", "enemybullet", "wall", "blackhole", "pickup"  )
-common.myCC:collidesWith( "player", { "enemy", "enemybullet", "wall", "blackhole", "pickup" } )
+common.myCC:addNames( "player", "enemy", "playerbullet", "enemybullet", "wall", "blackhole", "pickup", "spawnSensor"  )
+common.myCC:collidesWith( "player", { "enemy", "enemybullet", "wall", "blackhole", "pickup", "spawnSensor" } )
 common.myCC:collidesWith( "enemy", { "player", "playerbullet", "wall", "blackhole" } )
 
 
 --
 -- Helper Functions
 --
+
+-- Basic collision handler
+--
+common.enemyCollision = function( self, event )
+   if( self.isDestroyed ) then return end
+   local other = event.other
+   local phase = event.phase
+   if( phase ~= "began" ) then return end
+   
+   if( other.colliderName == "player" ) then       
+      common.curLives = common.curLives - 1
+      post("purgeEnemies")
+      timer.performWithDelay( 1,
+         function()
+            other.x = centerX
+            other.y = centerY
+         end )
+      self:selfDestruct()
+      return true
+   end
+   
+   if( other.colliderName == "playerbullet" ) then 
+      post( "onIncrScore", { score = self.value  } )
+      self.isDestroyed = true
+      self:selfDestruct()
+      return false 
+   end
+   return false
+end
+
+--
+-- enemySelfDestruct() - Clean up details about this enemy then destroy it.
+--
+function common.enemySelfDestruct( self )
+   if( self.ranSelfDestruct ) then return end     
+   if( not common.isRunning ) then return end
+   
+   local explosion = require "scripts.explosion"         
+   explosion.create( self.parent, self.x, self.y, 1 )   
+   
+   self.ranSelfDestruct = true      
+   transition.cancel( self )
+   common.enemies[self] = nil      
+   display.remove(self)
+end
+
+
 
 -- Normalize Rotations - Force rotation (number of object.rotation ) to be in range [ 0, 360 )
 --
