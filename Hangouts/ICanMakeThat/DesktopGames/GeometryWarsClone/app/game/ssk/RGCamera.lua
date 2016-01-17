@@ -142,6 +142,71 @@ function camera.tracking( trackObj, world, params )
 	Runtime:addEventListener( "enterFrame", world )
 end
 
+
+function camera.delayedTracking( trackObj, world, params )	
+
+	if( not isValid( world ) ) then return end
+	
+	params = params or {}	
+   local maxRate  = params.maxRate or 100
+	local lockX    = params.lockX 
+	local lockY    = params.lockY
+	local centered = fnn( params.centered, false)
+
+	local lx = 0
+	local ly = 0
+
+	if( centered ) then
+		if( lockX ) then
+			lx = trackObj.x
+		else
+			lx = centerX
+		end
+
+		if( lockY ) then
+			ly = trackObj.y
+		else
+			ly = centerY
+		end
+	else
+		lx = trackObj.x
+		ly = trackObj.y
+	end
+   
+   world.cameraMoving = false
+
+	world.enterFrame = function( self )
+		if( not isValid( world ) ) then 
+			ignore( "enterFrame", world )
+			return 
+		end
+		if( not isValid( trackObj ) ) then 
+			return 
+		end
+      
+      if( world.cameraMoving ) then return end      
+		local dx = 0
+		local dy = 0
+		if(not lockX) then dx = trackObj.x - lx end		
+		if(not lockY) then dy = trackObj.y - ly end
+		if(dx or dy) then
+         world.cameraMoving = true
+         local tx = trackObj.x
+         local ty = trackObj.y
+         world.onComplete = function( self )
+            print("BOOM")
+            self.onComplete = nil
+            self.cameraMoving = false
+            lx = tx
+            ly = ty
+         end
+			transition.to( world, { x = world.x - dx, y = world.y - dy, onComplete = world, time = 1000 } )
+		end
+		return false
+	end
+	Runtime:addEventListener( "enterFrame", world )
+end
+
 -- ==
 --		trackingLooseSquare() - Follows target, but has a deadzone followed by an acceleration zone to gradually move the camera.
 -- ==

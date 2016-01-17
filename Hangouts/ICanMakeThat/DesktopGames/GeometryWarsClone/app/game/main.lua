@@ -13,6 +13,7 @@ display.setStatusBar(display.HiddenStatusBar)
 system.activate("multitouch")
 io.output():setvbuf("no") 
 math.randomseed(os.time());
+native.setProperty( "mouseCursorVisible", false )
 
 ----------------------------------------------------------------------
 --	Globals

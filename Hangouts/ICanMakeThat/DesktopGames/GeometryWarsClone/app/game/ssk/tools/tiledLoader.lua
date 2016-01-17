@@ -94,6 +94,7 @@ function public.load( levelName, layers, makers, params )
             --table.dump(objects[j],nil,"tiledLoader : " .. tostring(j))
             local otype = objects[j].type
             local gid = tonumber(objects[j].gid)
+            print(gid)
                
             local maker = makers[gid]
             if( maker and not excludeObject( objects[j]) ) then 
