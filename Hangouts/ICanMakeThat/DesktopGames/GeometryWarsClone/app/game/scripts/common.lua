@@ -7,18 +7,23 @@
 
 local common = {}
 
-common.meterEn = false
+common.meterEn = true
 
 common.enemies = {}
+
+--common.enemyDebugSpeed = 1
 
 common.nextLife      = 10000
 common.nextMine      = 15000
 
-common.showSpawnGrid = false
+common.showSpawnGrid = true
 
 common.particleStyle = 1
 
-common.maxEnemies    = 10
+common.msPerLevel       = 1000
+common.difficultyStart  = 0
+common.maxEnemies       = 1
+common.maxEnemiesCap    = 100
 
 common.startLives    = 3
 common.startMines    = 3
@@ -28,8 +33,15 @@ common.curMines      = common.startMines
 --
 -- Input Control
 --
---common.inputStyle = "keyboardAndMouse"
-common.inputStyle    = "controller"
+common.forceMode     = "auto"
+--common.forceMode     = "mobile"
+if( onMobile or common.forceMode == "mobile" ) then
+   print("MOBILE MODE")
+   common.inputStyle    = "mobile"
+else
+   print("DESKTOP MODE")
+   common.inputStyle    = "desktop"
+end
 
 --
 -- Game Variables
@@ -90,51 +102,6 @@ common.myCC:collidesWith( "enemy", { "player", "playerbullet", "wall", "blackhol
 --
 -- Helper Functions
 --
-
--- Basic collision handler
---
-common.enemyCollision = function( self, event )
-   if( self.isDestroyed ) then return end
-   local other = event.other
-   local phase = event.phase
-   if( phase ~= "began" ) then return end
-   
-   if( other.colliderName == "player" ) then       
-      common.curLives = common.curLives - 1
-      post("purgeEnemies")
-      timer.performWithDelay( 1,
-         function()
-            other.x = centerX
-            other.y = centerY
-         end )
-      self:selfDestruct()
-      return true
-   end
-   
-   if( other.colliderName == "playerbullet" ) then 
-      post( "onIncrScore", { score = self.value  } )
-      self.isDestroyed = true
-      self:selfDestruct()
-      return false 
-   end
-   return false
-end
-
---
--- enemySelfDestruct() - Clean up details about this enemy then destroy it.
---
-function common.enemySelfDestruct( self )
-   if( self.ranSelfDestruct ) then return end     
-   if( not common.isRunning ) then return end
-   
-   local explosion = require "scripts.explosion"         
-   explosion.create( self.parent, self.x, self.y, 1 )   
-   
-   self.ranSelfDestruct = true      
-   transition.cancel( self )
-   common.enemies[self] = nil      
-   display.remove(self)
-end
 
 
 

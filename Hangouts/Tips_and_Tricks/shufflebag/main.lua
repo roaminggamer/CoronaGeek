@@ -14,19 +14,33 @@ io.output():setvbuf("no")
 local function naive()  
    
    local cards = { "jack.png", "king.png", "queen.png", "ace.png" }
-   
+   local selected = {}
+  
    local group = display.newGroup()
    
    local function showCards( button )
+      selected = {}
       display.remove(group)
       group = display.newGroup()
+
+      local count = 0
       
       for i = 1, 4 do
-         local file = cards[math.random( 1, #cards )]         
+         count = count + 1
+         local file = cards[math.random( 1, #cards )] 
+         
+         while( selected[file] ) do
+            count = count + 1
+            file = cards[math.random( 1, #cards )] 
+         end
+         selected[file] = file
+
+
          local card = display.newImageRect( group, file, 140, 190 )
          card.x = button.x + 160 * i
          card.y = button.y
       end
+      print("Count == ", count )
    end
       
    --

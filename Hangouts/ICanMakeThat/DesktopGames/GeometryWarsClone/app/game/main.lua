@@ -28,6 +28,7 @@ _G.fontColor2  = { 1, 1, 1 }
 ----------------------------------------------------------------------
 -- Include SSK Core (Features I just can't live without.)
 --local ssk 		= require "ssk.loadSSK"
+----[[
 require("ssk_core.globals.variables")
 require("ssk_core.globals.functions")
 require("ssk_core.extensions.display")
@@ -36,6 +37,7 @@ require("ssk_core.extensions.math")
 require("ssk_core.extensions.string")
 require("ssk_core.extensions.table")
 require("ssk_core.extensions.transition_color")
+--]]
 
 local common 	= require "scripts.common"
 local gamePad  = require "scripts.gamePad" 
@@ -75,7 +77,9 @@ local soundMgr = require "scripts.soundMgr"
 ----------------------------------------------------------------------
 -- Inputs
 ----------------------------------------------------------------------
-if( common.inputStyle == "controller" ) then
+if( common.inputStyle == "mobile" ) then   
+elseif( common.inputStyle == "desktop" ) then
+   print("Initialize GamePad")
    require "scripts.gamePad"
 end
 
@@ -96,7 +100,7 @@ local composer 	= require "composer"
 --composer.recycleOnLowMemory = false
 --composer.recycleOnSceneChange = true
 
-composer.gotoScene( "ifc.splash" )
---composer.gotoScene( "ifc.mainMenu", { params = { skipAnimation = true } } )
+--composer.gotoScene( "ifc.splash" )
+composer.gotoScene( "ifc.mainMenu", { params = { skipAnimation = true } } )
 --composer.gotoScene( "ifc.playGUI" )
 

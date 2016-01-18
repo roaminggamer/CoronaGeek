@@ -47,7 +47,7 @@ function public.create( x, y )
    enemy.y = y
    enemy:setFillColor( 1, 1, 1, 0.5 )   
    physics.addBody( enemy, "dynamic", { radius = common.enemySize/2, filter = common.myCC:getCollisionFilter( "enemy" ) } )   
-   enemy.speed = 75   
+   enemy.speed = common.enemyDebugSpeed or 75   
    enemy.currentState = "spawn"
    enemy.createdTime = getTimer()
    enemy.blinkTrans = transition.blink( enemy, { time = 500 } )

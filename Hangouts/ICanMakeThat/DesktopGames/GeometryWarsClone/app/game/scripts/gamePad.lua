@@ -61,8 +61,7 @@ local onKey = function( event )
       
       -- Unified event
       details.button = button
-      post( "onGamePad",  details )
-      
+      post( "onGamePad",  details )      
    end
    
    return false   

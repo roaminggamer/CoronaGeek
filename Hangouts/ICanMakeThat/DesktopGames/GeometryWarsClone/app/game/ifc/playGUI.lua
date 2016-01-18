@@ -32,8 +32,12 @@ function scene:create( event )
    sceneGroup:insert(sceneGroup.overlay)
    
    -- Create a button
-	PushButton( sceneGroup.overlay, left + 45, bottom - 25, "Back", scene.onBack, { labelColor = {0.8,0.2,0.2}, labelSize = 18, width = 80} )
+	PushButton( sceneGroup.overlay, right-45, top + 30, "Back", scene.onBack, { labelColor = {0.8,0.2,0.2}, labelSize = 18, width = 80} )
    sceneGroup.overlay.isVisible = false
+   
+   PushButton( sceneGroup.overlay, right-420, bottom - 45, "", scene.onMine, { labelColor = {0.8,0.2,0.2}, labelSize = 18, width = 80, height = 80} )
+   local tmp = display.newImageRect(  sceneGroup.overlay, "images/minebutton.png", 80, 80 )
+   tmp.x, tmp.y = right-420, bottom - 45
 end
 
 ----------------------------------------------------------------------
@@ -49,6 +53,9 @@ function scene:didEnter( event )
    game.create( sceneGroup )   
    sceneGroup.overlay:toFront()
    sceneGroup.overlay.isVisible = true
+   
+   sceneGroup.overlay.isVisible = (common.inputStyle == "mobile" or onSimulator )
+      
 end
 
 ----------------------------------------------------------------------
@@ -86,6 +93,12 @@ scene.onBack = function ( self, event )
 	}
 	composer.gotoScene( "ifc.mainMenu", options  )	
 	return true
+end
+
+scene.onMine = function ( self, event ) 
+   if( common.curMines <= 0 ) then return end
+   common.curMines = common.curMines - 1
+   post( "purgeEnemies", { getPoints = true } )
 end
 
 

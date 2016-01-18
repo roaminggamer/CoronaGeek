@@ -40,6 +40,8 @@ end
 -- 
 function public.create( group, x, y )
    local style = common.particleStyle
+   
+   if( not isDisplayObject( group ) ) then return end
 
    if( style == 1 ) then
       -- explosion

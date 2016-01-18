@@ -76,6 +76,11 @@ function public.create( group )
    common.curMines      = common.startMines
    
    --
+   -- Reset difficulty
+   common.maxEnemies = 1
+   common.difficultyStart = getTimer()
+   
+   --
    -- Set up rendering layers for this 'game'
    --
    local layers = layersMaker.create( group )
@@ -171,7 +176,7 @@ function public.create( group )
 	-- Start The Camera
 	-- 
 	cameraMgr.attach( player )
-   --cameraMgr.detach()
+   --cameraMgr.detach()   
 	 
 	common.isRunning = true
    
@@ -182,15 +187,34 @@ function public.create( group )
    enemyManager.generate()
    
    huds.create()
+   
+   --
+   -- Inputs
+   --
+   if( common.inputStyle == "mobile" ) then   
+      print("Creating Virtual Joysticks")
+      local twoStick = require "scripts.twoStick"
+      twoStick.create( layers.interfaces, { debugEn = false, joyParams = { doNorm = true, outerRadius = 100 } } )
+      
+   
+   elseif( common.inputStyle == "desktop" ) then
+   end
+   
+   
 end
 
+local function onResetDifficulty()
+   print("Reset difficulty")
+   common.maxEnemies = 1
+   common.difficultyStart = getTimer()
+end
+listen( "onResetDifficulty", onResetDifficulty )
+
+
 --
--- Temporary listener to catch 'onDied' event and restart game.
+-- Lister to catch 'onGameOver' event.  Ends game session and goes to mainMenu
 --
--- We'll handle this better later, but for now, this gives us a 
--- reasonable response to getting hit by enemies.
---
-local function onPlayerDied( )   
+local function onGameOver( )   
    -- Wait till the next frame, then restart (lets this frame's work complete)
    timer.performWithDelay( 1, 
       function ()  
@@ -202,6 +226,7 @@ local function onPlayerDied( )
       end )   
    post( "onSFX", { sfx = "died" } )
 end
-listen( "onPlayerDied", onPlayerDied )
+listen( "onGameOver", onGameOver )
+
 
 return public

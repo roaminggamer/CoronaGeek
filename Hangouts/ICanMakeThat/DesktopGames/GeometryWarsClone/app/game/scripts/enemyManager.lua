@@ -116,6 +116,17 @@ function public.generate( )
       timer.cancel( public.lastTimer )
       public.lastTimer = nil
    end
+   
+   -- Calculate current difficulty
+   local dt = getTimer() - common.difficultyStart   
+   common.maxEnemies = round(dt/common.msPerLevel)
+   
+   if( common.maxEnemies < 1 ) then 
+      common.maxEnemies = 1
+   elseif( common.maxEnemies > common.maxEnemiesCap ) then
+      common.maxEnemies = common.maxEnemiesCap
+   end
+   --print(dt, common.maxEnemies, getTimer(), common.difficultyStart )
 
    local maxEnemies = common.maxEnemies
    --print("Enemy count: ", table.count( common.enemies ), maxEnemies )   
@@ -147,10 +158,10 @@ function public.generate( )
       enemy = diamond.create( spawnX, spawnY )
    end
    
-   enemy.collision = common.enemyCollision
+   enemy.collision = public.enemyCollision
    enemy:addEventListener( "collision" )
    
-   enemy.selfDestruct = common.enemySelfDestruct
+   enemy.selfDestruct = public.enemySelfDestruct
    
    enemy.purgeEnemies = enemy.selfDestruct
    listen( "purgeEnemies", enemy )
@@ -161,6 +172,61 @@ function public.generate( )
    enemy:think()      
 
    public.lastTimer = timer.performWithDelay( common.enemyTweenTime, public.generate )	
+end
+
+
+-- Basic collision handler
+--
+public.enemyCollision = function( self, event )
+   if( self.isDestroyed ) then return end
+   local other       = event.other
+   local phase       = event.phase
+   
+   if( phase ~= "began" ) then return end
+   
+   if( other.colliderName == "player" ) then       
+      common.curLives = common.curLives - 1
+      post("onResetDifficulty")
+      post("purgeEnemies")
+      timer.performWithDelay( 1,
+         function()
+            other.x = centerX
+            other.y = centerY
+         end )
+      self:selfDestruct()
+      return true
+   end
+   
+   if( other.colliderName == "playerbullet" ) then 
+      post( "onIncrScore", { score = self.value  } )
+      self.isDestroyed = true
+      self:selfDestruct()
+      return false 
+   end
+   return false
+end
+
+--
+-- enemySelfDestruct() - Clean up details about this enemy then destroy it.
+--
+function public.enemySelfDestruct( self, event )
+   if( self.ranSelfDestruct ) then return end     
+   if( not common.isRunning ) then return end
+   
+   event = event or {}
+   local getPoints = event.getPoints
+   
+   local explosion = require "scripts.explosion"         
+   explosion.create( self.parent, self.x, self.y, 1 )   
+   
+   if( getPoints ) then
+      post( "onIncrScore", { score = self.value  } )
+   end
+   
+   self.ranSelfDestruct = true      
+   transition.cancel( self )
+   common.enemies[self] = nil      
+   display.remove(self)
 end
 
 

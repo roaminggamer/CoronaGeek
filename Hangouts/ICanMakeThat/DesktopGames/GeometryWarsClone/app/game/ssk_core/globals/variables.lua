@@ -119,6 +119,10 @@ _G.onNook         = (system.getInfo("targetAppStore") == "nook");
 _G.onAmazon       = (system.getInfo("targetAppStore") == "amazon");
 _G.onAndroid      = _G.onAndroid or _G.onNook or _G.onAmazon
 
+_G.onMobile       = _G.onAndroid or _G.oniOS
+_G.onDesktop      = _G.onOSX or _G.onWin
+
+
 
 
 -- =============================================================
