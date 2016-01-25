@@ -30,8 +30,6 @@ function public.load( levelName, layers, makers, params )
    
    local level = require( levelRoot .. levelName )
    
-   
-   
    local layoutScale = params.layoutScale or tonumber(level.properties.layoutScale) or 1
    
    local srcSize  =  level.tilewidth * layoutScale -- level.tileheight Must be the same
@@ -59,7 +57,7 @@ function public.load( levelName, layers, makers, params )
       local minY = -srcSize
       local maxY = (level.height * level.tileheight)  + srcSize
 
-      print( minX, minY, maxX, maxY )
+      --print( minX, minY, maxX, maxY )
 
       excludeObject = function( obj )
          return ( obj.x < minX or obj.x > maxX or obj.y < minY or obj.y > maxY )

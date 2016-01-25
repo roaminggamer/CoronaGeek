@@ -22,6 +22,8 @@ local strSub		= string.sub
 local strFormat 	= string.format
 local strFind     = string.find
 
+local pathSep = ( onWin ) and "\\" or "//"
+
 
 local rgFiles = {}
 
@@ -29,7 +31,7 @@ local rgFiles = {}
 -- The Standard Corona (Base) Directories
 -- =====================================================
 local resourceRoot = system.pathForFile('main.lua', system.ResourceDirectory)
-local documentRoot = system.pathForFile('', system.DocumentsDirectory)
+local documentRoot = system.pathForFile('', system.DocumentsDirectory) .. pathSep
 if( not resourceRoot ) then
 	resourceRoot = ""
 else
@@ -308,7 +310,7 @@ end
 
 
 --
--- duplicateFile( tbl, path, base ) -- Save a table. (base defaults to rgFile.DesktopDirectory)
+-- EFM - TBD
 function rgFiles.osCopy( src, dst, srcBase, dstBase )
    srcBase = srcBase or rgFiles.DesktopDirectory
    dstBase = dstBase or system.DocumentsDirectory
@@ -320,7 +322,8 @@ function rgFiles.osCopy( src, dst, srcBase, dstBase )
       srcPath = rgFiles.getPath( "/" .. src, srcBase )
       srcPath = strGSub( srcPath, "//", "/" ) 
    end
-   local dstPath = system.pathForFile( dst, dstBase )      
+   
+   dstPath = system.pathForFile( dst, dstBase )      
    
    print(srcPath,dstPath)
 
@@ -329,6 +332,18 @@ function rgFiles.osCopy( src, dst, srcBase, dstBase )
 		command = "copy /Y " .. '"' .. srcPath  .. '" "' .. dstPath .. '"'
 	else
 		command = "cp " .. '"' .. srcPath  .. '" "' .. dstPath .. '"'
+	end
+	print(command)
+	local retVal =  os.execute( command )
+	return ( retVal == 0 ) 
+end
+
+function rgFiles.directOSCopy( src, dst )
+	local command  
+	if(onWin) then
+		command = "copy /Y " .. '"' .. src  .. '" "' .. dst .. '"'
+	else
+		command = "cp " .. '"' .. src  .. '" "' .. dst .. '"'
 	end
 	print(command)
 	local retVal =  os.execute( command )

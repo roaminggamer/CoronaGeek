@@ -1,6 +1,6 @@
 --require("mobdebug").start() -- ZeroBrane Users
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2015 
+-- Copyright Roaming Gamer, LLC. 2009-2016 
 -- =============================================================
 -- This content produced for Corona Geek Hangouts audience.
 -- You may use any and all contents in this example to make a game or app.
@@ -30,6 +30,7 @@ local function newSensor( x, y, size )
    tmp.canSpawn = true
    tmp:setFillColor(0,1,0)
    tmp.alpha = 0.15
+   tmp.strokeWidth = 1
 
    -- Add body 
    physics.addBody( tmp, "static", { isSensor = true } )
