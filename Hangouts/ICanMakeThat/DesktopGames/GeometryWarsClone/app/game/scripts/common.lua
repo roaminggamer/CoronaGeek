@@ -7,50 +7,13 @@
 
 local common = {}
 
-common.meterEn = true
+-- Debug Features
+common.meterEn       = false
+common.showSpawnGrid = false
+common.showCounts    = false
 
-common.enemies = {}
-
---common.enemyDebugSpeed = 1
-
-common.nextLife      = 10000
-common.nextMine      = 15000
-
-common.showSpawnGrid = true
-
-common.particleStyle = 1
-
-common.msPerLevel       = 1000
-common.difficultyStart  = 0
-common.maxEnemies       = 1
-common.maxEnemiesCap    = 100
-
-common.startLives    = 3
-common.startMines    = 3
-common.curLives      = common.startLives
-common.curMines      = common.startMines
-
---
--- Input Control
---
-common.forceMode     = "auto"
---common.forceMode     = "mobile"
-if( onMobile or common.forceMode == "mobile" ) then
-   print("MOBILE MODE")
-   common.inputStyle    = "mobile"
-else
-   print("DESKTOP MODE")
-   common.inputStyle    = "desktop"
-end
-
---
--- Game Variables
---
-common.debugEn		= false
-
-common.startLevel    = 1
-common.currentLevel  = common.startLevel 
-
+-- Optimizations
+common.particleStyle = 1 -- 1 discrete lines; 2 discrete circles 
 
 --
 -- World Settings
@@ -69,23 +32,43 @@ common.rightLimit    = common.rightBorder - common.gridSize/2
 common.upLimit       = common.upBorder + common.gridSize/2
 common.downLimit     = common.downBorder - common.gridSize/2
 
---
--- Player Settings
---
-common.playerSize = 50
 
---
--- Enemy Settings
---
+-- Player
+common.playerSize    = 50
+common.nextLife      = 10000 -- Get new life every 10K points
+common.nextMine      = 15000 -- Get new mine every 15K points
+common.startLives    = 3 -- Number of lives to start with on fresh game
+common.startMines    = 3 -- Number of mines to start with on fresh game
+common.curLives      = common.startLives
+common.curMines      = common.startMines
+
+-- Enemies
 common.enemySize        = 40
 common.enemyTweenTime   = 500
 common.enemySpawnOffset = 150
+common.enemies          = {}
+--common.enemyDebugSpeed = 1 -- uncomment and set to some pixels-per-second value while debbugging
+common.maxEnemies       = 1      -- (starting) Max Enemies
+common.maxEnemiesCap    = 100    -- (all time) Max Enemies
+
+
+-- Difficulty
+common.msPerLevel       = 1000   -- Increase difficulty one level per second
+common.difficultyStart  = 0      -- Start at 0 difficulty
+
 
 --
--- Current Frame Tracker
+-- Input Control Selection
 --
-common.curFrame = 0
-listen( "enterFrame", function() common.curFrame = common.curFrame + 1 end )
+common.forceMode     = "auto" -- "auto" - Select using game logic; 
+                              -- "mobile"/"desktop" - Force to one of these modes for testing
+
+if( onMobile or common.forceMode == "mobile" ) then
+   common.inputStyle    = "mobile"
+else
+   common.inputStyle    = "desktop"
+end
+
 
 
 --
@@ -102,8 +85,6 @@ common.myCC:collidesWith( "enemy", { "player", "playerbullet", "wall", "blackhol
 --
 -- Helper Functions
 --
-
-
 
 -- Normalize Rotations - Force rotation (number of object.rotation ) to be in range [ 0, 360 )
 --

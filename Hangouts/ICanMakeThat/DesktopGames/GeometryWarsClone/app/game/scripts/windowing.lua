@@ -22,7 +22,7 @@ local function onKey( event )
 	--print("\n ---------------------------- onKey() @ ", getTimer() )
 	--table.dump(event)
 
-	if( phase == "down" and key == "enter" and isCtrlDown  ) then -- and isAltDown ) then
+	if( phase == "down" and key == "enter" and isCtrlDown  ) then 
 		print("Toggle screen mode")
 		public.toggleFullScreen()
 	end
@@ -33,17 +33,17 @@ local function onKey( event )
 	end
 
 
-	if( phase == "down" and key == "f" and isCtrlDown ) then -- and isAltDown ) then
+	if( phase == "down" and key == "f" and isCtrlDown ) then
 		print("Toggle screen mode")
 		native.setProperty( "windowMode", "fullscreen" )  -- fullscreen, maximized, normal
 	end
 
-	if( phase == "down" and key == "n" and isCtrlDown  ) then -- and isAltDown ) then
+	if( phase == "down" and key == "n" and isCtrlDown  ) then -
 		print("Toggle screen mode")
 		native.setProperty( "windowMode", "normal" )  -- fullscreen, maximized, normal
 	end
 
-	if( phase == "down" and key == "m" and isCtrlDown  ) then -- and isAltDown ) then
+	if( phase == "down" and key == "m" and isCtrlDown  ) then
 		print("Toggle screen mode")
 		native.setProperty( "windowMode", "maximized" )  -- fullscreen, maximized, normal
 	end

@@ -17,13 +17,16 @@ end
 --
 -- Note: 'key' events from game pad are being captured in individual modules (playerMaker.lua, etc.).
 --
-
 local buttons        = { "buttonA", "buttonB",  "buttonX", "buttonY", "buttonStart", "buttonSelect" }
 local dpad           = { "left", "right", "up", "down"  }
 local phaseConvert   = { down = "began", up = "ended" }
+
+--
+-- Listen for the 'buttons'/'dpad' keys and if detected, generate an onXYZ event. i.e. onButtonA or onButtonB
+--
 local onKey = function( event )   
    --table.dump( event )
-   table.print_r(event)         
+   --table.print_r(event)         
    -- Check for buttons we care about
    local i = 1
    local button 
@@ -72,7 +75,7 @@ listen( "key", onKey )
 --
 -- Basic Joystick Listener for joysticks on gamePad
 --
--- This listener takes the 'axis' event and 'cleans it up' a bit.
+-- This listener takes the 'axis' event and 'cleans it up' a bit, then spawn and event: onLeftJoystick or onRightJoystick
 --
 --
 local sensitivity = 0.15
@@ -104,8 +107,7 @@ local function onAxis( event )
    
    local playerAxisValues  = joyAxisValues[player]   
    
-   --print( isLeftJoy, isRightJoy, player, axisLetter )   
-   
+   --print( isLeftJoy, isRightJoy, player, axisLetter )      
    if( isLeftJoy ) then
       local jostickValues        = playerAxisValues.left      
       axisLetter                 = strGSub( axisType, "left", "" )   
@@ -139,8 +141,7 @@ local function onAxis( event )
       --post( "onGamePad", details )
       post( "onJoystick", details )      
       --table.dump(details)
-   end
-   
+   end   
    
    return false
 end

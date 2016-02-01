@@ -42,7 +42,11 @@ function public.create( group, x, y )
    local style = common.particleStyle
    
    if( not isDisplayObject( group ) ) then return end
-
+   
+   -- STYLE 1
+   --
+   -- Use 90 lines radiating all round the point if explosion.
+   --
    if( style == 1 ) then
       -- explosion
       for i = 1, 359, 4 do
@@ -72,6 +76,10 @@ function public.create( group, x, y )
                         } )
       end
    
+   -- STYLE 2
+   --
+   -- Use 2..5 circles centered and then randomly offset from the point of explosion.
+   --
    elseif( style == 2 ) then
       local total = math.random(2,5)
       local offset = 15

@@ -31,11 +31,11 @@ local huds              = require "scripts.huds"
 ----------------------------------------------------------------------
 --								DECLARATIONS						--
 ----------------------------------------------------------------------
-
 -- Variables
-
+-- none.
 
 -- Forward Declarations
+-- none.
 
 -- Localizations
 local mRand             = math.random
@@ -58,7 +58,6 @@ function public.destroy( )
    playerMaker.destroy()
    layersMaker.destroy()
 end
-
 
 -- 
 -- create() - Creates a new level.
@@ -129,8 +128,7 @@ function public.create( group )
          self:setFillColor(0,1,0)
       end
       return false
-   end
-   
+   end   
    
    local totalWidth = common.worldWidth * common.gridSize 
    local totalHeight = common.worldHeight * common.gridSize 

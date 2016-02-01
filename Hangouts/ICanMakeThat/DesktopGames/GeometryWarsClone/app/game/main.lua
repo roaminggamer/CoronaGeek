@@ -18,8 +18,11 @@ native.setProperty( "mouseCursorVisible", false )
 ----------------------------------------------------------------------
 --	Globals
 ----------------------------------------------------------------------
+
+--
+-- These global values are used for text and buttons throughout the app
+--
 _G.gameFont    = "Aileron Thin"
---_G.gameFont    = "Space Cruiser Pro"
 _G.fontColor   = { 0xa4/255, 0xee/255, 0x47/255 }
 _G.fontColor2  = { 1, 1, 1 }
 
@@ -27,8 +30,6 @@ _G.fontColor2  = { 1, 1, 1 }
 --	Requires
 ----------------------------------------------------------------------
 -- Include SSK Core (Features I just can't live without.)
---local ssk 		= require "ssk.loadSSK"
-----[[
 require("ssk_core.globals.variables")
 require("ssk_core.globals.functions")
 require("ssk_core.extensions.display")
@@ -37,26 +38,30 @@ require("ssk_core.extensions.math")
 require("ssk_core.extensions.string")
 require("ssk_core.extensions.table")
 require("ssk_core.extensions.transition_color")
---]]
 
+
+-- Load common and gamePad modules so they get initialized
+--
 local common 	= require "scripts.common"
 local gamePad  = require "scripts.gamePad" 
-local math2d   = require "plugin.math2d"
+
 
 -- Push Button and Toggle Button OOP Classes (from a prior hangout)
+-- Load these to so they will get inserted into the global space.
 require "scripts.buttonClasses.pushButtonClass"
 require "scripts.buttonClasses.toggleButtonClass"
 require "scripts.buttonClasses.controllerPushButtonClass"
 
--- Start listening for key inputs that affect windowing (full screen, minimize, maximize, etc. )
-if( not onSimulator ) then
+-- Are we running on a desktop build?
+-- If so, start listening for key inputs that affect windowing (full screen, minimize, maximize, etc. )
+--
+-- Tips: onSimulator and onDesktop can be found in ssk_core/globals/variables.lua
+if( not onSimulator and onDesktop ) then
    require "scripts.windowing"
 end
 
-
-
 ----------------------------------------------------------------------
--- Sound
+-- Run FPS and Memory Meters?
 ----------------------------------------------------------------------
 if( common.meterEn ) then
    local meter = require "scripts.meter"

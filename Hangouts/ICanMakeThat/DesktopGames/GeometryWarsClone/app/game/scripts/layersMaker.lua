@@ -8,7 +8,6 @@ local public = {}
 
 local common 			   = require "scripts.common"
 
-
 -- Variables
 local layers
 

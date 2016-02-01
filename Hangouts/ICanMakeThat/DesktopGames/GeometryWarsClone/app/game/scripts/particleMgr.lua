@@ -53,10 +53,19 @@ end
 --	 get()
 -- 
 function particleMgr.get()   
-   local particle    
+   local particle   
+   
+   -- Do we have a free particle ready to re-use?
+   --
+   
+   --
+   -- Yes - Grab it, and return it.
    if( #freeParticles > 0 ) then 
       particle = freeParticles[#freeParticles]
       table.remove( freeParticles, #freeParticles )
+   
+   --
+   -- No - Create a new particle (line or circle as per setting in common.lua)
    else
       if( common.particleStyle == 1 ) then
          particle = display.newRect( 100000, 100000, 1, 1 )
@@ -68,6 +77,11 @@ function particleMgr.get()
          particle.y = 100000
       end
       
+      -- This method will 'clean up' the particle and put it into the 'unused' list
+      -- when we are done with it.
+      --
+      -- This part is a bit costly, but should be cheaper than making new particles every time.
+      --
       function particle.release(self)
          if( not isValid( self ) ) then return end
          if( not self.inUse ) then return end

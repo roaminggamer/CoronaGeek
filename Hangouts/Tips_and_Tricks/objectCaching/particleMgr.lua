@@ -91,8 +91,8 @@ function particleMgr.get( particleStyle, caching )
          function particle.release(self)
             --print("CACHE RELEASE", self.inUse )
             if( not self.inUse ) then return end            
-            self.x = 10000
-            self.y = 10000
+            self.x = 100000
+            self.y = 100000
             self.inUse = false
             table.remove( usedParticles, table.indexOf( usedParticles, self ) )
             freeParticles[#freeParticles+1] = self
@@ -102,7 +102,7 @@ function particleMgr.get( particleStyle, caching )
          particle.inUse = true
          usedParticles[#usedParticles+1] = particle
       else
-         particle.release = display.remove
+         particle.release = display.remove      
       end
       
       --print("CREATED NEW", #usedParticles, #freeParticles )

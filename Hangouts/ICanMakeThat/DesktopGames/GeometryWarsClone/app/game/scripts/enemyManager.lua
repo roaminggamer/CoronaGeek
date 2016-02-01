@@ -34,9 +34,8 @@ local angle2Vector		= math2d.angle2Vector
 local scaleVec			   = math2d.scale
 
 
-
 -- 
---	 destroy()
+--	 destroy() - Stop spawning and clear 'enemies' list.
 -- 
 function public.destroy()
    if( public.lastTimer ) then
@@ -47,14 +46,14 @@ function public.destroy()
 end
 
 -- 
---	 create()
+--	 create() -- Cleanup just in case; All other work done by generate() below.
 -- 
 function public.create( )
    public.destroy()   
 end
 
 -- 
---	 count()
+--	 count() -- Return total number of enemies on screen.
 -- 
 function public.getCount()
    return table.count( common.enemies )
@@ -73,29 +72,9 @@ function public.getRandom()
    return list[mRand(1,#list)]   
 end
 
--- 
---	 getNearest() - Return a random enemy
--- 
-function public.getNearest( obj )
-   if( not common.isRunning ) then return nil end
-   
-   local dist = math.huge
-   local nearest   
-   
-   for k,v in pairs( common.enemies ) do
-      local vec = diffVec( v, obj )
-      local len2 = len2Vec( vec )
-      if( not v.isDestroyed and len2 < dist ) then 
-         dist = len2
-         nearest = v
-      end
-   end   
-   return nearest
-end
-
 
 -- 
---	 cancelGenerate()
+--	 cancelGenerate()  -- Stop the generator.
 -- 
 function public.cancelGenerate( )
    if( public.lastTimer ) then 
@@ -106,12 +85,14 @@ end
 
 
 -- 
---	 generate()
+--	 generate() -- Generate one new enemiy every N milliseconds, up to  the
+--                maximum number of enemies as determined by the current difficulty.
 -- 
 function public.generate( )
    if( not common.isRunning ) then return end
    if( not isValid( common.player ) ) then return end
    
+   -- Cancel any 'dangling' timer (just in case)
    if( public.lastTimer ) then 
       timer.cancel( public.lastTimer )
       public.lastTimer = nil
@@ -121,6 +102,7 @@ function public.generate( )
    local dt = getTimer() - common.difficultyStart   
    common.maxEnemies = round(dt/common.msPerLevel)
    
+   -- How many enemies should we have on the screen?
    if( common.maxEnemies < 1 ) then 
       common.maxEnemies = 1
    elseif( common.maxEnemies > common.maxEnemiesCap ) then
@@ -130,11 +112,15 @@ function public.generate( )
 
    local maxEnemies = common.maxEnemies
    --print("Enemy count: ", table.count( common.enemies ), maxEnemies )   
+   
+   -- If we are at 'maxEnemies' do not spawn, just come back later and check again.
    if( table.count( common.enemies )  >= maxEnemies ) then 
       public.lastTimer = timer.performWithDelay( common.enemyTweenTime, public.generate  )	
       return 
    end 
    
+   -- Spawn an enemy by selecting a 'safe to spawn' location (via spawn grids) and then randomly generate
+   -- an enemy somewhere in the bounds of that grid position.
    local spawnGrids = {}
    for k,v in pairs(common.spawnGrid) do
       if( v.canSpawn == true ) then
@@ -149,28 +135,28 @@ function public.generate( )
    local spawnY = spawnGrid.y - spawnGrid.contentHeight/2 + math.random(common.enemySize, spawnGrid.contentHeight-common.enemySize)
    spawnGrid:setFillColor(1,1,0)
    
-   
+   -- Now that we know where to put the enemy, let's choose the type randomly and create it.
    local enemy
-
    if( math.random(1,100) > 50 ) then
       enemy = pinwheel.create( spawnX, spawnY )
    else
       enemy = diamond.create( spawnX, spawnY )
    end
    
+   -- Attach collision, selfDestruct, and purgeEnemies methods/listeners to this enemy
    enemy.collision = public.enemyCollision
-   enemy:addEventListener( "collision" )
-   
-   enemy.selfDestruct = public.enemySelfDestruct
-   
+   enemy:addEventListener( "collision" )   
+   enemy.selfDestruct = public.enemySelfDestruct   
    enemy.purgeEnemies = enemy.selfDestruct
    listen( "purgeEnemies", enemy )
       
+   -- Store a reference to the enemy in our 'enemies' table
    common.enemies[enemy] = enemy
    
-   
+   -- Tell the enemy to start doing it's evil work....
    enemy:think()      
 
+   -- Come back in a bit and try to spawn a new enemy.
    public.lastTimer = timer.performWithDelay( common.enemyTweenTime, public.generate )	
 end
 
@@ -184,6 +170,8 @@ public.enemyCollision = function( self, event )
    
    if( phase ~= "began" ) then return end
    
+   -- If 'other' is a player, purge all enemies, move the player back to the center of the screen, and reset the diffuculty level
+   -- 
    if( other.colliderName == "player" ) then       
       common.curLives = common.curLives - 1
       post("onResetDifficulty")
@@ -197,6 +185,7 @@ public.enemyCollision = function( self, event )
       return true
    end
    
+   -- If 'other' is a bullet, destroy the enemy and give the player some points.
    if( other.colliderName == "playerbullet" ) then 
       post( "onIncrScore", { score = self.value  } )
       self.isDestroyed = true
@@ -219,6 +208,8 @@ function public.enemySelfDestruct( self, event )
    local explosion = require "scripts.explosion"         
    explosion.create( self.parent, self.x, self.y, 1 )   
    
+   -- If getPoints is set to try, give the player some points for destroying this enemy.
+   -- 
    if( getPoints ) then
       post( "onIncrScore", { score = self.value  } )
    end

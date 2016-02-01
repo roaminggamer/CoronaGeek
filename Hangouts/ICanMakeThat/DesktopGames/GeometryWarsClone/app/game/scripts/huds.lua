@@ -29,9 +29,10 @@ local particleMgr       = require "scripts.particleMgr"
 ----------------------------------------------------------------------
 
 -- Variables
-
+--none.
 
 -- Forward Declarations
+--none.
 
 -- Localizations
 local mRand             = math.random
@@ -182,28 +183,29 @@ function public.create( group )
       return false
    end
    listen( "onButtonA", minesHUD )      
-   
       
    
    -- Particle HUD & Max Enemies HUD
    --
-   local phud = display.newText( layers.interfaces, "0 / 0 / 0 ", right - 20, bottom - 10, _G.gameFont, 30 )
-   phud.anchorX = 1
-   phud.anchorY = 1
-   
-   local maxEnemies = display.newText( layers.interfaces, "1", right - 20, phud.y - phud.contentHeight - 10, _G.gameFont, 30 )
-   maxEnemies.anchorX = 1
-   maxEnemies.anchorY = 1
-   maxEnemies:setFillColor(1,0,0)
-   
-   function phud.enterFrame( self )
-      local particleMgr       = require "scripts.particleMgr"
-      local f,u,t = particleMgr.getCounts()      
-      self.text = f .. " / " .. u .. " / " ..  t      
-      maxEnemies.text = common.maxEnemies
+   if( common.showCounts ) then
+      local phud = display.newText( layers.interfaces, "0 / 0 / 0 ", right - 20, bottom - 10, _G.gameFont, 30 )
+      phud.anchorX = 1
+      phud.anchorY = 1
+      
+      local maxEnemies = display.newText( layers.interfaces, "1", right - 20, phud.y - phud.contentHeight - 10, _G.gameFont, 30 )
+      maxEnemies.anchorX = 1
+      maxEnemies.anchorY = 1
+      maxEnemies:setFillColor(1,0,0)
+      
+      function phud.enterFrame( self )
+         local particleMgr       = require "scripts.particleMgr"
+         local f,u,t = particleMgr.getCounts()      
+         self.text = f .. " / " .. u .. " / " ..  t      
+         maxEnemies.text = common.maxEnemies
+      end
+      listen( "enterFrame", phud )
    end
-   listen( "enterFrame", phud )
-   
+      
 end
 
 

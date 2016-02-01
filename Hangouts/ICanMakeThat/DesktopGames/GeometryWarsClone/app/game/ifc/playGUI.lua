@@ -31,13 +31,18 @@ function scene:create( event )
    sceneGroup.overlay = display.newGroup()
    sceneGroup:insert(sceneGroup.overlay)
    
-   -- Create a button
-	PushButton( sceneGroup.overlay, right-45, top + 30, "Back", scene.onBack, { labelColor = {0.8,0.2,0.2}, labelSize = 18, width = 80} )
-   sceneGroup.overlay.isVisible = false
    
-   PushButton( sceneGroup.overlay, right-420, bottom - 45, "", scene.onMine, { labelColor = {0.8,0.2,0.2}, labelSize = 18, width = 80, height = 80} )
-   local tmp = display.newImageRect(  sceneGroup.overlay, "images/minebutton.png", 80, 80 )
-   tmp.x, tmp.y = right-420, bottom - 45
+   -- Create a button
+   if( onSimulator ) then
+      PushButton( sceneGroup.overlay, right-45, top + 30, "Back", scene.onBack, { labelColor = {0.8,0.2,0.2}, labelSize = 18, width = 80} )
+      sceneGroup.overlay.isVisible = false
+   end
+   
+   if( common.inputStyle == "mobile" ) then
+      PushButton( sceneGroup.overlay, right-420, bottom - 45, "", scene.onMine, { labelColor = {0.8,0.2,0.2}, labelSize = 18, width = 80, height = 80} )
+      local tmp = display.newImageRect(  sceneGroup.overlay, "images/minebutton.png", 80, 80 )
+      tmp.x, tmp.y = right-420, bottom - 45
+   end
 end
 
 ----------------------------------------------------------------------
@@ -103,7 +108,6 @@ end
 
 
 function scene.key( self, event )      
-   table.dump(event)
    if( not enableKeys ) then return false end
    
    

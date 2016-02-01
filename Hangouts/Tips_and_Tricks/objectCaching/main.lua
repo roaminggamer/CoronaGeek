@@ -42,9 +42,11 @@ local function runTest( style, instances, useCaching )
          objects = {}
          for i = 1, instances do      
             local obj = particleMgr.get( style, useCaching )
+
             obj:setFillColor( mRand(), mRand(), mRand() )
             obj.x = mRand( left + 10, right - 10 )
             obj.y = mRand( top + 10, bottom - 10 )
+
             objects[#objects+1] = obj
          end
       else

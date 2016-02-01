@@ -1,7 +1,8 @@
 -- =============================================================
 -- Copyright Roaming Gamer, LLC. 2009-2015
 -- =============================================================
--- One Touch Input
+-- Joystick code - Extracted from SSK and modified slightly to be 
+-- consistent with gamePad output format.
 -- =============================================================
 -- 								License
 -- =============================================================
@@ -74,7 +75,7 @@ end
 local joy = {}
 
 -- =======================
--- ====================== Joystick Builder
+-- ====================== Virtual Joystick Builder
 -- =======================
 -- ==
 --    joy:createJoystick( ) - Creates a simple joystick input device on the screen.

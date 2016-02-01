@@ -1,7 +1,7 @@
 -- =============================================================
 -- Copyright Roaming Gamer, LLC. 2009-2015
 -- =============================================================
--- Two Stick - Split-Screen Virtual Joystick Builder
+-- Two Stick - Split-Screen Virtual Joystick Builder (extracted for SSK)
 -- =============================================================
 -- 								License
 -- =============================================================
@@ -51,16 +51,6 @@ local function create( group, params )
    rightInputObj:setFillColor( unpack( rightFill ) )
    rightInputObj.myEventName = leftEventName
    rightInputObj.isHitTestable = true   
-
-   --[[
-	local left = newRect( inputs, centerX - fullw/4, centerY,
-		{ w = fullw/2, h = fullh, fill = leftFill, alpha = alpha, 
-		  myEventName = leftEventName, myFill = leftFill, isHitTestable = true })
-
-	local right = newRect( inputs, centerX + fullw/4, centerY,
-		{ w = fullw/2, h = fullh, fill = rightFill, alpha = alpha, 
-		  myEventName = rightEventName, myFill = rightFill, isHitTestable = true })
-   --]]
 
 	leftJoyParams.inputObj = leftInputObj
 	leftJoyParams.eventName = leftEventName
