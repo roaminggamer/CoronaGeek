@@ -39,6 +39,8 @@ function bulletMaker.destroy()
    bulletMaker.bullets = {}   
 end
 
+
+-- HANGOUT 179 -- The bullet 'create' function starts here
 -- 
 --	 create()
 -- 
@@ -69,7 +71,7 @@ function bulletMaker.create( self )
       start = 2
       spreadCount = 1
    end   
-   for i = start, shooter.bulletsPerShot do
+   for i = start, shooter.bulletsPerShot do -- HANGOUT 179 - Control 'shots per second'
       -- 
       -- Fire Angle Calc (for multiple bullets per shot)
       --
@@ -85,6 +87,7 @@ function bulletMaker.create( self )
             spreadMult = -1 * spreadCount
          end
       end
+      -- HANGOUT 179 - 'fireAngle' is the spread between streams of bullets.      
       fireAngle = fireAngle + spreadMult * (shooter.bulletSpread + mRand( -1, 1 ) )
             
       -- 
@@ -95,18 +98,23 @@ function bulletMaker.create( self )
       shooter.parent:insert( bullet )
       bullet.x = shooter.x 
       bullet.y = shooter.y
+      
+      -- HANGOUT 179 - Changing bullet size is straight forward
       if( common.particleStyle == 1 ) then
-         bullet.xScale = shooter.bulletWidth
-         bullet.yScale = shooter.bulletHeight
+         bullet.xScale = shooter.bulletWidth  
+         bullet.yScale = shooter.bulletHeight 
       else
          bullet.xScale = shooter.bulletWidth/20
          bullet.yScale = shooter.bulletHeight/20
       end
       
       bullet:toBack()
-      bullet:setFillColor(unpack(shooter.bulletColor))
+      bullet:setFillColor(unpack(shooter.bulletColor)) -- HANGOUT 179 - Easily change color
       bullet.rotation = fireAngle      
-      physics.addBody( bullet, "dynamic", { radius = shooter.bulletHeight/2, filter = common.myCC:getCollisionFilter( colliderName ), isBullet = true, isSensor = true }  )
+      physics.addBody( bullet, "dynamic", 
+                      { radius = shooter.bulletHeight/2, 
+                        filter = common.myCC:getCollisionFilter( colliderName ), 
+                        isBullet = true, isSensor = true }  )
       bullet.hasBody = true
       bullet.colliderName = colliderName
       

@@ -64,13 +64,13 @@ common.forceMode     = "auto" -- "auto" - Select using game logic;
                               -- "mobile"/"desktop" - Force to one of these modes for testing
 
 if( onMobile or common.forceMode == "mobile" ) then
-   common.inputStyle    = "mobile"
+   common.inputStyle    = "mobile" 
 else
    common.inputStyle    = "desktop"
 end
 
 
-
+-- HANGOUT 179 / 180+ - This code sets up the collision 'filters' for our game using names instead of math.. :)
 --
 -- Collision Calculator For Easy Collision Calculations
 --

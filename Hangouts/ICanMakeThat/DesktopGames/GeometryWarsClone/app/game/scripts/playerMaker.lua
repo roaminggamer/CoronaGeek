@@ -58,6 +58,7 @@ function playerMaker.create()
    player.y = centerY
    physics.addBody( player, "dynamic", { radius = common.playerSize/2 - 3, filter = common.myCC:getCollisionFilter( "player" ) }  )
 
+   -- HANGOUT 179
    -- Various player flags and values used in animations, walking, firing, etc.
    player.colliderName        = "player"
    player.fireAngle           = 0
@@ -75,6 +76,9 @@ function playerMaker.create()
    player.bulletColor         = { 1, 1, 0 }
    player.bulletSpeed         = 1000
    player.bulletSpeedVariance = 100
+   
+   -- HANGOUT 179
+   --timer.performWithDelay( 3000, function() player.bulletsPerShot = 15 end )
    
    -- Left Joystick Listener
    --
@@ -112,6 +116,7 @@ function playerMaker.create()
       end
       
       local sensitivity = 0.15
+
 
       -- Facing 	
       --	

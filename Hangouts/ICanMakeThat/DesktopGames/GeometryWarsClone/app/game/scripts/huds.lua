@@ -144,7 +144,7 @@ function public.create( group )
    listen( "enterFrame", livesHUD )      
    --timer.performWithDelay( 1000, function() common.curLives = 5 end )
          
-   
+   -- HANGOUT 180? Mines
    -- Mines HUD
    --   
    display.setDefault( "textureWrapX", "repeat" )
@@ -172,6 +172,12 @@ function public.create( group )
    listen( "enterFrame", minesHUD )      
    --timer.performWithDelay( 1000, function() common.curMines = 5 end )
    
+   
+   -- onButtonA Event Listener (from gamePad code)
+   --
+   -- If this listener is triggered and if we have mines left, post
+   -- a 'purgeEnemies' event (search code for string 'purgeEnemies'
+   --
    function minesHUD.onButtonA( self, event )
       if( autoIgnore( "onButtonA", self ) ) then return end
       if( common.curMines <= 0 ) then return end

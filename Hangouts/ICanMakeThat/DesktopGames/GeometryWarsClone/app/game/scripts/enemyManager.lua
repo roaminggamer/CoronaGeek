@@ -142,12 +142,12 @@ function public.generate( )
    else
       enemy = diamond.create( spawnX, spawnY )
    end
-   
+      
    -- Attach collision, selfDestruct, and purgeEnemies methods/listeners to this enemy
    enemy.collision = public.enemyCollision
    enemy:addEventListener( "collision" )   
    enemy.selfDestruct = public.enemySelfDestruct   
-   enemy.purgeEnemies = enemy.selfDestruct
+   enemy.purgeEnemies = enemy.selfDestruct -- HANGOUT 180? Mines
    listen( "purgeEnemies", enemy )
       
    -- Store a reference to the enemy in our 'enemies' table
@@ -175,7 +175,7 @@ public.enemyCollision = function( self, event )
    if( other.colliderName == "player" ) then       
       common.curLives = common.curLives - 1
       post("onResetDifficulty")
-      post("purgeEnemies")
+      post("purgeEnemies") -- HANGOUT 180? Mines
       timer.performWithDelay( 1,
          function()
             other.x = centerX
@@ -195,6 +195,7 @@ public.enemyCollision = function( self, event )
    return false
 end
 
+-- HANGOUT 180? Mines
 --
 -- enemySelfDestruct() - Clean up details about this enemy then destroy it.
 --

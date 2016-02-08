@@ -38,6 +38,7 @@ function scene:create( event )
       sceneGroup.overlay.isVisible = false
    end
    
+   -- HANGOUT 180? Mines
    if( common.inputStyle == "mobile" ) then
       PushButton( sceneGroup.overlay, right-420, bottom - 45, "", scene.onMine, { labelColor = {0.8,0.2,0.2}, labelSize = 18, width = 80, height = 80} )
       local tmp = display.newImageRect(  sceneGroup.overlay, "images/minebutton.png", 80, 80 )
@@ -100,10 +101,12 @@ scene.onBack = function ( self, event )
 	return true
 end
 
+-- Listener for 'mine' button touch in mobile version of game
+--
 scene.onMine = function ( self, event ) 
    if( common.curMines <= 0 ) then return end
    common.curMines = common.curMines - 1
-   post( "purgeEnemies", { getPoints = true } )
+   post( "purgeEnemies", { getPoints = true } ) -- HANGOUT 180? Mines
 end
 
 
