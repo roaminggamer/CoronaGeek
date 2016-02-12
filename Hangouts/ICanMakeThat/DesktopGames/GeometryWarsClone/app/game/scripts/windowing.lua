@@ -38,7 +38,7 @@ local function onKey( event )
 		native.setProperty( "windowMode", "fullscreen" )  -- fullscreen, maximized, normal
 	end
 
-	if( phase == "down" and key == "n" and isCtrlDown  ) then -
+	if( phase == "down" and key == "n" and isCtrlDown  ) then
 		print("Toggle screen mode")
 		native.setProperty( "windowMode", "normal" )  -- fullscreen, maximized, normal
 	end
