@@ -13,4 +13,4 @@ This code wask discussed in episodes 124 .. 128, the sub folders contain:
 * 11_reference_passing - Answer to a forums question, "How do I pass data from one scene to another?"
 * 12_rebuild_playgui - Example of 'building the scene on each re-entry' versus just once in 'create'.
 * 13_textFields - Answer to question in forums, "How do I manage my text fields between scenes?"
-
+* 14_textFields_as_scene_gates - Changes last example to prevent scene changes unless specific values are in the text fields.

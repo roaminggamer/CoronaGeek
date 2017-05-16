@@ -48,7 +48,7 @@ function scene:create( event )
 	label:setEmbossColor( color )
 
 	-- Create some buttons for navigation
-	local sceneChange Button = PushButton( sceneGroup, centerX, centerY - 50, "Go To Scene 1", onChangeScene, 
+	local sceneChangeButton = PushButton( sceneGroup, centerX, centerY - 50, "Go To Scene 1", onChangeScene, 
 	                          { labelColor = {0,1,0}, labelSize = 18, width = 200 } )
 
 

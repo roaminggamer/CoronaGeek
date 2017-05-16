@@ -15,12 +15,13 @@ local h = display.contentHeight
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
 
-local field1
-local field2
+local field1  -- GATE
+local field2  -- GATE
 
+local canChangeScene = false  -- GATE
 
 -- Forward Declare Functions
-local onChangeScene
+local onChangeScene  -- GATE
 
 ----------------------------------------------------------------------
 --	Scene Methods
@@ -51,10 +52,8 @@ function scene:create( event )
 	local sceneChangeButton = PushButton( sceneGroup, centerX, centerY - 50, "Go To Scene 2", onChangeScene, 
 	                          { labelColor = {0,1,0}, labelSize = 18, width = 200 } )
 
-
 	-- Text Field For This Scene
 	--	
-
 	local function textListener(  self, event )
 		if ( event.phase == "began" ) then
 
@@ -73,6 +72,7 @@ function scene:create( event )
 	field1 = native.newTextField( centerX, centerY, 300, 30 )
 	field1.userInput = textListener	
 	field1:addEventListener( "userInput" )
+	field1.placeholder = "Both fields must contain at least"
 
 	field1.isVisible = false
 	sceneGroup:insert(field1)
@@ -80,12 +80,11 @@ function scene:create( event )
 	field2 = native.newTextField( centerX, centerY + 40, 300, 30 )
 	field2.userInput = textListener	
 	field2:addEventListener( "userInput" )
+	field2.placeholder = "one letter to change scenes."
 
 	field2.isVisible = false
 	sceneGroup:insert(field2)
 
-
-	
 end
 
 ----------------------------------------------------------------------
@@ -145,6 +144,9 @@ end
 -- onChangeScene() - Button listener. Changes to other scene.
 --
 onChangeScene = function ( self, event ) 
+	if( not field1 or not field2 ) then return end -- GATE
+	if( string.len(field1.text) < 1 or string.len(field2.text) < 1 ) then return end  -- GATE
+
 	local options = {  effect = "slideLeft", time = 500 }
 	composer.gotoScene( "ifc.scene2", options  )	
 	return true

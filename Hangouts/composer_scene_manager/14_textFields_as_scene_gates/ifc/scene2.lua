@@ -15,12 +15,11 @@ local h = display.contentHeight
 local centerX = display.contentCenterX
 local centerY = display.contentCenterY
 
-local field1
-local field2
+local field1 -- GATE
+local field2 -- GATE
 
 
 -- Forward Declare Functions
-local onChangeScene
 
 ----------------------------------------------------------------------
 --	Scene Methods
@@ -38,7 +37,7 @@ function scene:create( event )
 	if(w>h) then back.rotation = 90 end
 
 	-- Create a label showing which scene this is
-	local label = display.newEmbossedText( sceneGroup, "Scene 1", centerX, 40, native.systemFont, 60 )
+	local label = display.newEmbossedText( sceneGroup, "Scene 2", centerX, 40, native.systemFont, 60 )
 	label:setFillColor( 0xCC/255, 1, 1  )
 	local color = 
 	{
@@ -48,42 +47,40 @@ function scene:create( event )
 	label:setEmbossColor( color )
 
 	-- Create some buttons for navigation
-	local sceneChangeButton = PushButton( sceneGroup, centerX, centerY - 50, "Go To Scene 2", onChangeScene, 
-	                          { labelColor = {0,1,0}, labelSize = 18, width = 200 } )
-
 
 	-- Text Field For This Scene
 	--	
-
 	local function textListener(  self, event )
-		if ( event.phase == "began" ) then
+		-- GATE ==>>
+		if( field1 and 
+			 field2 and 
+			 field1.text == "Corona" and
+			 field2.text == "Rocks" ) then
 
-		elseif ( event.phase == "ended" or event.phase == "submitted" ) then
-			print( event.target.text )
-
-		elseif ( event.phase == "editing" ) then
-			print( event.newCharacters )
-			print( event.oldText )
-			print( event.startPosition )
-			print( event.text )
+			local options = {  effect = "slideRight", time = 500 }
+			composer.gotoScene( "ifc.scene1", options  )	
 		end
+		-- <<== GATE
 	end
 
 	-- Create two text fields
 	field1 = native.newTextField( centerX, centerY, 300, 30 )
 	field1.userInput = textListener	
 	field1:addEventListener( "userInput" )
-
+	field1.placeholder = "Corona"
+	
 	field1.isVisible = false
 	sceneGroup:insert(field1)
 
 	field2 = native.newTextField( centerX, centerY + 40, 300, 30 )
 	field2.userInput = textListener	
 	field2:addEventListener( "userInput" )
+	field2.placeholder = "Rocks"
 
 	field2.isVisible = false
 	sceneGroup:insert(field2)
 
+	local label = display.newText( sceneGroup, "Type To Change Scenes", centerX, centerY - 50, native.systemFont, 22 )
 
 	
 end
@@ -95,9 +92,11 @@ function scene:willEnter( event )
 
 	if( field1 ) then
 		field1.isVisible = true
+		field1.text = "" -- GATE
 	end
 	if( field2 ) then
 		field2.isVisible = true
+		field2.text = "" -- GATE
 	end
 end
 ----------------------------------------------------------------------
@@ -140,15 +139,6 @@ end
 ----------------------------------------------------------------------
 --				FUNCTION/CALLBACK DEFINITIONS						--
 ----------------------------------------------------------------------
-
---
--- onChangeScene() - Button listener. Changes to other scene.
---
-onChangeScene = function ( self, event ) 
-	local options = {  effect = "slideLeft", time = 500 }
-	composer.gotoScene( "ifc.scene2", options  )	
-	return true
-end
 
 ---------------------------------------------------------------------------------
 -- Scene Dispatch Events, Etc. - Generally Do Not Touch Below This Line
