@@ -69,31 +69,31 @@ function scene:create( event )
 
 	-- Create a button
 	local push1 = PushButton( sceneGroup, centerX, centerY, "Back", onBack, 
-	                          { labelColor = {0.8,0.2,0.2}, labelSize = 18 } )
+	                          { labelColor = {0.8,0.2,0.2}, labelSize = 24 } )
 
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-function scene:willEnter( event )
+function scene:willShow( event )
 	local sceneGroup = self.view
 	transition.to( back, { alpha = 0.8, time = 500 } )
 end
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-function scene:didEnter( event )
+function scene:didShow( event )
 	local sceneGroup = self.view	
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-function scene:willExit( event )
+function scene:willHide( event )
 	local sceneGroup = self.view
 	transition.to( back, { alpha = 0, time = 300 } )
 end
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-function scene:didExit( event )
+function scene:didHide( event )
 	local sceneGroup = self.view
 end
 
@@ -120,18 +120,18 @@ function scene:show( event )
 	local sceneGroup 	= self.view
 	local willDid 	= event.phase
 	if( willDid == "will" ) then
-		self:willEnter( event )
+		self:willShow( event )
 	elseif( willDid == "did" ) then
-		self:didEnter( event )
+		self:didShow( event )
 	end
 end
 function scene:hide( event )
 	local sceneGroup 	= self.view
 	local willDid 	= event.phase
 	if( willDid == "will" ) then
-		self:willExit( event )
+		self:willHide( event )
 	elseif( willDid == "did" ) then
-		self:didExit( event )
+		self:didHide( event )
 	end
 end
 scene:addEventListener( "create", scene )

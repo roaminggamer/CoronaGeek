@@ -2,17 +2,17 @@ class = require 'scripts.30log'
 
 PushButton = class 
 	{ 
-		x 			= display.contentCenterX,
-		y 			= display.contentCenterY, 
-		width 		= 100, 
-		height 		= 40, 
-		selFill 	= { 0.8, 0.8, 0.8 }, 
+		x 				= display.contentCenterX,
+		y 				= display.contentCenterY, 
+		width 		= 200, 
+		height 		= 60, 
+		selFill 		= { 0.8, 0.8, 0.8 }, 
 		unselFill 	= { 0.5, 0.5, 0.5 }, 
 		selStroke 	= { 1, 1, 1 },
 		unselStroke = { 0.8, 0.8, 0.8 },
 		strokeWidth = 2,
 		labelColor 	= { 0, 0, 0 },
-		labelSize 	= 14,
+		labelSize 	= 22,
 		labelFont 	= native.systemFontBold,
 		__name = 'PushButton'
 	}

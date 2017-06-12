@@ -50,7 +50,7 @@ function scene:create( event )
 	local sceneGroup = self.view
 
 	-- Create a simple background
-	local back = display.newImageRect( sceneGroup, "images/protoBack.png", 380, 570 )
+	local back = display.newImageRect( sceneGroup, "images/protoBack.png", 380*2, 570*2 )
 	back.x = centerX
 	back.y = centerY
 	if(w>h) then back.rotation = 90 end
@@ -67,29 +67,29 @@ function scene:create( event )
 
 	-- Create a button
 	local push1 = PushButton( sceneGroup, centerX, centerY, "Back", onBack, 
-	                          { labelColor = {0.8,0.2,0.2}, labelSize = 18 } )
+	                          { labelColor = {0.8,0.2,0.2}, labelSize = 24 } )
 
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-function scene:willEnter( event )
+function scene:willShow( event )
 	local sceneGroup = self.view
 end
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-function scene:didEnter( event )
+function scene:didShow( event )
 	local sceneGroup = self.view
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-function scene:willExit( event )
+function scene:willHide( event )
 	local sceneGroup = self.view
 end
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
-function scene:didExit( event )
+function scene:didHide( event )
 	local sceneGroup = self.view
 end
 
@@ -124,18 +124,18 @@ function scene:show( event )
 	sceneGroup 	= self.view
 	local willDid 	= event.phase
 	if( willDid == "will" ) then
-		self:willEnter( event )
+		self:willShow( event )
 	elseif( willDid == "did" ) then
-		self:didEnter( event )
+		self:didShow( event )
 	end
 end
 function scene:hide( event )
 	sceneGroup 	= self.view
 	local willDid 	= event.phase
 	if( willDid == "will" ) then
-		self:willExit( event )
+		self:willHide( event )
 	elseif( willDid == "did" ) then
-		self:didExit( event )
+		self:didHide( event )
 	end
 end
 scene:addEventListener( "create", scene )
