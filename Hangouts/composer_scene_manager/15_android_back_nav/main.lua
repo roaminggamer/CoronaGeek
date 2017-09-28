@@ -41,4 +41,4 @@ display.setStatusBar(display.HiddenStatusBar)
 ----------------------------------------------------------------------
 -- 3. Execution
 ----------------------------------------------------------------------
-composer.gotoScene( "ifc.mainMenu" )
+composer.gotoScene( "ifc.scene1" )

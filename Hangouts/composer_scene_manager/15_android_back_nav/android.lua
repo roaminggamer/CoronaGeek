@@ -31,8 +31,7 @@ function android.new( params )
     params.title = params.title or "Exit?"
     params.msg = params.msg or "Are you sure?"
     local function exitApp()
-        local alert
-        alert = native.showAlert( params.title, params.msg, { "NO", "YES" }, onComplete )
+        local alert        
         local function onComplete( event )
             if "clicked" == event.action then
                 local i = event.index
@@ -44,7 +43,8 @@ function android.new( params )
                     native.requestExit()
                 end                        
             end
-        end            
+        end
+        alert = native.showAlert( params.title, params.msg, { "NO", "YES" }, onComplete )
     end
     local handler = {}
     function handler.key( self, event )
