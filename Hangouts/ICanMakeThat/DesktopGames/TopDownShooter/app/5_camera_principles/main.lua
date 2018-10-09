@@ -1,4 +1,4 @@
-require("mobdebug").start()
+--require("mobdebug").start()
 display.setStatusBar(display.HiddenStatusBar)  
 system.activate("multitouch")
 io.output():setvbuf("no") 
